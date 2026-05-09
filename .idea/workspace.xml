@@ -4,17 +4,11 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="71e9927c-e2fa-4e89-9be1-aaff13f24a5d" name="Changes" comment="Created with Spring Initializr">
-      <change afterPath="$PROJECT_DIR$/src/main/java/bg/fmi/uni/boomvox/domain/Album.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/bg/fmi/uni/boomvox/domain/Song.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/bg/fmi/uni/boomvox/domain/User.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/bg/fmi/uni/boomvox/enums/Genre.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/bg/fmi/uni/boomvox/enums/UserRole.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/compiler.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/compiler.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+    <list default="true" id="71e9927c-e2fa-4e89-9be1-aaff13f24a5d" name="Changes" comment="Added a few domain objects">
+      <change afterPath="$PROJECT_DIR$/src/main/java/bg/fmi/uni/boomvox/enums/SongFormat.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/application.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/bg/fmi/uni/boomvox/domain/Album.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/bg/fmi/uni/boomvox/domain/Album.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/bg/fmi/uni/boomvox/domain/Song.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/bg/fmi/uni/boomvox/domain/Song.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -111,12 +105,21 @@
       <option name="project" value="LOCAL" />
       <updated>1778326286492</updated>
     </task>
-    <option name="localTasksCounter" value="2" />
+    <task id="LOCAL-00002" summary="Added a few domain objects">
+      <option name="closed" value="true" />
+      <created>1778333002958</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1778333002958</updated>
+    </task>
+    <option name="localTasksCounter" value="3" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="Created with Spring Initializr" />
-    <option name="LAST_COMMIT_MESSAGE" value="Created with Spring Initializr" />
+    <MESSAGE value="Added a few domain objects" />
+    <option name="LAST_COMMIT_MESSAGE" value="Added a few domain objects" />
   </component>
   <component name="github-copilot-workspace">
     <instructionFileLocations>
