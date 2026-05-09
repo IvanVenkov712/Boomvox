@@ -23,8 +23,8 @@ public class Album {
     @Column(nullable = false)
     private Genre genre;
 
-    @Column(name = "upload_date", nullable = false)
-    private Date uploadDate;
+    @Column(name = "created_at", nullable = false)
+    private Date createdAt;
 
     @Version
     private long version;
@@ -33,7 +33,7 @@ public class Album {
         this.author = author;
         this.name = name;
         this.genre = genre;
-        this.uploadDate = uploadDate;
+        this.createdAt = uploadDate;
     }
 
     public long getId() {
@@ -52,8 +52,8 @@ public class Album {
         return genre;
     }
 
-    public Date getUploadDate() {
-        return uploadDate;
+    public Date getCreatedAt() {
+        return createdAt;
     }
 
     @Override
