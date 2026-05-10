@@ -5,17 +5,9 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="71e9927c-e2fa-4e89-9be1-aaff13f24a5d" name="Changes" comment="Added a few domain objects">
-      <change afterPath="$PROJECT_DIR$/src/main/java/bg/fmi/uni/boomvox/domain/FavouritesListSong.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/bg/fmi/uni/boomvox/domain/PlaylistSong.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/bg/fmi/uni/boomvox/domain/Recommendation.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/bg/fmi/uni/boomvox/domain/SongTag.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/bg/fmi/uni/boomvox/domain/Tag.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/bg/fmi/uni/boomvox/ids/FavouritesListSongId.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/bg/fmi/uni/boomvox/ids/PlaylistSongId.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/bg/fmi/uni/boomvox/ids/RecommendationId.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/bg/fmi/uni/boomvox/ids/SongTagId.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/bg/fmi/uni/boomvox/domain/Rating.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/bg/fmi/uni/boomvox/ids/RatingId.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/bg/fmi/uni/boomvox/domain/Album.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/bg/fmi/uni/boomvox/domain/Album.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -168,7 +160,23 @@
       <option name="project" value="LOCAL" />
       <updated>1778413028853</updated>
     </task>
-    <option name="localTasksCounter" value="9" />
+    <task id="LOCAL-00009" summary="Added a few domain objects">
+      <option name="closed" value="true" />
+      <created>1778418386912</created>
+      <option name="number" value="00009" />
+      <option name="presentableId" value="LOCAL-00009" />
+      <option name="project" value="LOCAL" />
+      <updated>1778418386912</updated>
+    </task>
+    <task id="LOCAL-00010" summary="Added a few domain objects">
+      <option name="closed" value="true" />
+      <created>1778418556187</created>
+      <option name="number" value="00010" />
+      <option name="presentableId" value="LOCAL-00010" />
+      <option name="project" value="LOCAL" />
+      <updated>1778418556187</updated>
+    </task>
+    <option name="localTasksCounter" value="11" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
