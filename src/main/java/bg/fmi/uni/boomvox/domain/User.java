@@ -25,15 +25,20 @@ public class User {
     @Column(nullable = false)
     private UserRole role;
 
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "favourites_id")
+    private Favourites favourites;
+
     @Version
     private long version;
 
-    public User(String username, String email, String firstName, String lastName, UserRole role) {
+    public User(String username, String email, String firstName, String lastName, UserRole role, Favourites favourites) {
         this.username = username;
         this.email = email;
         this.firstName = firstName;
         this.lastName = lastName;
         this.role = role;
+        this.favourites = favourites;
     }
 
     public long getId() {
@@ -60,6 +65,10 @@ public class User {
         return role;
     }
 
+    public Favourites getFavourites() {
+        return favourites;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;
@@ -81,7 +90,8 @@ public class User {
             ", email='" + email + '\'' +
             ", firstName='" + firstName + '\'' +
             ", lastName='" + lastName + '\'' +
-            ", role=" + role +
+            ", role=" + role + '\'' +
+            ", favourites=" + favourites +
             '}';
     }
 }

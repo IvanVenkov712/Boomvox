@@ -35,4 +35,17 @@ public abstract class SongCollection {
     public Date getCreatedAt() {
         return createdAt;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) return false;
+
+        SongCollection that = (SongCollection) o;
+        return id == that.id;
+    }
+
+    @Override
+    public int hashCode() {
+        return Long.hashCode(id);
+    }
 }
