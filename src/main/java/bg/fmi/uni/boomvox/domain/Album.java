@@ -9,6 +9,7 @@ import java.util.Date;
 @Table(name = "album")
 public class Album extends SongCollection {
 
+    //Possible change: If an album has several authors, not just one
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     private User author;
