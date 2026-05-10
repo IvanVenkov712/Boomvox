@@ -5,55 +5,21 @@ import jakarta.persistence.*;
 
 import java.util.Date;
 
-
+@Entity
 @Table(name = "album")
-public class Album {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", nullable = false)
-    private User author;
-
-    @Column(name = "name", nullable = false)
-    private String name;
+public class Album extends SongCollection {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private Genre genre;
 
-    @Column(name = "created_at", nullable = false)
-    private Date createdAt;
-
-    @Version
-    private long version;
-
-    public Album(User author, String name, Genre genre, Date uploadDate) {
-        this.author = author;
-        this.name = name;
+    public Album(User author, String name, Date createdAt, Genre genre) {
+        super(author, name, createdAt);
         this.genre = genre;
-        this.createdAt = uploadDate;
-    }
-
-    public long getId() {
-        return id;
-    }
-
-    public User getAuthor() {
-        return author;
-    }
-
-    public String getName() {
-        return name;
     }
 
     public Genre getGenre() {
         return genre;
-    }
-
-    public Date getCreatedAt() {
-        return createdAt;
     }
 
     @Override
@@ -61,22 +27,22 @@ public class Album {
         if (o == null || getClass() != o.getClass()) return false;
 
         Album album = (Album) o;
-        return id == album.id;
+        return getId() == album.getId();
     }
 
     @Override
     public int hashCode() {
-        return Long.hashCode(id);
+        return Long.hashCode(getId());
     }
 
     @Override
     public String toString() {
         return "Album{" +
-            "id=" + id +
-            ", author=" + author +
-            ", name='" + name + '\'' +
-            ", genre=" + genre +
-            ", uploadDate=" + uploadDate +
+            "id=" + getId() +
+            ", author=" + getAuthor() +
+            ", name='" + getName() + '\'' +
+            ", createdAt=" + getCreatedAt() +
+            ", genre=" + getGenre() +
             '}';
     }
 }

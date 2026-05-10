@@ -3,6 +3,9 @@ package bg.fmi.uni.boomvox.domain;
 import bg.fmi.uni.boomvox.enums.SongFormat;
 import jakarta.persistence.*;
 
+import java.util.Date;
+
+@Entity
 @Table(name = "song")
 public class Song {
     @Id
@@ -16,6 +19,9 @@ public class Song {
     @Column(name = "name", nullable = false)
     private String name;
 
+    @Column(name = "uploaded_at", nullable = false)
+    private Date uploadedAt;
+
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private SongFormat format;
@@ -27,16 +33,18 @@ public class Song {
     private long fileSize;
 
     // We will eventually use AWS or the filesystem to store the uploaded songs.
-    // This will be a path to a file or an URL address of the actual song data.
+    // This will be a path to a file or a URL address of the actual song data.
     @Column(name = "storage_key", nullable = false)
     private String storageKey;
 
     @Version
     private long version;
 
-    public Song(Album album, String name, SongFormat format, long duration, long fileSize, String storageKey) {
+    public Song(Album album, String name, Date uploadedAt, SongFormat format, long duration, long fileSize,
+                String storageKey) {
         this.album = album;
         this.name = name;
+        this.uploadedAt = uploadedAt;
         this.format = format;
         this.duration = duration;
         this.fileSize = fileSize;
@@ -71,6 +79,10 @@ public class Song {
         return storageKey;
     }
 
+    public Date getUploadedAt() {
+        return uploadedAt;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;
@@ -90,6 +102,7 @@ public class Song {
             "id=" + id +
             ", album=" + album +
             ", name='" + name + '\'' +
+            ", uploadedAt=" + uploadedAt +
             ", format=" + format +
             ", duration=" + duration +
             ", fileSize=" + fileSize +

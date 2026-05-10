@@ -5,8 +5,11 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="71e9927c-e2fa-4e89-9be1-aaff13f24a5d" name="Changes" comment="Added a few domain objects">
-      <change afterPath="$PROJECT_DIR$/src/main/java/bg/fmi/uni/boomvox/domain/Playlist.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/bg/fmi/uni/boomvox/domain/SongCollection.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/bg/fmi/uni/boomvox/domain/Album.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/bg/fmi/uni/boomvox/domain/Album.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/bg/fmi/uni/boomvox/domain/Playlist.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/bg/fmi/uni/boomvox/domain/Playlist.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/bg/fmi/uni/boomvox/domain/Song.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/bg/fmi/uni/boomvox/domain/Song.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -47,18 +50,18 @@
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
-  <component name="GitHubPullRequestSearchHistory"><![CDATA[{
-  "lastFilter": {
-    "state": "OPEN",
-    "assignee": "IvanVenkov712"
+  <component name="GitHubPullRequestSearchHistory">{
+  &quot;lastFilter&quot;: {
+    &quot;state&quot;: &quot;OPEN&quot;,
+    &quot;assignee&quot;: &quot;IvanVenkov712&quot;
   }
-}]]></component>
-  <component name="GithubPullRequestsUISettings"><![CDATA[{
-  "selectedUrlAndAccountId": {
-    "url": "https://github.com/IvanVenkov712/Boomvox.git",
-    "accountId": "18478d01-1f05-4dd4-ac06-c1628c4840ed"
+}</component>
+  <component name="GithubPullRequestsUISettings">{
+  &quot;selectedUrlAndAccountId&quot;: {
+    &quot;url&quot;: &quot;https://github.com/IvanVenkov712/Boomvox.git&quot;,
+    &quot;accountId&quot;: &quot;18478d01-1f05-4dd4-ac06-c1628c4840ed&quot;
   }
-}]]></component>
+}</component>
   <component name="MavenImportPreferences">
     <option name="generalSettings">
       <MavenGeneralSettings>
@@ -66,27 +69,27 @@
       </MavenGeneralSettings>
     </option>
   </component>
-  <component name="ProjectColorInfo"><![CDATA[{
-  "customColor": "",
-  "associatedIndex": 1
-}]]></component>
+  <component name="ProjectColorInfo">{
+  &quot;customColor&quot;: &quot;&quot;,
+  &quot;associatedIndex&quot;: 1
+}</component>
   <component name="ProjectId" id="3DU9kvYFeuhiGxqMQgnXnTMD5lH" />
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "Application.BoomvoxApplication.executor": "Run",
-    "Application.TestBoomvoxApplication.executor": "Run",
-    "ModuleVcsDetector.initialDetectionPerformed": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "RunOnceActivity.git.unshallow": "true",
-    "git-widget-placeholder": "feature-Ivan",
-    "kotlin-language-version-configured": "true",
-    "settings.editor.selected.configurable": "org.infernus.idea.checkstyle.CheckStyleConfigurable"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;Application.BoomvoxApplication.executor&quot;: &quot;Run&quot;,
+    &quot;Application.TestBoomvoxApplication.executor&quot;: &quot;Run&quot;,
+    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;feature-Ivan&quot;,
+    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;org.infernus.idea.checkstyle.CheckStyleConfigurable&quot;
   }
-}]]></component>
+}</component>
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
       <changelist id="71e9927c-e2fa-4e89-9be1-aaff13f24a5d" name="Changes" comment="" />
@@ -119,8 +122,27 @@
       <option name="project" value="LOCAL" />
       <updated>1778334665171</updated>
     </task>
-    <option name="localTasksCounter" value="4" />
+    <task id="LOCAL-00004" summary="Added a few domain objects">
+      <option name="closed" value="true" />
+      <created>1778334924616</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1778334924616</updated>
+    </task>
+    <option name="localTasksCounter" value="5" />
     <servers />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="Created with Spring Initializr" />
