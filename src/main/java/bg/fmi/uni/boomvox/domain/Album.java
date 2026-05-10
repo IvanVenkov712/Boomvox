@@ -9,13 +9,22 @@ import java.util.Date;
 @Table(name = "album")
 public class Album extends SongCollection {
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false)
+    private User author;
+
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private Genre genre;
 
-    public Album(User author, String name, Date createdAt, Genre genre) {
-        super(author, name, createdAt);
+    public Album(String name, Date createdAt, User author, Genre genre) {
+        super(name, createdAt);
+        this.author = author;
         this.genre = genre;
+    }
+
+    public User getAuthor() {
+        return author;
     }
 
     public Genre getGenre() {

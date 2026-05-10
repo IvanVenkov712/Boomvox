@@ -10,10 +10,6 @@ public abstract class SongCollection {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", nullable = false)
-    private User author;
-
     @Column(name = "name", nullable = false)
     private String name;
 
@@ -23,18 +19,13 @@ public abstract class SongCollection {
     @Version
     private long version;
 
-    public SongCollection(User author, String name, Date createdAt) {
-        this.author = author;
+    public SongCollection(String name, Date createdAt) {
         this.name = name;
         this.createdAt = createdAt;
     }
 
     public long getId() {
         return id;
-    }
-
-    public User getAuthor() {
-        return author;
     }
 
     public String getName() {

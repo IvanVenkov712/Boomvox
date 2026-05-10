@@ -7,15 +7,24 @@ import java.util.Date;
 @Entity
 @Table(name = "playlist")
 public class Playlist extends SongCollection {
-    public Playlist(User author, String name, Date createdAt) {
-        super(author, name, createdAt);
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false)
+    private User owner;
+
+    public Playlist(String name, Date createdAt) {
+        super(name, createdAt);
+    }
+
+    public User getOwner() {
+        return owner;
     }
 
     @Override
     public String toString() {
         return "Playlist{" +
             "id=" + getId() +
-            ", author=" + getAuthor() +
+            ", owner=" + getOwner() +
             ", name='" + getName() + '\'' +
             ", createdAt=" + getCreatedAt() +
             '}';
