@@ -15,6 +15,9 @@ public class User {
     @Column(name = "email", nullable = false, length = 50, unique = true)
     private String email;
 
+    @Column(name = "password_hash", nullable = false)
+    private String passwordHash;
+
     @Column(name = "first_name", nullable = false, length = 20)
     private String firstName;
 
@@ -32,9 +35,10 @@ public class User {
     @Version
     private long version;
 
-    public User(String username, String email, String firstName, String lastName, UserRole role, FavouritesList favouritesList) {
+    public User(String username, String email, String passwordHash, String firstName, String lastName, UserRole role, FavouritesList favouritesList) {
         this.username = username;
         this.email = email;
+        this.passwordHash = passwordHash;
         this.firstName = firstName;
         this.lastName = lastName;
         this.role = role;
@@ -67,6 +71,10 @@ public class User {
 
     public FavouritesList getFavouritesList() {
         return favouritesList;
+    }
+
+    public String getPasswordHash() {
+        return passwordHash;
     }
 
     @Override
