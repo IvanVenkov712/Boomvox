@@ -8,7 +8,7 @@ import java.util.Date;
 @Table(name = "favourites_list")
 public class FavouritesList extends SongCollection {
 
-    @OneToOne(mappedBy = "favourites")
+    @OneToOne(mappedBy = "favouritesList")
     User user;
 
     public FavouritesList(String name, Date createdAt, User user) {

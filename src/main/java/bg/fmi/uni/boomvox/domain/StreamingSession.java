@@ -34,6 +34,9 @@ public class StreamingSession {
     @Column(nullable = false)
     private SessionStatus status;
 
+    @Version
+    private long version;
+
     public StreamingSession(User user, Song song, Playlist playlist, LocalDateTime startedAt, LocalDateTime endedAt,
                             SessionStatus status) {
         this.user = user;

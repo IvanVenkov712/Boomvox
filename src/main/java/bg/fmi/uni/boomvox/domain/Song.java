@@ -37,6 +37,10 @@ public class Song {
     @Column(name = "storage_key", nullable = false)
     private String storageKey;
 
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "song_stats_id", nullable = false)
+    private SongStats stats;
+
     @Version
     private long version;
 
@@ -99,14 +103,15 @@ public class Song {
     @Override
     public String toString() {
         return "Song{" +
-            "id=" + id +
-            ", album=" + album +
-            ", name='" + name + '\'' +
-            ", uploadedAt=" + uploadedAt +
-            ", format=" + format +
-            ", duration=" + duration +
-            ", fileSize=" + fileSize +
-            ", storageKey='" + storageKey + '\'' +
+            "id=" + getId() +
+            ", album=" + getAlbum() +
+            ", name='" + getName() + '\'' +
+            ", uploadedAt=" + getUploadedAt() +
+            ", format=" + getFormat() +
+            ", duration=" + getDuration() +
+            ", fileSize=" + getFileSize() +
+            ", storageKey='" + getStorageKey() + '\'' +
+            ", stats=" + stats +
             '}';
     }
 }
