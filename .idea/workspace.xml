@@ -5,11 +5,17 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="71e9927c-e2fa-4e89-9be1-aaff13f24a5d" name="Changes" comment="Added a few domain objects">
-      <change afterPath="$PROJECT_DIR$/src/main/java/bg/fmi/uni/boomvox/domain/SongStats.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/bg/fmi/uni/boomvox/cli/StartupEnvironmentLogger.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/bg/fmi/uni/boomvox/config/AppLogger.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/bg/fmi/uni/boomvox/config/BoomvoxProperties.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/bg/fmi/uni/boomvox/config/ConsoleAppLogger.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/bg/fmi/uni/boomvox/config/FileAppLogger.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/bg/fmi/uni/boomvox/config/LogLevel.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/bg/fmi/uni/boomvox/dto/ErrorResponse.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/bg/fmi/uni/boomvox/dto/PageResponse.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/resources/application-dev.yml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/resources/application-prod.yml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/bg/fmi/uni/boomvox/domain/FavouritesList.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/bg/fmi/uni/boomvox/domain/FavouritesList.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/bg/fmi/uni/boomvox/domain/Song.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/bg/fmi/uni/boomvox/domain/Song.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/bg/fmi/uni/boomvox/domain/StreamingSession.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/bg/fmi/uni/boomvox/domain/StreamingSession.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -194,7 +200,15 @@
       <option name="project" value="LOCAL" />
       <updated>1778488825918</updated>
     </task>
-    <option name="localTasksCounter" value="13" />
+    <task id="LOCAL-00013" summary="Added a few domain objects">
+      <option name="closed" value="true" />
+      <created>1778490425822</created>
+      <option name="number" value="00013" />
+      <option name="presentableId" value="LOCAL-00013" />
+      <option name="project" value="LOCAL" />
+      <updated>1778490425822</updated>
+    </task>
+    <option name="localTasksCounter" value="14" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
