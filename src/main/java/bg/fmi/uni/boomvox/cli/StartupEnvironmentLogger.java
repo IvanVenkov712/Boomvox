@@ -23,7 +23,7 @@ public class StartupEnvironmentLogger implements ApplicationRunner {
 
     @Override
     public void run(ApplicationArguments args) {
-        logger.info("=== Theatre App Started ===");
+        logger.info("=== Boomvox Started ===");
         logger.info("Log level     : " + properties.getLogLevel());
         logger.info("Page size     : " + properties.getDefaultPageSize());
         logger.info("Log file      : " + properties.getLogFile());

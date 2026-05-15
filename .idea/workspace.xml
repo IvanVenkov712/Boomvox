@@ -5,14 +5,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="71e9927c-e2fa-4e89-9be1-aaff13f24a5d" name="Changes" comment="Added configuration">
-      <change afterPath="$PROJECT_DIR$/src/main/resources/db/changelog/changes/001-create-show-table.sql" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/resources/db/changelog/changes/002-create-hall-table.sql" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/resources/db/changelog/changes/003-create-performance-table.sql" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/resources/db/changelog/changes/004-add-version-columns.sql" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/resources/db/changelog/changes/005-create-reservation-table.sql" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/bg/fmi/uni/boomvox/cli/StartupEnvironmentLogger.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/bg/fmi/uni/boomvox/cli/StartupEnvironmentLogger.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/db/changelog/db.changelog-master.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/db/changelog/db.changelog-master.yaml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -81,18 +74,18 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "Application.BoomvoxApplication.executor": "Run",
-    "Application.TestBoomvoxApplication.executor": "Run",
-    "ModuleVcsDetector.initialDetectionPerformed": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "RunOnceActivity.git.unshallow": "true",
-    "git-widget-placeholder": "feature-Ivan",
-    "kotlin-language-version-configured": "true",
-    "settings.editor.selected.configurable": "org.infernus.idea.checkstyle.CheckStyleConfigurable"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;Application.BoomvoxApplication.executor&quot;: &quot;Run&quot;,
+    &quot;Application.TestBoomvoxApplication.executor&quot;: &quot;Run&quot;,
+    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;feature-Ivan&quot;,
+    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;org.infernus.idea.checkstyle.CheckStyleConfigurable&quot;
   }
-}]]></component>
+}</component>
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
       <changelist id="71e9927c-e2fa-4e89-9be1-aaff13f24a5d" name="Changes" comment="" />
