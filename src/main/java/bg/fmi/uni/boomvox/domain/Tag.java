@@ -2,7 +2,6 @@ package bg.fmi.uni.boomvox.domain;
 
 import jakarta.persistence.*;
 
-import java.util.Objects;
 
 @Entity
 @Table(name = "tag")

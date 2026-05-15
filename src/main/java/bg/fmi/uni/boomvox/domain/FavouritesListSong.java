@@ -1,10 +1,8 @@
 package bg.fmi.uni.boomvox.domain;
 
 import bg.fmi.uni.boomvox.ids.FavouritesListSongId;
-import bg.fmi.uni.boomvox.ids.PlaylistSongId;
 import jakarta.persistence.*;
 
-import java.io.Serializable;
 import java.time.LocalDateTime;
 
 @Entity
@@ -15,7 +13,7 @@ public class FavouritesListSong {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "favourites_list_id", nullable = false)
-    @MapsId("playlistId")
+    @MapsId("favouritesListId")
     private FavouritesList favouritesList;
 
     @ManyToOne(fetch = FetchType.LAZY)
