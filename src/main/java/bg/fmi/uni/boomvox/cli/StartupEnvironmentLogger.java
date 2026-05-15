@@ -27,11 +27,11 @@ public class StartupEnvironmentLogger implements ApplicationRunner {
         logger.info("Log level     : " + properties.getLogLevel());
         logger.info("Page size     : " + properties.getDefaultPageSize());
         logger.info("Log file      : " + properties.getLogFile());
-        logger.debug("--- Project beans (bg.uni.fmi.theatre) ---");
+        logger.debug("--- Project beans (bg.fmi.uni.boomvox) ---");
         Arrays.stream(ctx.getBeanDefinitionNames())
             .filter(name -> {
                 try {
-                    return ctx.getBean(name).getClass().getPackageName().startsWith("bg.uni.fmi.theatre");
+                    return ctx.getBean(name).getClass().getPackageName().startsWith("bg.fmi.uni.boomvox");
                 } catch (Exception e) { return false; }
             })
             .forEach(name -> logger.debug("  bean: " + name));
