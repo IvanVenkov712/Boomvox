@@ -4,17 +4,8 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="71e9927c-e2fa-4e89-9be1-aaff13f24a5d" name="Changes" comment="Added a few domain objects">
-      <change afterPath="$PROJECT_DIR$/src/main/java/bg/fmi/uni/boomvox/cli/StartupEnvironmentLogger.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/bg/fmi/uni/boomvox/config/AppLogger.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/bg/fmi/uni/boomvox/config/BoomvoxProperties.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/bg/fmi/uni/boomvox/config/ConsoleAppLogger.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/bg/fmi/uni/boomvox/config/FileAppLogger.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/bg/fmi/uni/boomvox/config/LogLevel.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/bg/fmi/uni/boomvox/dto/ErrorResponse.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/bg/fmi/uni/boomvox/dto/PageResponse.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/resources/application-dev.yml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/resources/application-prod.yml" afterDir="false" />
+    <list default="true" id="71e9927c-e2fa-4e89-9be1-aaff13f24a5d" name="Changes" comment="Added configuration">
+      <change afterPath="$PROJECT_DIR$/src/main/resources/db/changelog/db.changelog-master.yaml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -208,7 +199,15 @@
       <option name="project" value="LOCAL" />
       <updated>1778490425822</updated>
     </task>
-    <option name="localTasksCounter" value="14" />
+    <task id="LOCAL-00014" summary="Added configuration">
+      <option name="closed" value="true" />
+      <created>1778832430176</created>
+      <option name="number" value="00014" />
+      <option name="presentableId" value="LOCAL-00014" />
+      <option name="project" value="LOCAL" />
+      <updated>1778832430176</updated>
+    </task>
+    <option name="localTasksCounter" value="15" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -225,7 +224,8 @@
   <component name="VcsManagerConfiguration">
     <MESSAGE value="Created with Spring Initializr" />
     <MESSAGE value="Added a few domain objects" />
-    <option name="LAST_COMMIT_MESSAGE" value="Added a few domain objects" />
+    <MESSAGE value="Added configuration" />
+    <option name="LAST_COMMIT_MESSAGE" value="Added configuration" />
   </component>
   <component name="github-copilot-workspace">
     <instructionFileLocations>
