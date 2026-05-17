@@ -3,12 +3,13 @@ package bg.fmi.uni.boomvox.repository;
 import bg.fmi.uni.boomvox.domain.FavouritesList;
 import bg.fmi.uni.boomvox.domain.FavouritesListSong;
 import bg.fmi.uni.boomvox.domain.Song;
+import bg.fmi.uni.boomvox.ids.FavouritesListSongId;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
-public interface FavouritesListSongRepository extends JpaRepository<FavouritesListSong, Long> {
+public interface FavouritesListSongRepository extends JpaRepository<FavouritesListSong, FavouritesListSongId> {
 
     List<FavouritesListSong> findBySongId(Long id);
 

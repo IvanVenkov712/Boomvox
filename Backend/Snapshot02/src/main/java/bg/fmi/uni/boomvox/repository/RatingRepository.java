@@ -3,12 +3,13 @@ package bg.fmi.uni.boomvox.repository;
 import bg.fmi.uni.boomvox.domain.Rating;
 import bg.fmi.uni.boomvox.domain.Song;
 import bg.fmi.uni.boomvox.domain.User;
+import bg.fmi.uni.boomvox.ids.RatingId;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
 
-public interface RatingRepository extends JpaRepository<Rating, Long> {
+public interface RatingRepository extends JpaRepository<Rating, RatingId> {
 
     List<Rating> findByUserId(Long id);
 
