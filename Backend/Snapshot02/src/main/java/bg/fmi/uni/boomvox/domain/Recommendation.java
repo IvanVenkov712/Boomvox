@@ -2,6 +2,7 @@ package bg.fmi.uni.boomvox.domain;
 
 import bg.fmi.uni.boomvox.ids.RecommendationId;
 import jakarta.persistence.*;
+import lombok.Getter;
 
 @Entity
 @Table(name = "recommendation")
@@ -10,16 +11,19 @@ public class Recommendation {
     @EmbeddedId
     private RecommendationId id;
 
+    @Getter
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     @MapsId("userId")
     private User user;
 
+    @Getter
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "song_id", nullable = false)
     @MapsId("songId")
     private Song song;
 
+    @Getter
     private int percent;
 
     @Version
@@ -33,18 +37,6 @@ public class Recommendation {
         }
         id = new RecommendationId(user.getId(), song.getId());
         this.percent = percent;
-    }
-
-    public User getUser() {
-        return user;
-    }
-
-    public Song getSong() {
-        return song;
-    }
-
-    public int getPercent() {
-        return percent;
     }
 
     @Override

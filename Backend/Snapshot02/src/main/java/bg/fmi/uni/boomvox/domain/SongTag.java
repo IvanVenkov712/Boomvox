@@ -2,6 +2,7 @@ package bg.fmi.uni.boomvox.domain;
 
 import bg.fmi.uni.boomvox.ids.SongTagId;
 import jakarta.persistence.*;
+import lombok.Getter;
 
 import java.time.LocalDateTime;
 import java.util.Objects;
@@ -12,16 +13,19 @@ public class SongTag {
     @EmbeddedId
     private SongTagId id;
 
+    @Getter
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "song_id", nullable = false)
     @MapsId("songId")
     private Song song;
 
+    @Getter
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "tag_id", nullable = false)
     @MapsId("tagId")
     private Tag tag;
 
+    @Getter
     @Column(name = "added_at")
     private LocalDateTime addedAt;
 
@@ -33,18 +37,6 @@ public class SongTag {
         this.tag = tag;
         this.addedAt = addedAt;
         this.id = new SongTagId(song.getId(), tag.getId());
-    }
-
-    public Song getSong() {
-        return song;
-    }
-
-    public Tag getTag() {
-        return tag;
-    }
-
-    public LocalDateTime getAddedAt() {
-        return addedAt;
     }
 
     @Override

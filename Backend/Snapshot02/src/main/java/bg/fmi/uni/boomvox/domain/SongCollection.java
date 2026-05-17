@@ -1,39 +1,32 @@
 package bg.fmi.uni.boomvox.domain;
 
 import jakarta.persistence.*;
+import lombok.Getter;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 
 @MappedSuperclass
 public abstract class SongCollection {
+    @Getter
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
+    @Getter
     @Column(name = "name", nullable = false)
     private String name;
 
+    @Getter
     @Column(name = "created_at", nullable = false)
-    private Date createdAt;
+    private LocalDateTime createdAt;
 
     @Version
     private long version;
 
-    public SongCollection(String name, Date createdAt) {
+    public SongCollection(String name, LocalDateTime createdAt) {
         this.name = name;
         this.createdAt = createdAt;
-    }
-
-    public long getId() {
-        return id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public Date getCreatedAt() {
-        return createdAt;
     }
 
     @Override

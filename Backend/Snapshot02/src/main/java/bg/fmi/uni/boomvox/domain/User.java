@@ -1,33 +1,42 @@
 package bg.fmi.uni.boomvox.domain;
 import bg.fmi.uni.boomvox.enums.UserRole;
 import jakarta.persistence.*;
+import lombok.Getter;
 
 @Entity
 @Table(name = "user")
 public class User {
+    @Getter
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
+    @Getter
     @Column(name = "username", nullable = false, length = 20, unique = true)
     private String username;
 
+    @Getter
     @Column(name = "email", nullable = false, length = 50, unique = true)
     private String email;
 
+    @Getter
     @Column(name = "password_hash", nullable = false)
     private String passwordHash;
 
+    @Getter
     @Column(name = "first_name", nullable = false, length = 20)
     private String firstName;
 
+    @Getter
     @Column(name = "last_name", nullable = false, length = 20)
     private String lastName;
 
+    @Getter
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private UserRole role;
 
+    @Getter
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "favourites_list_id")
     private FavouritesList favouritesList;
@@ -43,38 +52,6 @@ public class User {
         this.lastName = lastName;
         this.role = role;
         this.favouritesList = favouritesList;
-    }
-
-    public long getId() {
-        return id;
-    }
-
-    public String getUsername() {
-        return username;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public String getFirstName() {
-        return firstName;
-    }
-
-    public String getLastName() {
-        return lastName;
-    }
-
-    public UserRole getRole() {
-        return role;
-    }
-
-    public FavouritesList getFavouritesList() {
-        return favouritesList;
-    }
-
-    public String getPasswordHash() {
-        return passwordHash;
     }
 
     @Override

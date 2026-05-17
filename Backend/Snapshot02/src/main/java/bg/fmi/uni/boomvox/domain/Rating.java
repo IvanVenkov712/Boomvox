@@ -2,6 +2,7 @@ package bg.fmi.uni.boomvox.domain;
 
 import bg.fmi.uni.boomvox.ids.RatingId;
 import jakarta.persistence.*;
+import lombok.Getter;
 
 import java.time.LocalDateTime;
 import java.util.Objects;
@@ -13,22 +14,27 @@ public class Rating {
     @EmbeddedId
     private RatingId id;
 
+    @Getter
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     @MapsId("userId")
     private User user;
 
+    @Getter
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "song_id", nullable = false)
     @MapsId("songId")
     private Song song;
 
+    @Getter
     @Column(name = "rating_grade")
     private int grade;
 
+    @Getter
     @Column(name = "comment", columnDefinition = "TEXT", nullable = false)
     private String comment;
 
+    @Getter
     @Column(name = "last_updated_at", nullable = false)
     private LocalDateTime lastUpdatedAt;
 
@@ -45,26 +51,6 @@ public class Rating {
         this.comment = comment;
         this.lastUpdatedAt = lastUpdatedAt;
         this.id = new RatingId(user.getId(), song.getId());
-    }
-
-    public User getUser() {
-        return user;
-    }
-
-    public Song getSong() {
-        return song;
-    }
-
-    public int getGrade() {
-        return grade;
-    }
-
-    public String getComment() {
-        return comment;
-    }
-
-    public LocalDateTime getLastUpdatedAt() {
-        return lastUpdatedAt;
     }
 
     @Override

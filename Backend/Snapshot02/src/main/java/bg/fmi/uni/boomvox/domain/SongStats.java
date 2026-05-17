@@ -1,10 +1,12 @@
 package bg.fmi.uni.boomvox.domain;
 
 import jakarta.persistence.*;
+import lombok.Getter;
 
 @Entity
 @Table(name = "song_stats")
 public class SongStats {
+    @Getter
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
@@ -15,15 +17,19 @@ public class SongStats {
     @Column(name = "ratings_count", nullable = false)
     private long ratingsCount;
 
+    @Getter
     @Column(name = "avg_rating", nullable = false)
     private double avgRating;
 
+    @Getter
     @Column(name = "plays_count", nullable = false)
     private long playsCount;
 
+    @Getter
     @Column(name = "playlists_count", nullable = false)
     private long playlistsCount;
 
+    @Getter
     @Column(name = "recommendations_count", nullable = false)
     private long recommendationsCount;
 
@@ -39,26 +45,6 @@ public class SongStats {
         this.avgRating = avgRating;
         this.ratingsCount = ratingsCount;
         this.song = song;
-    }
-
-    public long getId() {
-        return id;
-    }
-
-    public long getRecommendationsCount() {
-        return recommendationsCount;
-    }
-
-    public long getPlaylistsCount() {
-        return playlistsCount;
-    }
-
-    public long getPlaysCount() {
-        return playsCount;
-    }
-
-    public double getAvgRating() {
-        return avgRating;
     }
 
     public long getRatingsCount() {

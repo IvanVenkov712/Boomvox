@@ -1,7 +1,10 @@
 package bg.fmi.uni.boomvox.domain;
 
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.ToString;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 
 @Entity
@@ -10,18 +13,12 @@ public class Playlist extends SongCollection {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
+    @Getter
     private User owner;
 
-    @Version
-    private long version;
-
-    public Playlist(String name, Date createdAt, User owner) {
+    public Playlist(String name, LocalDateTime createdAt, User owner) {
         super(name, createdAt);
         this.owner = owner;
-    }
-
-    public User getOwner() {
-        return owner;
     }
 
     @Override

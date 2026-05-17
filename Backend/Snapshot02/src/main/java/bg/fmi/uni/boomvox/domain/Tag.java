@@ -1,29 +1,27 @@
 package bg.fmi.uni.boomvox.domain;
 
 import jakarta.persistence.*;
+import lombok.Getter;
 
 
 @Entity
 @Table(name = "tag")
 public class Tag {
+    @Getter
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
+    @Getter
     @Column(name = "word", nullable = false)
     private String word;
+
+    @Version
+    private long version;
 
     public Tag(long id, String word) {
         this.id = id;
         this.word = word;
-    }
-
-    public long getId() {
-        return id;
-    }
-
-    public String getWord() {
-        return word;
     }
 
     @Override

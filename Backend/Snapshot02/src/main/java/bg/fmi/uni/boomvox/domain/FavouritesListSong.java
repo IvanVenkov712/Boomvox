@@ -2,6 +2,7 @@ package bg.fmi.uni.boomvox.domain;
 
 import bg.fmi.uni.boomvox.ids.FavouritesListSongId;
 import jakarta.persistence.*;
+import lombok.Getter;
 
 import java.time.LocalDateTime;
 
@@ -11,19 +12,23 @@ public class FavouritesListSong {
     @EmbeddedId
     private FavouritesListSongId id;
 
+    @Getter
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "favourites_list_id", nullable = false)
     @MapsId("favouritesListId")
     private FavouritesList favouritesList;
 
+    @Getter
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "song_id", nullable = false)
     @MapsId("songId")
     private Song song;
 
+    @Getter
     @Column(name = "position", nullable = false)
     private int position;
 
+    @Getter
     @Column(name = "added_at", nullable = false)
     private LocalDateTime addedAt;
 
@@ -33,22 +38,6 @@ public class FavouritesListSong {
         this.position = position;
         this.addedAt = addedAt;
         this.id = new FavouritesListSongId(favouritesList.getId(), song.getId());
-    }
-
-    public FavouritesList getFavouritesList() {
-        return favouritesList;
-    }
-
-    public Song getSong() {
-        return song;
-    }
-
-    public int getPosition() {
-        return position;
-    }
-
-    public LocalDateTime getAddedAt() {
-        return addedAt;
     }
 
     @Override

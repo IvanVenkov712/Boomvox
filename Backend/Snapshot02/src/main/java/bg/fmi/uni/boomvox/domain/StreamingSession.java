@@ -2,34 +2,42 @@ package bg.fmi.uni.boomvox.domain;
 
 import bg.fmi.uni.boomvox.enums.SessionStatus;
 import jakarta.persistence.*;
+import lombok.Getter;
 
 import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "streaming_session")
 public class StreamingSession {
+    @Getter
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
+    @Getter
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
+    @Getter
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "song_id", nullable = false)
     private Song song;
 
+    @Getter
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "playlist_id", nullable = true)
     private Playlist playlist;
 
+    @Getter
     @Column(name = "started_at", nullable = false)
     private LocalDateTime startedAt;
 
+    @Getter
     @Column(name = "ended_at", nullable = true)
     private LocalDateTime endedAt;
 
+    @Getter
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private SessionStatus status;
@@ -45,34 +53,6 @@ public class StreamingSession {
         this.startedAt = startedAt;
         this.endedAt = endedAt;
         this.status = status;
-    }
-
-    public SessionStatus getStatus() {
-        return status;
-    }
-
-    public LocalDateTime getEndedAt() {
-        return endedAt;
-    }
-
-    public LocalDateTime getStartedAt() {
-        return startedAt;
-    }
-
-    public Playlist getPlaylist() {
-        return playlist;
-    }
-
-    public Song getSong() {
-        return song;
-    }
-
-    public User getUser() {
-        return user;
-    }
-
-    public int getId() {
-        return id;
     }
 
     @Override

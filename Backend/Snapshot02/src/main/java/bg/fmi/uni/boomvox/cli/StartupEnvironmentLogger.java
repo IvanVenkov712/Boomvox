@@ -2,11 +2,14 @@ package bg.fmi.uni.boomvox.cli;
 
 import bg.fmi.uni.boomvox.config.AppLogger;
 import bg.fmi.uni.boomvox.config.BoomvoxProperties;
+import bg.fmi.uni.boomvox.domain.Album;
+import bg.fmi.uni.boomvox.enums.Genre;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDateTime;
 import java.util.Arrays;
 
 @Component
@@ -35,5 +38,6 @@ public class StartupEnvironmentLogger implements ApplicationRunner {
                 } catch (Exception e) { return false; }
             })
             .forEach(name -> logger.debug("  bean: " + name));
+
     }
 }

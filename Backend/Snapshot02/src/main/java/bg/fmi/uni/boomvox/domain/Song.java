@@ -2,38 +2,47 @@ package bg.fmi.uni.boomvox.domain;
 
 import bg.fmi.uni.boomvox.enums.SongFormat;
 import jakarta.persistence.*;
+import lombok.Getter;
 
 import java.util.Date;
 
 @Entity
 @Table(name = "song")
 public class Song {
+    @Getter
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
+    @Getter
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "album_id", nullable = false)
     private Album album;
 
+    @Getter
     @Column(name = "name", nullable = false)
     private String name;
 
+    @Getter
     @Column(name = "uploaded_at", nullable = false)
     private Date uploadedAt;
 
+    @Getter
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private SongFormat format;
 
+    @Getter
     @Column(name = "duration", nullable = false)
     private long duration;
 
+    @Getter
     @Column(name = "file_size", nullable = false)
     private long fileSize;
 
     // We will eventually use AWS or the filesystem to store the uploaded songs.
     // This will be a path to a file or a URL address of the actual song data.
+    @Getter
     @Column(name = "storage_key", nullable = false)
     private String storageKey;
 
@@ -53,38 +62,6 @@ public class Song {
         this.duration = duration;
         this.fileSize = fileSize;
         this.storageKey = storageKey;
-    }
-
-    public long getId() {
-        return id;
-    }
-
-    public Album getAlbum() {
-        return album;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public SongFormat getFormat() {
-        return format;
-    }
-
-    public long getDuration() {
-        return duration;
-    }
-
-    public long getFileSize() {
-        return fileSize;
-    }
-
-    public String getStorageKey() {
-        return storageKey;
-    }
-
-    public Date getUploadedAt() {
-        return uploadedAt;
     }
 
     @Override
