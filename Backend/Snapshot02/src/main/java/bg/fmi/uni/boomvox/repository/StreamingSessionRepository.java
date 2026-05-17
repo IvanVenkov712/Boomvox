@@ -11,6 +11,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 public interface StreamingSessionRepository extends JpaRepository<StreamingSession, Long> {
+
     List<StreamingSession> findByUserId(Long id);
 
     List<StreamingSession> findByUser(User user);
@@ -59,4 +60,7 @@ public interface StreamingSessionRepository extends JpaRepository<StreamingSessi
 
     Long countBySong(Song song);
 
+    Long countBySongIdAndStatus(Long songId, SessionStatus status);
+
+    Long countBySongAndStatus(Song song, SessionStatus status);
 }
