@@ -2,6 +2,7 @@ package bg.fmi.uni.boomvox.domain;
 
 import jakarta.persistence.*;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.ToString;
 
 import java.time.LocalDateTime;
@@ -9,6 +10,7 @@ import java.util.Date;
 
 @Entity
 @Table(name = "playlist")
+@NoArgsConstructor
 public class Playlist extends SongCollection {
 
     @ManyToOne(fetch = FetchType.LAZY)

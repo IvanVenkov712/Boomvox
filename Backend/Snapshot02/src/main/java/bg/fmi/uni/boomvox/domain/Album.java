@@ -3,11 +3,13 @@ package bg.fmi.uni.boomvox.domain;
 import bg.fmi.uni.boomvox.enums.Genre;
 import jakarta.persistence.*;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "album")
+@NoArgsConstructor
 public class Album extends SongCollection {
 
     //Possible change: If an album has several authors, not just one

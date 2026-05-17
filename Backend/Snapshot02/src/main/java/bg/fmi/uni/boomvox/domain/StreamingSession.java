@@ -3,11 +3,13 @@ package bg.fmi.uni.boomvox.domain;
 import bg.fmi.uni.boomvox.enums.SessionStatus;
 import jakarta.persistence.*;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "streaming_session")
+@NoArgsConstructor
 public class StreamingSession {
     @Getter
     @Id

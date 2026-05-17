@@ -3,11 +3,13 @@ package bg.fmi.uni.boomvox.domain;
 import bg.fmi.uni.boomvox.ids.FavouritesListSongId;
 import jakarta.persistence.*;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "favourites_list_song")
+@NoArgsConstructor
 public class FavouritesListSong {
     @EmbeddedId
     private FavouritesListSongId id;

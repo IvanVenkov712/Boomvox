@@ -2,9 +2,11 @@ package bg.fmi.uni.boomvox.domain;
 import bg.fmi.uni.boomvox.enums.UserRole;
 import jakarta.persistence.*;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name = "user")
+@NoArgsConstructor
 public class User {
     @Getter
     @Id

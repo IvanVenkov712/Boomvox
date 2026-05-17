@@ -2,18 +2,22 @@ package bg.fmi.uni.boomvox.domain;
 
 import jakarta.persistence.*;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name = "song_stats")
+@NoArgsConstructor
 public class SongStats {
     @Getter
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
+    @Getter
     @OneToOne(mappedBy = "stats")
     private Song song;
 
+    @Getter
     @Column(name = "ratings_count", nullable = false)
     private long ratingsCount;
 
@@ -45,14 +49,6 @@ public class SongStats {
         this.avgRating = avgRating;
         this.ratingsCount = ratingsCount;
         this.song = song;
-    }
-
-    public long getRatingsCount() {
-        return ratingsCount;
-    }
-
-    public Song getSong() {
-        return song;
     }
 
     @Override

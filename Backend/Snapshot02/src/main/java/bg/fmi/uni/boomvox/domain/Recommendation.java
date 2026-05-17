@@ -3,9 +3,11 @@ package bg.fmi.uni.boomvox.domain;
 import bg.fmi.uni.boomvox.ids.RecommendationId;
 import jakarta.persistence.*;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name = "recommendation")
+@NoArgsConstructor
 public class Recommendation {
 
     @EmbeddedId

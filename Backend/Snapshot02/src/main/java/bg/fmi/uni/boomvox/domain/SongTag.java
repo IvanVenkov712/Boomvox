@@ -3,12 +3,14 @@ package bg.fmi.uni.boomvox.domain;
 import bg.fmi.uni.boomvox.ids.SongTagId;
 import jakarta.persistence.*;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 import java.util.Objects;
 
 @Entity
 @Table(name = "song_tag")
+@NoArgsConstructor
 public class SongTag {
     @EmbeddedId
     private SongTagId id;

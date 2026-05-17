@@ -3,11 +3,13 @@ package bg.fmi.uni.boomvox.domain;
 import bg.fmi.uni.boomvox.enums.SongFormat;
 import jakarta.persistence.*;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.util.Date;
 
 @Entity
 @Table(name = "song")
+@NoArgsConstructor
 public class Song {
     @Getter
     @Id

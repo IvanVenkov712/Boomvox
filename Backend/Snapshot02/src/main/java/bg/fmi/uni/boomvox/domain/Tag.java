@@ -2,10 +2,12 @@ package bg.fmi.uni.boomvox.domain;
 
 import jakarta.persistence.*;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 
 @Entity
 @Table(name = "tag")
+@NoArgsConstructor
 public class Tag {
     @Getter
     @Id

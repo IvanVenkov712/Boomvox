@@ -3,6 +3,7 @@ package bg.fmi.uni.boomvox.domain;
 import bg.fmi.uni.boomvox.ids.RatingId;
 import jakarta.persistence.*;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 import java.util.Objects;
@@ -10,6 +11,7 @@ import java.util.Objects;
 
 @Entity
 @Table(name = "rating")
+@NoArgsConstructor
 public class Rating {
     @EmbeddedId
     private RatingId id;
