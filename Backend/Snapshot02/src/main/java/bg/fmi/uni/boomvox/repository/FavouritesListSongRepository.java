@@ -9,6 +9,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 public interface FavouritesListSongRepository extends JpaRepository<FavouritesListSong, Long> {
+
     List<FavouritesListSong> findBySongId(Long id);
 
     List<FavouritesListSong> findBySong(Song song);
@@ -21,7 +22,7 @@ public interface FavouritesListSongRepository extends JpaRepository<FavouritesLi
 
     List<FavouritesListSong> findByFavouritesList(FavouritesList list);
 
-    List<FavouritesListSong> findBySongAndAddedAtGreaterThan(Song song, LocalDateTime time);
+    List<FavouritesListSong> findBySongAndAddedAtAfter(Song song, LocalDateTime time);
 
-    List<FavouritesListSong> findByFavouritesListAndAddedAtGreaterThan(FavouritesList list, LocalDateTime time);
+    List<FavouritesListSong> findByFavouritesListAndAddedAtAfter(FavouritesList list, LocalDateTime time);
 }

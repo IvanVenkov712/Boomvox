@@ -12,8 +12,12 @@ public class Playlist extends SongCollection {
     @JoinColumn(name = "user_id", nullable = false)
     private User owner;
 
-    public Playlist(String name, Date createdAt) {
+    @Version
+    private long version;
+
+    public Playlist(String name, Date createdAt, User owner) {
         super(name, createdAt);
+        this.owner = owner;
     }
 
     public User getOwner() {
