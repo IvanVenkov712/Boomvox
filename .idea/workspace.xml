@@ -4,8 +4,74 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="71e9927c-e2fa-4e89-9be1-aaff13f24a5d" name="Changes" comment="Added configuration">
+    <list default="true" id="4317b6ed-f033-40e5-9a15-57807b132c30" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.gitattributes" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/compiler.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/encodings.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/jarRepositories.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/vcs.xml" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.mvn/wrapper/maven-wrapper.properties" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/TODO.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/mvnw" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/mvnw.cmd" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/pom.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/bg/fmi/uni/boomvox/BoomvoxApplication.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/bg/fmi/uni/boomvox/cli/StartupEnvironmentLogger.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/bg/fmi/uni/boomvox/config/AppLogger.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/bg/fmi/uni/boomvox/config/BoomvoxProperties.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/bg/fmi/uni/boomvox/config/ConsoleAppLogger.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/bg/fmi/uni/boomvox/config/FileAppLogger.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/bg/fmi/uni/boomvox/config/LogLevel.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/bg/fmi/uni/boomvox/domain/Album.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/bg/fmi/uni/boomvox/domain/FavouritesList.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/bg/fmi/uni/boomvox/domain/FavouritesListSong.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/bg/fmi/uni/boomvox/domain/Playlist.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/bg/fmi/uni/boomvox/domain/PlaylistSong.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/bg/fmi/uni/boomvox/domain/Rating.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/bg/fmi/uni/boomvox/domain/Recommendation.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/bg/fmi/uni/boomvox/domain/Song.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/bg/fmi/uni/boomvox/domain/SongCollection.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/bg/fmi/uni/boomvox/domain/SongStats.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/bg/fmi/uni/boomvox/domain/SongTag.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/bg/fmi/uni/boomvox/domain/StreamingSession.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/bg/fmi/uni/boomvox/domain/Tag.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/bg/fmi/uni/boomvox/domain/User.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/bg/fmi/uni/boomvox/dto/ErrorResponse.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/bg/fmi/uni/boomvox/dto/PageResponse.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/bg/fmi/uni/boomvox/enums/Genre.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/bg/fmi/uni/boomvox/enums/SessionStatus.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/bg/fmi/uni/boomvox/enums/SongFormat.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/bg/fmi/uni/boomvox/enums/UserRole.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/bg/fmi/uni/boomvox/ids/FavouritesListSongId.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/bg/fmi/uni/boomvox/ids/PlaylistSongId.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/bg/fmi/uni/boomvox/ids/RatingId.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/bg/fmi/uni/boomvox/ids/RecommendationId.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/bg/fmi/uni/boomvox/ids/SongTagId.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/application-dev.yml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/application-prod.yml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/application-test.yml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/application.properties" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/application.yml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/db/changelog/changes/001-create-favourites-list-table.sql" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/db/changelog/changes/002-create-user-table.sql" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/db/changelog/changes/003-create-album-table.sql" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/db/changelog/changes/004-create-playlist-table.sql" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/db/changelog/changes/005-create-song-stats-table.sql" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/db/changelog/changes/006-create-song-table.sql" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/db/changelog/changes/007-create-tag-table.sql" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/db/changelog/changes/008-create-playlist-song-table.sql" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/db/changelog/changes/009-create-favourites-list-song-table.sql" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/db/changelog/changes/010-create-rating-table.sql" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/db/changelog/changes/011-create-recommendation-table.sql" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/db/changelog/changes/012-create-song-tag-table.sql" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/db/changelog/changes/013-create-streaming-session-table.sql" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/db/changelog/db.changelog-master.yaml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/java/bg/fmi/uni/boomvox/BoomvoxApplicationTests.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/java/bg/fmi/uni/boomvox/TestBoomvoxApplication.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/java/bg/fmi/uni/boomvox/TestcontainersConfiguration.java" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -15,11 +81,11 @@
   <component name="CopilotChats">
     <option name="panelChat">
       <chat>
-        <option name="activeSessionId" value="36b5860c-d180-4a1b-bec4-c51df93d430a" />
+        <option name="activeSessionId" value="7093971b-a423-43c0-9e4f-266a061250cd" />
         <option name="sessions">
           <session>
             <option name="chatType" value="PANEL" />
-            <option name="id" value="36b5860c-d180-4a1b-bec4-c51df93d430a" />
+            <option name="id" value="7093971b-a423-43c0-9e4f-266a061250cd" />
             <option name="modeId" value="Ask" />
             <option name="modelType" value="builtin_family" />
             <option name="modelValue" value="auto" />
@@ -32,32 +98,24 @@
   </component>
   <component name="CopilotPersistence">
     <persistenceIdMap>
-      <entry key="_C:/Users/ivanv/FMI/WebJava/Boomvox" value="3DU9kvYFeuhiGxqMQgnXnTMD5lH" />
+      <entry key="_C:/Users/ivanv/FMI/WebJava/Boomvox" value="3DqEZ3VI790PESp7mG3Hla0WDDx" />
     </persistenceIdMap>
-  </component>
-  <component name="FileTemplateManagerImpl">
-    <option name="RECENT_TEMPLATES">
-      <list>
-        <option value="Enum" />
-        <option value="Class" />
-      </list>
-    </option>
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
-  <component name="GitHubPullRequestSearchHistory">{
-  &quot;lastFilter&quot;: {
-    &quot;state&quot;: &quot;OPEN&quot;,
-    &quot;assignee&quot;: &quot;IvanVenkov712&quot;
+  <component name="GitHubPullRequestSearchHistory"><![CDATA[{
+  "lastFilter": {
+    "state": "OPEN",
+    "assignee": "IvanVenkov712"
   }
-}</component>
-  <component name="GithubPullRequestsUISettings">{
-  &quot;selectedUrlAndAccountId&quot;: {
-    &quot;url&quot;: &quot;https://github.com/IvanVenkov712/Boomvox.git&quot;,
-    &quot;accountId&quot;: &quot;18478d01-1f05-4dd4-ac06-c1628c4840ed&quot;
+}]]></component>
+  <component name="GithubPullRequestsUISettings"><![CDATA[{
+  "selectedUrlAndAccountId": {
+    "url": "https://github.com/IvanVenkov712/Boomvox.git",
+    "accountId": "18478d01-1f05-4dd4-ac06-c1628c4840ed"
   }
-}</component>
+}]]></component>
   <component name="MavenImportPreferences">
     <option name="generalSettings">
       <MavenGeneralSettings>
@@ -65,174 +123,34 @@
       </MavenGeneralSettings>
     </option>
   </component>
-  <component name="ProjectColorInfo">{
-  &quot;customColor&quot;: &quot;&quot;,
-  &quot;associatedIndex&quot;: 1
-}</component>
-  <component name="ProjectId" id="3DU9kvYFeuhiGxqMQgnXnTMD5lH" />
+  <component name="ProjectColorInfo"><![CDATA[{
+  "customColor": "",
+  "associatedIndex": 1
+}]]></component>
+  <component name="ProjectId" id="3DqEZ3VI790PESp7mG3Hla0WDDx" />
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;Application.BoomvoxApplication.executor&quot;: &quot;Run&quot;,
-    &quot;Application.TestBoomvoxApplication.executor&quot;: &quot;Run&quot;,
-    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;feature-Ivan&quot;,
-    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;org.infernus.idea.checkstyle.CheckStyleConfigurable&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "ModuleVcsDetector.initialDetectionPerformed": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "git-widget-placeholder": "feature-Ivan",
+    "kotlin-language-version-configured": "true",
+    "settings.editor.selected.configurable": "org.infernus.idea.checkstyle.CheckStyleConfigurable"
   }
-}</component>
+}]]></component>
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
-      <changelist id="71e9927c-e2fa-4e89-9be1-aaff13f24a5d" name="Changes" comment="" />
-      <created>1778325928315</created>
+      <changelist id="4317b6ed-f033-40e5-9a15-57807b132c30" name="Changes" comment="" />
+      <created>1779001252624</created>
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
-      <updated>1778325928315</updated>
+      <updated>1779001252624</updated>
     </task>
-    <task id="LOCAL-00001" summary="Created with Spring Initializr">
-      <option name="closed" value="true" />
-      <created>1778326286492</created>
-      <option name="number" value="00001" />
-      <option name="presentableId" value="LOCAL-00001" />
-      <option name="project" value="LOCAL" />
-      <updated>1778326286492</updated>
-    </task>
-    <task id="LOCAL-00002" summary="Added a few domain objects">
-      <option name="closed" value="true" />
-      <created>1778333002958</created>
-      <option name="number" value="00002" />
-      <option name="presentableId" value="LOCAL-00002" />
-      <option name="project" value="LOCAL" />
-      <updated>1778333002958</updated>
-    </task>
-    <task id="LOCAL-00003" summary="Added a few domain objects">
-      <option name="closed" value="true" />
-      <created>1778334665171</created>
-      <option name="number" value="00003" />
-      <option name="presentableId" value="LOCAL-00003" />
-      <option name="project" value="LOCAL" />
-      <updated>1778334665171</updated>
-    </task>
-    <task id="LOCAL-00004" summary="Added a few domain objects">
-      <option name="closed" value="true" />
-      <created>1778334924616</created>
-      <option name="number" value="00004" />
-      <option name="presentableId" value="LOCAL-00004" />
-      <option name="project" value="LOCAL" />
-      <updated>1778334924616</updated>
-    </task>
-    <task id="LOCAL-00005" summary="Added a few domain objects">
-      <option name="closed" value="true" />
-      <created>1778408594588</created>
-      <option name="number" value="00005" />
-      <option name="presentableId" value="LOCAL-00005" />
-      <option name="project" value="LOCAL" />
-      <updated>1778408594590</updated>
-    </task>
-    <task id="LOCAL-00006" summary="Added a few domain objects">
-      <option name="closed" value="true" />
-      <created>1778410366586</created>
-      <option name="number" value="00006" />
-      <option name="presentableId" value="LOCAL-00006" />
-      <option name="project" value="LOCAL" />
-      <updated>1778410366586</updated>
-    </task>
-    <task id="LOCAL-00007" summary="Added a few domain objects">
-      <option name="closed" value="true" />
-      <created>1778412883221</created>
-      <option name="number" value="00007" />
-      <option name="presentableId" value="LOCAL-00007" />
-      <option name="project" value="LOCAL" />
-      <updated>1778412883221</updated>
-    </task>
-    <task id="LOCAL-00008" summary="Added a few domain objects">
-      <option name="closed" value="true" />
-      <created>1778413028853</created>
-      <option name="number" value="00008" />
-      <option name="presentableId" value="LOCAL-00008" />
-      <option name="project" value="LOCAL" />
-      <updated>1778413028853</updated>
-    </task>
-    <task id="LOCAL-00009" summary="Added a few domain objects">
-      <option name="closed" value="true" />
-      <created>1778418386912</created>
-      <option name="number" value="00009" />
-      <option name="presentableId" value="LOCAL-00009" />
-      <option name="project" value="LOCAL" />
-      <updated>1778418386912</updated>
-    </task>
-    <task id="LOCAL-00010" summary="Added a few domain objects">
-      <option name="closed" value="true" />
-      <created>1778418556187</created>
-      <option name="number" value="00010" />
-      <option name="presentableId" value="LOCAL-00010" />
-      <option name="project" value="LOCAL" />
-      <updated>1778418556187</updated>
-    </task>
-    <task id="LOCAL-00011" summary="Added a few domain objects">
-      <option name="closed" value="true" />
-      <created>1778432024658</created>
-      <option name="number" value="00011" />
-      <option name="presentableId" value="LOCAL-00011" />
-      <option name="project" value="LOCAL" />
-      <updated>1778432024658</updated>
-    </task>
-    <task id="LOCAL-00012" summary="Added a few domain objects">
-      <option name="closed" value="true" />
-      <created>1778488825918</created>
-      <option name="number" value="00012" />
-      <option name="presentableId" value="LOCAL-00012" />
-      <option name="project" value="LOCAL" />
-      <updated>1778488825918</updated>
-    </task>
-    <task id="LOCAL-00013" summary="Added a few domain objects">
-      <option name="closed" value="true" />
-      <created>1778490425822</created>
-      <option name="number" value="00013" />
-      <option name="presentableId" value="LOCAL-00013" />
-      <option name="project" value="LOCAL" />
-      <updated>1778490425822</updated>
-    </task>
-    <task id="LOCAL-00014" summary="Added configuration">
-      <option name="closed" value="true" />
-      <created>1778832430176</created>
-      <option name="number" value="00014" />
-      <option name="presentableId" value="LOCAL-00014" />
-      <option name="project" value="LOCAL" />
-      <updated>1778832430176</updated>
-    </task>
-    <task id="LOCAL-00015" summary="Added configuration">
-      <option name="closed" value="true" />
-      <created>1778833447435</created>
-      <option name="number" value="00015" />
-      <option name="presentableId" value="LOCAL-00015" />
-      <option name="project" value="LOCAL" />
-      <updated>1778833447435</updated>
-    </task>
-    <option name="localTasksCounter" value="16" />
     <servers />
-  </component>
-  <component name="Vcs.Log.Tabs.Properties">
-    <option name="TAB_STATES">
-      <map>
-        <entry key="MAIN">
-          <value>
-            <State />
-          </value>
-        </entry>
-      </map>
-    </option>
-  </component>
-  <component name="VcsManagerConfiguration">
-    <MESSAGE value="Created with Spring Initializr" />
-    <MESSAGE value="Added a few domain objects" />
-    <MESSAGE value="Added configuration" />
-    <option name="LAST_COMMIT_MESSAGE" value="Added configuration" />
   </component>
   <component name="github-copilot-workspace">
     <instructionFileLocations>
