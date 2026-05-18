@@ -1,0 +1,13 @@
+spring:
+  config:
+    activate:
+      on-profile: prod
+
+boomvox:
+  log-level: INFO
+  log-file: logs/boomvox-prod.log
+
+logging:
+  level:
+    root: WARN
+    bg.fmi.uni.boomvox: INFO

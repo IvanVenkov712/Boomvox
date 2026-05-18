@@ -1,0 +1,17 @@
+spring:
+  config:
+    activate:
+      on-profile: test
+  jpa:
+    show-sql: false
+
+theatre:
+  log-level: ERROR
+  log-file: logs/boomvox-test.log
+
+logging:
+  level:
+    root: WARN
+    bg.fmi.uni.boomvox: ERROR
+    org.testcontainers: INFO
+    liquibase: WARN
