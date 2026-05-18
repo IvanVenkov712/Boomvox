@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 
 @Entity
@@ -27,7 +28,7 @@ public class Song {
 
     @Getter
     @Column(name = "uploaded_at", nullable = false)
-    private Date uploadedAt;
+    private LocalDateTime uploadedAt;
 
     @Getter
     @Enumerated(EnumType.STRING)
@@ -55,7 +56,7 @@ public class Song {
     @Version
     private long version;
 
-    public Song(Album album, String name, Date uploadedAt, SongFormat format, long duration, long fileSize,
+    public Song(Album album, String name, LocalDateTime uploadedAt, SongFormat format, long duration, long fileSize,
                 String storageKey) {
         this.album = album;
         this.name = name;

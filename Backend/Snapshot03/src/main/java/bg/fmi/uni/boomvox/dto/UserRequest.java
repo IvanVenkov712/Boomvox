@@ -34,4 +34,8 @@ public record UserRequest(
     @Positive
     Long favouritesListId
 ) {
+    public static UserRequest of(String username, String email, String password, String firstName, String lastName,
+                                 UserRole role, Long favouritesListId) {
+        return new UserRequest(username, email, password, firstName, lastName, role, favouritesListId);
+    }
 }

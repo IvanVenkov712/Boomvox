@@ -21,4 +21,8 @@ public record StreamingEventRequest(
     @PositiveOrZero
     Long seekToSec
 ) {
+    public static StreamingEventRequest of(int sessionId, StreamingEventType type, long positionSec,
+                                           Long seekFromSec, Long seekToSec) {
+        return new StreamingEventRequest(sessionId, type, positionSec, seekFromSec, seekToSec);
+    }
 }

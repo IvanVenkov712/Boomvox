@@ -19,4 +19,7 @@ public record RatingRequest(
     @NotBlank
     String comment
 ) {
+    public static RatingRequest of(long userId, long songId, int grade, String comment) {
+        return new RatingRequest(userId, songId, grade, comment);
+    }
 }

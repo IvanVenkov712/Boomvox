@@ -10,4 +10,7 @@ public record PlaylistRequest(
     @Positive
     long ownerId
 ) {
+    public static PlaylistRequest of(String name, long ownerId) {
+        return new PlaylistRequest(name, ownerId);
+    }
 }

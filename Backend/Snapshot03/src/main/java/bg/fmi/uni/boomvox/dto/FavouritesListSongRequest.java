@@ -13,4 +13,7 @@ public record FavouritesListSongRequest(
     @PositiveOrZero
     int position
 ) {
+    public static FavouritesListSongRequest of(long favouritesListId, long songId, int position) {
+        return new FavouritesListSongRequest(favouritesListId, songId, position);
+    }
 }

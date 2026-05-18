@@ -13,4 +13,7 @@ public record PlaylistSongRequest(
     @PositiveOrZero
     int position
 ) {
+    public static PlaylistSongRequest of(long playlistId, long songId, int position) {
+        return new PlaylistSongRequest(playlistId, songId, position);
+    }
 }

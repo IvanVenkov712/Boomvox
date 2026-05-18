@@ -15,4 +15,7 @@ public record RecommendationRequest(
     @Max(100)
     int percent
 ) {
+    public static RecommendationRequest of(long userId, long songId, int percent) {
+        return new RecommendationRequest(userId, songId, percent);
+    }
 }

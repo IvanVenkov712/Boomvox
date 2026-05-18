@@ -9,4 +9,7 @@ public record SongTagRequest(
     @Positive
     long tagId
 ) {
+    public static SongTagRequest of(long songId, long tagId) {
+        return new SongTagRequest(songId, tagId);
+    }
 }

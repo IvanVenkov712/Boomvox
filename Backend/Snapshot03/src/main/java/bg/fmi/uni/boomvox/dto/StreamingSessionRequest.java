@@ -17,4 +17,7 @@ public record StreamingSessionRequest(
     @NotNull
     SessionStatus status
 ) {
+    public static StreamingSessionRequest of(long userId, long songId, Long playlistId, SessionStatus status) {
+        return new StreamingSessionRequest(userId, songId, playlistId, status);
+    }
 }

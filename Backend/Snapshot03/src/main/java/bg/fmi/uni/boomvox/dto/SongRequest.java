@@ -25,4 +25,8 @@ public record SongRequest(
     @NotBlank
     String storageKey
 ) {
+    public static SongRequest of(long albumId, String name, SongFormat format, long duration, long fileSize,
+                                 String storageKey) {
+        return new SongRequest(albumId, name, format, duration, fileSize, storageKey);
+    }
 }

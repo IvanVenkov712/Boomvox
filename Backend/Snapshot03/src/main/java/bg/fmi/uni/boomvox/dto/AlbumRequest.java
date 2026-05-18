@@ -15,4 +15,7 @@ public record AlbumRequest(
     @NotNull
     Genre genre
 ) {
+    public static AlbumRequest of(String name, long authorId, Genre genre) {
+        return new AlbumRequest(name, authorId, genre);
+    }
 }
