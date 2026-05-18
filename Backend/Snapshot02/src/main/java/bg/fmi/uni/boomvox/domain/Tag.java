@@ -18,9 +18,9 @@ public class Tag {
     @Column(name = "word", nullable = false)
     private String word;
 
-    @Version
-    @Transient
-    private long version;
+    // @Version
+    // @Transient
+    // private long version;
 
     public Tag(long id, String word) {
         this.id = id;
