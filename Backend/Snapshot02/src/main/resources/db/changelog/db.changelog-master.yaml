@@ -25,3 +25,5 @@ databaseChangeLog:
       file: db/changelog/changes/012-create-song-tag-table.sql
   - include:
       file: db/changelog/changes/013-create-streaming-session-table.sql
+  - include:
+      file: db/changelog/changes/014-create-streaming-event-table.sql

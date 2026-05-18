@@ -19,6 +19,7 @@ public class Tag {
     private String word;
 
     @Version
+    @Transient
     private long version;
 
     public Tag(long id, String word) {

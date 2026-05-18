@@ -1,5 +1,6 @@
 package bg.fmi.uni.boomvox;
 
+/*
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
 import org.springframework.context.annotation.Bean;
@@ -22,4 +23,9 @@ class TestcontainersConfiguration {
 		return new PostgreSQLContainer(DockerImageName.parse("postgres:latest"));
 	}
 
+}
+*/
+
+class TestcontainersConfiguration {
+	
 }

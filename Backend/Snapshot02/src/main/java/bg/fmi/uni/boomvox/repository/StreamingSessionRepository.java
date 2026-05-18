@@ -38,7 +38,7 @@ public interface StreamingSessionRepository extends JpaRepository<StreamingSessi
 
     List<StreamingSession> findByUserIdAndEndedAtNull(Long id);
 
-    List<StreamingSession> findByUserAndEndedNull(User user);
+    List<StreamingSession> findByUserAndEndedAtNull(User user);
 
     List<StreamingSession> findBySongIdAndStatus(Long songId, SessionStatus status);
 
@@ -54,7 +54,7 @@ public interface StreamingSessionRepository extends JpaRepository<StreamingSessi
 
     List<StreamingSession> findBySongIdAndEndedAtNull(Long id);
 
-    List<StreamingSession> findBySongAndEndedNull(Song user);
+    List<StreamingSession> findBySongAndEndedAtNull(Song user);
 
     Long countBySongId(Long id);
 
