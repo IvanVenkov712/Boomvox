@@ -45,6 +45,11 @@ public class SongStats {
         this.ratingsCount = ratingsCount;
     }
 
+    public void updateRatingSummary(long ratingsCount, double avgRating) {
+        this.ratingsCount = ratingsCount;
+        this.avgRating = avgRating;
+    }
+
     @Override
     public String toString() {
         return "SongStats{" +

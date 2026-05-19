@@ -10,6 +10,9 @@ public class RatingId implements Serializable {
 
     private long songId;
 
+    protected RatingId() {
+    }
+
     public RatingId(long userId, long songId) {
         this.userId = userId;
         this.songId = songId;

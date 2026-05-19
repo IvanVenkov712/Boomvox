@@ -46,13 +46,18 @@ public class Rating {
     public Rating(User user, Song song, int grade, String comment, LocalDateTime lastUpdatedAt) {
         this.user = user;
         this.song = song;
-        if(grade < 0 || grade > 10) {
+        update(grade, comment, lastUpdatedAt);
+        this.id = new RatingId(user.getId(), song.getId());
+    }
+
+    public void update(int grade, String comment, LocalDateTime lastUpdatedAt) {
+        if (grade < 0 || grade > 10) {
             throw new IllegalArgumentException("Grade should be between 0 and 10");
         }
+
         this.grade = grade;
         this.comment = comment;
         this.lastUpdatedAt = lastUpdatedAt;
-        this.id = new RatingId(user.getId(), song.getId());
     }
 
     @Override
