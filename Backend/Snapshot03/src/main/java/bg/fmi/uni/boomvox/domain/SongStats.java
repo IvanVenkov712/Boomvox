@@ -14,10 +14,6 @@ public class SongStats {
     private long id;
 
     @Getter
-    @OneToOne(mappedBy = "stats")
-    private Song song;
-
-    @Getter
     @Column(name = "ratings_count", nullable = false)
     private long ratingsCount;
 
@@ -41,14 +37,12 @@ public class SongStats {
     private long version;
 
     public SongStats(long recommendationsCount, long playlistsCount, long playsCount, double avgRating,
-                     long ratingsCount,
-                     Song song) {
+                     long ratingsCount) {
         this.recommendationsCount = recommendationsCount;
         this.playlistsCount = playlistsCount;
         this.playsCount = playsCount;
         this.avgRating = avgRating;
         this.ratingsCount = ratingsCount;
-        this.song = song;
     }
 
     @Override

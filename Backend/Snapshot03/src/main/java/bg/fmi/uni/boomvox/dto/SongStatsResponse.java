@@ -4,7 +4,6 @@ import bg.fmi.uni.boomvox.domain.SongStats;
 
 public record SongStatsResponse(
     long id,
-    long songId,
     long ratingsCount,
     double avgRating,
     long playsCount,
@@ -14,7 +13,6 @@ public record SongStatsResponse(
     public static SongStatsResponse from(SongStats stats) {
         return new SongStatsResponse(
             stats.getId(),
-            stats.getSong().getId(),
             stats.getRatingsCount(),
             stats.getAvgRating(),
             stats.getPlaysCount(),

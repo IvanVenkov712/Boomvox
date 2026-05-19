@@ -4,6 +4,7 @@ import bg.fmi.uni.boomvox.enums.SongFormat;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.time.LocalDateTime;
 
@@ -35,21 +36,25 @@ public class Song {
     private SongFormat format;
 
     @Getter
+    @Setter
     @Column(name = "duration", nullable = false)
     private long duration;
 
     @Getter
+    @Setter
     @Column(name = "file_size", nullable = false)
     private long fileSize;
 
     // We will eventually use AWS or the filesystem to store the uploaded songs.
     // This will be a path to a file or a URL address of the actual song data.
     @Getter
+    @Setter
     @Column(name = "storage_key", nullable = false)
     private String storageKey;
 
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "song_stats_id", nullable = false)
+    @Getter
     private SongStats stats;
 
     @Version
@@ -64,6 +69,7 @@ public class Song {
         this.duration = duration;
         this.fileSize = fileSize;
         this.storageKey = storageKey;
+        this.stats = new SongStats(0, 0, 0, 0, 0);
     }
 
     @Override

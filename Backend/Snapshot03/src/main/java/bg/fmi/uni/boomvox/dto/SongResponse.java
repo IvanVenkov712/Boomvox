@@ -14,13 +14,10 @@ public record SongResponse(
     long duration,
     long fileSize,
     String storageKey,
-    SongStatsResponse stats
+    Long statsId
 ) {
-    public static SongResponse from(Song song) {
-        return from(song, null);
-    }
 
-    public static SongResponse from(Song song, SongStatsResponse stats) {
+    public static SongResponse from(Song song) {
         return new SongResponse(
             song.getId(),
             song.getAlbum().getId(),
@@ -30,7 +27,7 @@ public record SongResponse(
             song.getDuration(),
             song.getFileSize(),
             song.getStorageKey(),
-            stats
+            song.getStats().getId()
         );
     }
 }

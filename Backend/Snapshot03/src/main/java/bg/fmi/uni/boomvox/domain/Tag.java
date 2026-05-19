@@ -18,12 +18,16 @@ public class Tag {
     @Column(name = "word", nullable = false)
     private String word;
 
-    // @Version
-    // @Transient
-    // private long version;
+    public Tag(String word) {
+        this.word = word;
+    }
 
     public Tag(long id, String word) {
         this.id = id;
+        this.word = word;
+    }
+
+    public void update(String word) {
         this.word = word;
     }
 

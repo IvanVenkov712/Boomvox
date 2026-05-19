@@ -60,41 +60,6 @@ public class AuthService {
         return UserResponse.from(user);
     }
 
-    @Transactional(readOnly = true)
-    public UserResponse getUserById(long id) {
-        return userRepository.findById(id)
-            .map(UserResponse::from)
-            .orElseThrow(() -> new NotFoundException("User", id));
-    }
-
-    @Transactional(readOnly = true)
-    public UserResponse getUserByUsername(String username) {
-        User user = userRepository.findByUsername(username);
-        if (user == null) {
-            throw new NotFoundException("User not found with username: " + username);
-        }
-
-        return UserResponse.from(user);
-    }
-
-    @Transactional(readOnly = true)
-    public UserResponse getUserByEmail(String email) {
-        User user = userRepository.findByEmail(email);
-        if (user == null) {
-            throw new NotFoundException("User not found with email: " + email);
-        }
-
-        return UserResponse.from(user);
-    }
-
-    public void deleteUser(long id) {
-        if (!userRepository.existsById(id)) {
-            throw new NotFoundException("User", id);
-        }
-
-        userRepository.deleteById(id);
-    }
-
     private void validateUserDoesNotExist(UserRequest request) {
         if (userRepository.findByUsername(request.username()) != null) {
             throw new ValidationException("Username is already taken: " + request.username());
