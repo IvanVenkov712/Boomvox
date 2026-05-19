@@ -10,6 +10,9 @@ public class FavouritesListSongId implements Serializable {
 
     private long songId;
 
+    public FavouritesListSongId() {
+    }
+
     public FavouritesListSongId(long favouritesListId, long songId) {
         this.favouritesListId = favouritesListId;
         this.songId = songId;

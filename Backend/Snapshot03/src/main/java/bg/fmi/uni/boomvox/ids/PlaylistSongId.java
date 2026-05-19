@@ -10,6 +10,9 @@ public class PlaylistSongId implements Serializable {
 
     private long songId;
 
+    public PlaylistSongId() {
+    }
+
     public PlaylistSongId(long playlistId, long songId) {
         this.playlistId = playlistId;
         this.songId = songId;
