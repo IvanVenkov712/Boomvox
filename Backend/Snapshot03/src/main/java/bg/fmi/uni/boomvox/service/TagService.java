@@ -30,19 +30,6 @@ public class TagService extends BaseService {
         return TagResponse.from(tagRepository.save(new Tag(word)));
     }
 
-    public TagResponse updateTag(long id, TagRequest request) {
-        Tag tag = findTag(id);
-        String word = request.word().trim();
-        Tag existing = tagRepository.findByWordIgnoreCase(word);
-        if (existing != null && existing.getId() != id) {
-            throw new ValidationException("Tag already exists: " + word);
-        }
-
-        tag.update(word);
-
-        return TagResponse.from(tag);
-    }
-
     @Transactional(readOnly = true)
     public TagResponse getTagById(long id) {
         return TagResponse.from(findTag(id));

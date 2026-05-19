@@ -27,10 +27,6 @@ public class Tag {
         this.word = word;
     }
 
-    public void update(String word) {
-        this.word = word;
-    }
-
     @Override
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;
