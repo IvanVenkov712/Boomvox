@@ -16,7 +16,7 @@ import java.util.List;
 
 @Service
 @Transactional
-public class AlbumService {
+public class AlbumService extends BaseService {
 
     private final AlbumRepository albumRepository;
     private final UserRepository userRepository;
@@ -84,13 +84,5 @@ public class AlbumService {
     private User findUser(long id) {
         return userRepository.findById(id)
             .orElseThrow(() -> new NotFoundException("User", id));
-    }
-
-    private String normalizeQuery(String query) {
-        if (query == null || query.isBlank()) {
-            return null;
-        }
-
-        return query.trim();
     }
 }

@@ -16,7 +16,7 @@ import java.time.LocalDateTime;
 
 @Service
 @Transactional
-public class AuthService {
+public class AuthService extends BaseService {
 
     private final UserRepository userRepository;
     private final FavouritesListRepository favouritesListRepository;

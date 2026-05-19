@@ -21,7 +21,7 @@ import java.util.List;
 
 @Service
 @Transactional
-public class SongTagService {
+public class SongTagService extends BaseService {
 
     private final SongRepository songRepository;
     private final TagRepository tagRepository;

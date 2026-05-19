@@ -19,7 +19,7 @@ import java.util.List;
 
 @Service
 @Transactional
-public class SongService {
+public class SongService extends BaseService {
 
     private final SongRepository songRepository;
     private final AlbumRepository albumRepository;
@@ -134,13 +134,5 @@ public class SongService {
         if (tagId != null && !tagRepository.existsById(tagId)) {
             throw new NotFoundException("Tag", tagId);
         }
-    }
-
-    private String normalizeQuery(String query) {
-        if (query == null || query.isBlank()) {
-            return null;
-        }
-
-        return query.trim();
     }
 }

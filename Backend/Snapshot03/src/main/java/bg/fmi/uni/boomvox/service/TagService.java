@@ -13,7 +13,7 @@ import java.util.List;
 
 @Service
 @Transactional
-public class TagService {
+public class TagService extends BaseService {
 
     private final TagRepository tagRepository;
 
@@ -78,13 +78,5 @@ public class TagService {
     private Tag findTag(long id) {
         return tagRepository.findById(id)
             .orElseThrow(() -> new NotFoundException("Tag", id));
-    }
-
-    private String normalizeQuery(String query) {
-        if (query == null || query.isBlank()) {
-            return null;
-        }
-
-        return query.trim();
     }
 }
