@@ -1,7 +1,6 @@
 package bg.fmi.uni.boomvox.service;
 
 import bg.fmi.uni.boomvox.exception.StorageException;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -16,7 +15,6 @@ import software.amazon.awssdk.services.s3.presigner.model.GetObjectPresignReques
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URL;
 import java.time.Duration;
 import java.util.List;
 

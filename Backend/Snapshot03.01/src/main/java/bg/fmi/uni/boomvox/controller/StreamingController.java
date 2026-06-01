@@ -26,8 +26,6 @@ import java.time.temporal.ChronoUnit;
 import java.util.Comparator;
 import java.util.List;
 
-import static bg.fmi.uni.boomvox.enums.UserRole.ADMIN;
-
 @RestController
 @RequestMapping("/api/songs")
 public class StreamingController {
@@ -98,7 +96,7 @@ public class StreamingController {
                 .findFirst()
                 .orElseThrow(() -> new NotFoundException("No default variant available"));
 
-            case USER, ARTIST, ADMIN -> variants.stream()
+            case ORDINARY_USER, AUTHOR, ADMIN -> variants.stream()
                 .max(Comparator.comparingInt(AudioVariant::getBitrateKbps))
                 .orElseThrow(() -> new NotFoundException("No variant available"));
         };

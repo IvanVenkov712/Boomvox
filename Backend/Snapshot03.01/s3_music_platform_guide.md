@@ -1,0 +1,1308 @@
+# AWS S3 — Music Platform Integration Guide
+
+> **Stack:** Java + Spring Boot · Angular SPA · PostgreSQL · AWS S3  
+> **Goal:** Secure file storage and direct-from-S3 audio streaming with minimal cost  
+> **Applies to:** `music_platform_spec_updated.md` v2.0
+
+---
+
+## Table of Contents
+
+1. [Concepts & Architecture Overview](#1-concepts--architecture-overview)
+2. [Step 1 — Create the S3 Bucket](#2-step-1--create-the-s3-bucket)
+3. [Step 2 — Configure Bucket Structure](#3-step-2--configure-bucket-structure)
+4. [Step 3 — IAM User & Permissions](#4-step-3--iam-user--permissions)
+5. [Step 4 — CORS Configuration](#5-step-4--cors-configuration)
+6. [Step 5 — Spring Boot AWS Setup](#6-step-5--spring-boot-aws-setup)
+7. [Step 6 — FileStorageService Implementation](#7-step-6--filestorageservice-implementation)
+8. [Step 7 — Upload Flow (End-to-End)](#8-step-7--upload-flow-end-to-end)
+9. [Step 8 — Streaming Flow (End-to-End)](#9-step-8--streaming-flow-end-to-end)
+10. [Step 9 — Streaming Controller & Signed URL Endpoint](#10-step-9--streaming-controller--signed-url-endpoint)
+11. [Step 10 — Angular Audio Player Integration](#11-step-10--angular-audio-player-integration)
+12. [Step 11 — Session & Event Logging](#12-step-11--session--event-logging)
+13. [Security Checklist](#13-security-checklist)
+14. [Cost Optimization Strategy](#14-cost-optimization-strategy)
+15. [Environment Variables Reference](#15-environment-variables-reference)
+16. [Troubleshooting](#16-troubleshooting)
+
+---
+
+## 1. Concepts & Architecture Overview
+
+### How it works at a high level
+
+Your app never serves audio bytes through Spring Boot. Instead:
+
+1. The browser asks your **Spring Boot API** for permission to stream a song
+2. Spring Boot validates the JWT, checks song visibility and user role, then asks **AWS S3** to generate a **pre-signed URL** — a temporary, cryptographically signed HTTPS link
+3. That URL is returned to the Angular frontend
+4. The browser streams audio **directly from S3** over HTTPS using the signed URL
+5. S3 enforces expiry (15 minutes) — after that the URL is dead
+
+```
+┌─────────────┐   1. GET /api/songs/{id}/stream + JWT    ┌──────────────────┐
+│             │ ──────────────────────────────────────► │                  │
+│   Angular   │                                         │   Spring Boot    │
+│    SPA      │ ◄────────────────────────────────────── │   (your server)  │
+│             │   2. Returns signed S3 URL (15-min TTL) │                  │
+└─────────────┘                                         └────────┬─────────┘
+       │                                                         │
+       │  3. Stream audio directly via HTTPS (Range requests)    │ Signs URL using
+       │     No Spring Boot in the data path                     │ IAM credentials
+       ▼                                                         ▼
+┌─────────────────────────────────────────────────────────────────────────┐
+│                            AWS S3 Bucket                                │
+│   variants/song_42_128k.mp3  ·  variants/song_42_320k.mp3  ·  covers/  │
+│   (private — no public access — only reachable via signed URLs)         │
+└─────────────────────────────────────────────────────────────────────────┘
+```
+
+### Why this design?
+
+| Benefit | Explanation |
+|---|---|
+| **Zero bandwidth cost on your server** | Audio bytes flow S3 → browser directly |
+| **Access control stays server-side** | Spring Boot decides if a signed URL is issued; S3 just enforces the signature |
+| **Seeking works natively** | S3 supports HTTP Range requests out of the box (HTTP 206 Partial Content) |
+| **Scales without changes** | S3 handles concurrent streams automatically |
+| **Minimal cost** | No EC2 egress on audio, no CDN needed at initial scale |
+
+---
+
+## 2. Step 1 — Create the S3 Bucket
+
+### 2.1 Open the AWS Console
+
+Navigate to: **AWS Console → Services → S3 → Create bucket**
+
+### 2.2 Basic Settings
+
+| Setting | Value | Reason |
+|---|---|---|
+| **Bucket name** | `your-music-platform-files` | Globally unique, lowercase, no dots |
+| **Region** | Closest to your app server (e.g. `eu-central-1`) | Reduces latency between Spring Boot and S3 |
+| **Object Ownership** | ACLs disabled (recommended) | Permissions managed via IAM only |
+
+> ⚠️ Bucket names are globally unique across all AWS accounts. If your name is taken, try `your-music-platform-prod` or add a random suffix.
+
+### 2.3 Block ALL Public Access
+
+On the **"Block Public Access"** panel, check **all four boxes**:
+
+```
+☑ Block all public access
+  ☑ Block public access to buckets and objects granted through new ACLs
+  ☑ Block public access to buckets and objects granted through any ACLs
+  ☑ Block public access granted through new public bucket policies
+  ☑ Block public access granted through any public bucket policies
+```
+
+> 🔴 **Critical:** This ensures no file is ever directly accessible via a public URL. The only way to access files is through time-limited signed URLs generated by your backend.
+
+### 2.4 Additional Settings
+
+| Setting | Value |
+|---|---|
+| **Bucket Versioning** | Disabled (saves cost; audio files don't need version history) |
+| **Default encryption** | Enable — SSE-S3 (free, AES-256 at rest) |
+| **Object Lock** | Disabled |
+
+Click **Create bucket**.
+
+---
+
+## 3. Step 2 — Configure Bucket Structure
+
+S3 doesn't have real folders — it uses key prefixes that act like folders. You don't need to create them manually; they are created automatically when you first upload a file with that prefix. For documentation purposes, your structure is:
+
+```
+your-music-platform-files/
+│
+├── raw/uploads/
+│   └── song_{UUID}.mp3          ← Temporary. Deleted after FFmpeg processing.
+│
+├── variants/
+│   ├── song_42_128k.mp3         ← Processed variant — default for guests/free users
+│   ├── song_42_320k.mp3         ← Processed variant — high quality
+│   └── song_42_256k.aac         ← Processed variant — AAC format
+│
+├── covers/
+│   └── song_{UUID}_cover.jpg    ← Song cover art
+│
+└── avatars/
+    └── user_{UUID}_avatar.jpg   ← User/artist profile images
+```
+
+### Key naming convention
+
+Use deterministic, collision-safe keys:
+
+```
+raw/uploads/song_{UUID}_{original_filename}
+variants/song_{songId}_{bitrate}k.{format}
+covers/song_{songId}_cover.{ext}
+avatars/user_{userId}_avatar.{ext}
+```
+
+Store these keys in PostgreSQL — they map directly to `audio_variants.streaming_key` and `audio_variants.storage_url` per the spec (Section 11, Critical item #2).
+
+### S3 Lifecycle Rule — Auto-delete raw uploads
+
+To ensure raw files are deleted even if your async job crashes:
+
+1. Go to your bucket → **Management → Lifecycle rules → Create lifecycle rule**
+2. Rule name: `delete-raw-uploads`
+3. Prefix filter: `raw/uploads/`
+4. Actions: **Expire current versions of objects** after **1 day**
+
+This is a safety net on top of your `@Async` job deleting the file after processing.
+
+---
+
+## 4. Step 3 — IAM User & Permissions
+
+Since your Spring Boot app is **not hosted on AWS** (no EC2/ECS), you cannot use instance roles. You create a dedicated IAM user with minimal permissions.
+
+### 4.1 Create the IAM User
+
+1. Go to **AWS Console → IAM → Users → Create user**
+2. Username: `music-platform-app`
+3. **Do NOT** enable AWS Management Console access — this is a programmatic-only user
+4. Click **Next** (skip adding to groups for now)
+5. Click **Create user**
+
+### 4.2 Create the IAM Policy
+
+1. Go to **IAM → Policies → Create policy**
+2. Switch to **JSON editor** and paste:
+
+```json
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "MusicPlatformS3Access",
+      "Effect": "Allow",
+      "Action": [
+        "s3:PutObject",
+        "s3:GetObject",
+        "s3:DeleteObject",
+        "s3:ListBucket"
+      ],
+      "Resource": [
+        "arn:aws:s3:::your-music-platform-files",
+        "arn:aws:s3:::your-music-platform-files/*"
+      ]
+    }
+  ]
+}
+```
+
+3. Policy name: `MusicPlatformS3Policy`
+4. Click **Create policy**
+
+### 4.3 Attach Policy to User
+
+1. Go to **IAM → Users → music-platform-app**
+2. **Permissions → Add permissions → Attach policies directly**
+3. Search for `MusicPlatformS3Policy` and attach it
+
+### 4.4 Generate Access Keys
+
+1. Go to the user → **Security credentials → Access keys → Create access key**
+2. Use case: **Application running outside AWS**
+3. Copy both values immediately — the secret is shown only once:
+
+```
+Access key ID:     AKIAIOSFODNN7EXAMPLE
+Secret access key: wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY
+```
+
+> 🔐 Store these in your server's environment variables or a secrets manager (e.g. AWS Secrets Manager, Vault, or `.env` file that is never committed to git).
+
+### 4.5 What each permission does
+
+| Permission | Used for |
+|---|---|
+| `s3:PutObject` | Uploading raw files, variants, covers, avatars |
+| `s3:GetObject` | Reading files for FFmpeg processing; generating signed URLs |
+| `s3:DeleteObject` | Deleting raw files after processing |
+| `s3:ListBucket` | Optional — useful for admin/debugging; can be removed for strictest access |
+
+---
+
+## 5. Step 4 — CORS Configuration
+
+Your Angular SPA streams audio directly from S3 in the browser. Browsers enforce CORS, so S3 must explicitly permit requests from your frontend origin — and crucially, it must allow the `Range` header (used for seeking).
+
+### 5.1 Apply the CORS policy
+
+1. Go to your bucket → **Permissions → Cross-origin resource sharing (CORS)**
+2. Click **Edit** and paste:
+
+```json
+[
+  {
+    "AllowedHeaders": [
+      "Range",
+      "Content-Type",
+      "Authorization"
+    ],
+    "AllowedMethods": [
+      "GET",
+      "HEAD"
+    ],
+    "AllowedOrigins": [
+      "https://yourapp.com"
+    ],
+    "ExposeHeaders": [
+      "Content-Range",
+      "Accept-Ranges",
+      "Content-Length",
+      "ETag"
+    ],
+    "MaxAgeSeconds": 3000
+  }
+]
+```
+
+3. Replace `https://yourapp.com` with your actual frontend domain
+4. For **local development only**, you can temporarily add `"http://localhost:4200"` to `AllowedOrigins` — remove it before going to production
+
+### 5.2 Why these headers matter
+
+| Header | Direction | Purpose |
+|---|---|---|
+| `Range` (allowed) | Request → S3 | Enables seek — browser asks for bytes at a specific offset |
+| `Content-Range` (exposed) | S3 → Browser | S3 tells the browser which byte range it's receiving |
+| `Accept-Ranges` (exposed) | S3 → Browser | Tells the browser that range requests are supported |
+| `Content-Length` (exposed) | S3 → Browser | Needed by the audio player to show total duration |
+
+---
+
+## 6. Step 5 — Spring Boot AWS Setup
+
+### 6.1 Maven Dependencies (`pom.xml`)
+
+These are already listed in the spec (Section 10.2). Confirmed versions:
+
+```xml
+<!-- AWS SDK v2 -->
+<dependency>
+    <groupId>software.amazon.awssdk</groupId>
+    <artifactId>s3</artifactId>
+    <version>2.20.0</version>
+</dependency>
+<dependency>
+    <groupId>software.amazon.awssdk</groupId>
+    <artifactId>s3-presigner</artifactId>
+    <version>2.20.0</version>
+</dependency>
+
+<!-- Avoids Netty async HTTP client conflicts — use url-connection-client for sync operations -->
+<dependency>
+    <groupId>software.amazon.awssdk</groupId>
+    <artifactId>url-connection-client</artifactId>
+    <version>2.20.0</version>
+</dependency>
+```
+
+### 6.2 Application Properties
+
+```properties
+# application.properties (or better: use environment variables, reference them here)
+aws.region=${AWS_REGION}
+aws.accessKeyId=${AWS_ACCESS_KEY_ID}
+aws.secretAccessKey=${AWS_SECRET_ACCESS_KEY}
+aws.s3.bucket=${AWS_S3_BUCKET}
+aws.s3.signedUrlExpiryMinutes=15
+```
+
+### 6.3 AWS Configuration Bean
+
+```java
+// config/S3Config.java
+@Configuration
+public class S3Config {
+
+    @Value("${aws.region}")
+    private String region;
+
+    @Value("${aws.accessKeyId}")
+    private String accessKeyId;
+
+    @Value("${aws.secretAccessKey}")
+    private String secretAccessKey;
+
+    private AwsCredentialsProvider credentialsProvider() {
+        return StaticCredentialsProvider.create(
+            AwsBasicCredentials.create(accessKeyId, secretAccessKey)
+        );
+    }
+
+    @Bean
+    public S3Client s3Client() {
+        return S3Client.builder()
+            .region(Region.of(region))
+            .credentialsProvider(credentialsProvider())
+            .httpClientBuilder(UrlConnectionHttpClient.builder())
+            .build();
+    }
+
+    @Bean
+    public S3Presigner s3Presigner() {
+        return S3Presigner.builder()
+            .region(Region.of(region))
+            .credentialsProvider(credentialsProvider())
+            .build();
+    }
+}
+```
+
+---
+
+## 7. Step 6 — FileStorageService Implementation
+
+This service is the single point of contact between your application and S3. All other services go through it — never call S3 directly from a Controller or domain service.
+
+```java
+// service/FileStorageService.java
+@Service
+@RequiredArgsConstructor
+@Slf4j
+public class FileStorageService {
+
+    private final S3Client s3Client;
+    private final S3Presigner s3Presigner;
+
+    @Value("${aws.s3.bucket}")
+    private String bucket;
+
+    @Value("${aws.s3.signedUrlExpiryMinutes}")
+    private int signedUrlExpiryMinutes;
+
+    // ─────────────────────────────────────────────
+    // UPLOAD
+    // ─────────────────────────────────────────────
+
+    /**
+     * Upload any file to S3. Returns the S3 key (store this in the database).
+     *
+     * @param key         S3 object key, e.g. "variants/song_42_128k.mp3"
+     * @param inputStream file content
+     * @param contentLength byte length of the file (required by SDK)
+     * @param contentType  MIME type, e.g. "audio/mpeg"
+     * @return the S3 key (same as input key)
+     */
+    public String uploadFile(String key, InputStream inputStream,
+                             long contentLength, String contentType) {
+        try {
+            log.info("Uploading to S3: bucket={} key={}", bucket, key);
+            s3Client.putObject(
+                PutObjectRequest.builder()
+                    .bucket(bucket)
+                    .key(key)
+                    .contentType(contentType)
+                    .contentLength(contentLength)
+                    .build(),
+                RequestBody.fromInputStream(inputStream, contentLength)
+            );
+            log.info("Upload complete: {}", key);
+            return key;
+        } catch (S3Exception e) {
+            log.error("S3 upload failed for key {}: {}", key, e.awsErrorDetails().errorMessage());
+            throw new StorageException("Failed to upload file to S3", e);
+        }
+    }
+
+    /**
+     * Convenience overload for MultipartFile uploads (from Controller layer).
+     */
+    public String uploadMultipartFile(String key, MultipartFile file) {
+        try {
+            return uploadFile(key, file.getInputStream(),
+                file.getSize(), file.getContentType());
+        } catch (IOException e) {
+            throw new StorageException("Failed to read uploaded file", e);
+        }
+    }
+
+    // ─────────────────────────────────────────────
+    // SIGNED URL GENERATION (for streaming)
+    // ─────────────────────────────────────────────
+
+    /**
+     * Generate a pre-signed GET URL for an S3 object.
+     * The URL expires in `signedUrlExpiryMinutes` minutes (default: 15).
+     *
+     * @param s3Key the streaming_key stored in audio_variants
+     * @return a temporary HTTPS URL the browser can use to stream the file
+     */
+    public String generateSignedUrl(String s3Key) {
+        try {
+            GetObjectPresignRequest presignRequest = GetObjectPresignRequest.builder()
+                .signatureDuration(Duration.ofMinutes(signedUrlExpiryMinutes))
+                .getObjectRequest(req -> req
+                    .bucket(bucket)
+                    .key(s3Key)
+                    .responseContentType("audio/mpeg") // hint to browser
+                )
+                .build();
+
+            URL signedUrl = s3Presigner.presignGetObject(presignRequest).url();
+            log.debug("Generated signed URL for key {}, expires in {} min", s3Key, signedUrlExpiryMinutes);
+            return signedUrl.toString();
+        } catch (S3Exception e) {
+            log.error("Failed to generate signed URL for key {}: {}", s3Key, e.awsErrorDetails().errorMessage());
+            throw new StorageException("Failed to generate streaming URL", e);
+        }
+    }
+
+    // ─────────────────────────────────────────────
+    // DELETE
+    // ─────────────────────────────────────────────
+
+    /**
+     * Delete a single file from S3 (used after FFmpeg processing to remove raw uploads).
+     */
+    public void deleteFile(String key) {
+        try {
+            s3Client.deleteObject(DeleteObjectRequest.builder()
+                .bucket(bucket)
+                .key(key)
+                .build());
+            log.info("Deleted S3 object: {}", key);
+        } catch (S3Exception e) {
+            // Log but don't throw — a failed delete of a raw file is not critical
+            log.warn("Failed to delete S3 object {}: {}", key, e.awsErrorDetails().errorMessage());
+        }
+    }
+
+    /**
+     * Delete all variant files for a song (used when a song is deleted by artist/admin).
+     */
+    public void deleteSongVariants(long songId) {
+        List<String> keys = List.of(
+            "variants/song_" + songId + "_128k.mp3",
+            "variants/song_" + songId + "_320k.mp3",
+            "variants/song_" + songId + "_256k.aac"
+        );
+        keys.forEach(this::deleteFile);
+    }
+
+    // ─────────────────────────────────────────────
+    // KEY BUILDERS (keep naming consistent)
+    // ─────────────────────────────────────────────
+
+    public static String rawUploadKey(String uuid, String originalFilename) {
+        return "raw/uploads/song_" + uuid + "_" + sanitize(originalFilename);
+    }
+
+    public static String variantKey(long songId, int bitrateKbps, String format) {
+        return "variants/song_" + songId + "_" + bitrateKbps + "k." + format;
+    }
+
+    public static String coverKey(long songId, String ext) {
+        return "covers/song_" + songId + "_cover." + ext;
+    }
+
+    public static String avatarKey(long userId, String ext) {
+        return "avatars/user_" + userId + "_avatar." + ext;
+    }
+
+    private static String sanitize(String filename) {
+        return filename.replaceAll("[^a-zA-Z0-9._-]", "_").toLowerCase();
+    }
+}
+```
+
+---
+
+## 8. Step 7 — Upload Flow (End-to-End)
+
+### 8.1 Flow Diagram
+
+```
+Artist (Angular)
+    │
+    │  POST /api/songs
+    │  Content-Type: multipart/form-data
+    │  Body: audio file + cover + metadata
+    │
+    ▼
+SongController.uploadSong()
+    │
+    ├── Validate MIME type (audio/mpeg or audio/wav only)
+    ├── Validate file size (e.g. ≤ 100MB)
+    │
+    ├── Upload raw file → S3: raw/uploads/song_{UUID}.mp3
+    ├── Upload cover art → S3: covers/song_{songId}_cover.jpg
+    │
+    ├── Save Song entity to PostgreSQL
+    │   processing_status = PROCESSING
+    │   original_file_url  = raw S3 key (internal only)
+    │
+    ├── HTTP 201 → returned to artist immediately
+    │
+    └── @Async AudioProcessingJob.process(songId, rawS3Key)
+            │
+            ├── Download raw file from S3 to temp local path
+            ├── FFmpeg: validate audio integrity
+            ├── FFmpeg: generate 3 variants:
+            │     song_{id}_128k.mp3  (128 kbps MP3)
+            │     song_{id}_320k.mp3  (320 kbps MP3)
+            │     song_{id}_256k.aac  (256 kbps AAC)
+            ├── Extract metadata: duration_sec, bitrate, sample rate
+            │
+            ├── Upload each variant → S3: variants/
+            ├── Insert audio_variants rows in PostgreSQL:
+            │     storage_url   = full S3 URI (internal)
+            │     streaming_key = S3 key (used for presigning)
+            │     status        = READY
+            │
+            ├── Update song.processing_status = ACTIVE
+            └── Delete raw file from S3: raw/uploads/song_{UUID}.mp3
+```
+
+### 8.2 SongController — Upload Endpoint
+
+```java
+// controller/SongController.java
+@RestController
+@RequestMapping("/api/songs")
+@RequiredArgsConstructor
+public class SongController {
+
+    private final SongUploadService songUploadService;
+
+    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PreAuthorize("hasRole('ARTIST')")
+    public ResponseEntity<SongUploadResponse> uploadSong(
+            @RequestPart("audio") MultipartFile audioFile,
+            @RequestPart(value = "cover", required = false) MultipartFile coverFile,
+            @RequestPart("metadata") @Valid SongUploadRequest metadata,
+            @AuthenticationPrincipal UserPrincipal currentUser) {
+
+        // 1. Validate MIME type
+        validateAudioMimeType(audioFile);
+
+        // 2. Validate file size (100MB max)
+        if (audioFile.getSize() > 100 * 1024 * 1024) {
+            throw new ValidationException("Audio file must not exceed 100MB");
+        }
+
+        // 3. Delegate to service
+        SongUploadResponse response = songUploadService.initiateUpload(
+            audioFile, coverFile, metadata, currentUser.getId());
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
+    }
+
+    private void validateAudioMimeType(MultipartFile file) {
+        String contentType = file.getContentType();
+        if (!"audio/mpeg".equals(contentType) && !"audio/wav".equals(contentType)) {
+            throw new ValidationException("Only MP3 and WAV files are accepted");
+        }
+    }
+}
+```
+
+### 8.3 SongUploadService
+
+```java
+// service/SongUploadService.java
+@Service
+@RequiredArgsConstructor
+@Slf4j
+public class SongUploadService {
+
+    private final FileStorageService fileStorageService;
+    private final SongRepository songRepository;
+    private final AudioProcessingJob audioProcessingJob;
+
+    @Transactional
+    public SongUploadResponse initiateUpload(MultipartFile audioFile,
+                                              MultipartFile coverFile,
+                                              SongUploadRequest metadata,
+                                              long artistId) {
+        String uuid = UUID.randomUUID().toString();
+
+        // 1. Upload raw audio to S3
+        String rawKey = FileStorageService.rawUploadKey(uuid, audioFile.getOriginalFilename());
+        fileStorageService.uploadMultipartFile(rawKey, audioFile);
+
+        // 2. Upload cover art (if provided)
+        String coverKey = null;
+        if (coverFile != null && !coverFile.isEmpty()) {
+            String ext = getExtension(coverFile.getOriginalFilename());
+            coverKey = FileStorageService.coverKey(0L, ext); // temp key, update after song save
+            fileStorageService.uploadMultipartFile(coverKey, coverFile);
+        }
+
+        // 3. Save Song entity
+        Song song = Song.builder()
+            .artistId(artistId)
+            .title(metadata.getTitle())
+            .description(metadata.getDescription())
+            .genreId(metadata.getGenreId())
+            .originalFileUrl(rawKey)  // internal S3 key — never returned to clients
+            .coverUrl(coverKey)
+            .processingStatus(SongProcessingStatus.PROCESSING)
+            .visibility(SongVisibility.PRIVATE) // hidden until processing complete
+            .rightsConfirmed(metadata.isRightsConfirmed())
+            .publishDate(metadata.getPublishDate())
+            .build();
+
+        song = songRepository.save(song);
+
+        // 4. Trigger async processing
+        audioProcessingJob.process(song.getId(), rawKey);
+
+        return new SongUploadResponse(song.getId(), SongProcessingStatus.PROCESSING);
+    }
+}
+```
+
+### 8.4 AudioProcessingJob
+
+```java
+// job/AudioProcessingJob.java
+@Component
+@RequiredArgsConstructor
+@Slf4j
+public class AudioProcessingJob {
+
+    private final FileStorageService fileStorageService;
+    private final AudioVariantRepository audioVariantRepository;
+    private final SongRepository songRepository;
+    private final FFmpeg ffmpeg;
+    private final FFprobe ffprobe;
+
+    @Async
+    public void process(long songId, String rawS3Key) {
+        Path tempInput = null;
+        List<Path> tempOutputs = new ArrayList<>();
+
+        try {
+            log.info("Starting audio processing for songId={}", songId);
+
+            // 1. Download raw file from S3 to a temp path
+            tempInput = downloadToTemp(rawS3Key);
+
+            // 2. Validate audio with FFprobe
+            FFmpegProbeResult probe = ffprobe.probe(tempInput.toString());
+            if (probe.hasError()) {
+                throw new AudioProcessingException("Invalid audio file for songId=" + songId);
+            }
+            double durationSec = probe.getFormat().duration;
+
+            // 3. Generate 3 variants
+            List<VariantSpec> specs = List.of(
+                new VariantSpec(128, "mp3",  "libmp3lame"),
+                new VariantSpec(320, "mp3",  "libmp3lame"),
+                new VariantSpec(256, "aac",  "aac")
+            );
+
+            for (VariantSpec spec : specs) {
+                Path tempOut = Files.createTempFile("variant_", "." + spec.format());
+                tempOutputs.add(tempOut);
+
+                // Run FFmpeg conversion
+                new FFmpegBuilder()
+                    .setInput(tempInput.toString())
+                    .addOutput(tempOut.toString())
+                        .setAudioCodec(spec.codec())
+                        .setAudioBitRate(spec.bitrate() * 1000L)
+                        .done()
+                    .build();
+                // (use net.bramp.ffmpeg FFmpegExecutor to run the builder)
+
+                // Upload variant to S3
+                String variantKey = FileStorageService.variantKey(songId, spec.bitrate(), spec.format());
+                try (InputStream is = Files.newInputStream(tempOut)) {
+                    fileStorageService.uploadFile(
+                        variantKey, is, Files.size(tempOut),
+                        "audio/" + (spec.format().equals("mp3") ? "mpeg" : "aac")
+                    );
+                }
+
+                // Save audio_variants row
+                AudioVariant variant = AudioVariant.builder()
+                    .songId(songId)
+                    .format(AudioFormat.valueOf(spec.format().toUpperCase()))
+                    .bitrateKbps(spec.bitrate())
+                    .durationSec((int) durationSec)
+                    .fileSizeBytes(Files.size(tempOut))
+                    .storageUrl("s3://" + variantKey)       // internal full URI
+                    .streamingKey(variantKey)                // used for presigning
+                    .isDefault(spec.bitrate() == 128)        // 128k is the default
+                    .status(AudioVariantStatus.READY)
+                    .build();
+                audioVariantRepository.save(variant);
+
+                log.info("Variant saved: songId={} bitrate={}k format={}", songId, spec.bitrate(), spec.format());
+            }
+
+            // 4. Mark song as ACTIVE
+            songRepository.updateProcessingStatus(songId, SongProcessingStatus.ACTIVE);
+
+            // 5. Delete raw file from S3
+            fileStorageService.deleteFile(rawS3Key);
+
+            log.info("Audio processing complete for songId={}", songId);
+
+        } catch (Exception e) {
+            log.error("Audio processing failed for songId={}", songId, e);
+            songRepository.updateProcessingStatus(songId, SongProcessingStatus.FAILED);
+        } finally {
+            // Clean up temp files
+            cleanupTemp(tempInput);
+            tempOutputs.forEach(this::cleanupTemp);
+        }
+    }
+
+    private Path downloadToTemp(String s3Key) throws IOException {
+        // Use s3Client.getObject() to download to a temp file
+        Path temp = Files.createTempFile("raw_", ".audio");
+        // ... download logic
+        return temp;
+    }
+
+    private void cleanupTemp(Path path) {
+        if (path != null) {
+            try { Files.deleteIfExists(path); } catch (IOException ignored) {}
+        }
+    }
+
+    record VariantSpec(int bitrate, String format, String codec) {}
+}
+```
+
+---
+
+## 9. Step 8 — Streaming Flow (End-to-End)
+
+### 9.1 Flow Diagram
+
+```
+User clicks Play (Angular)
+    │
+    │  GET /api/songs/{songId}/stream
+    │  Headers: Authorization: Bearer <JWT>
+    │           Accept: application/json
+    │
+    ▼
+StreamingController.getStreamUrl()
+    │
+    ├── Spring Security: validate JWT → extract userId, role
+    │
+    ├── Load song from DB → check:
+    │     song.visibility == PUBLIC  (or user is owner/admin)
+    │     song.processingStatus == ACTIVE
+    │
+    ├── Select best audio_variant:
+    │     GUEST / free user  → 128k MP3 (is_default = true)
+    │     Registered user    → 320k MP3
+    │     (future: premium)  → 256k AAC
+    │
+    ├── fileStorageService.generateSignedUrl(variant.streamingKey)
+    │     → S3Presigner signs the key with 15-minute expiry
+    │     → Returns HTTPS URL with embedded signature
+    │
+    ├── Return JSON: { streamUrl, expiresAt, format, bitrate, duration }
+    │
+    └── Log streaming session start (async, non-blocking)
+
+Browser receives streamUrl
+    │
+    ├── Sets <audio src="...signed-s3-url..."> or equivalent
+    │
+    ├── Initial request → S3: GET with no Range header
+    │     S3 response: HTTP 200, audio bytes begin streaming
+    │
+    ├── User seeks to 2:30
+    │     Browser → S3: GET Range: bytes=7500000-
+    │     S3 response: HTTP 206 Partial Content
+    │                  Content-Range: bytes 7500000-14999999/14999999
+    │
+    └── Progress updates → Spring Boot (every ~10 seconds):
+          PATCH /api/streaming/sessions/{id}
+          Body: { lastPositionSec, listenedSeconds, playbackStatus }
+```
+
+### 9.2 Variant Selection Logic
+
+```java
+// service/StreamingService.java — variant selection
+private AudioVariant selectVariant(List<AudioVariant> variants, UserRole role) {
+    return switch (role) {
+        case GUEST -> variants.stream()
+            .filter(v -> v.isDefault() && v.getStatus() == AudioVariantStatus.READY)
+            .findFirst()
+            .orElseThrow(() -> new ResourceNotFoundException("No default variant available"));
+
+        case USER, ARTIST, ADMIN -> variants.stream()
+            .filter(v -> v.getStatus() == AudioVariantStatus.READY)
+            .max(Comparator.comparingInt(AudioVariant::getBitrateKbps))
+            .orElseThrow(() -> new ResourceNotFoundException("No variant available"));
+    };
+}
+```
+
+---
+
+## 10. Step 9 — Streaming Controller & Signed URL Endpoint
+
+```java
+// controller/StreamingController.java
+@RestController
+@RequestMapping("/api/songs")
+@RequiredArgsConstructor
+public class StreamingController {
+
+    private final StreamingService streamingService;
+    private final SongRepository songRepository;
+    private final AudioVariantRepository audioVariantRepository;
+    private final FileStorageService fileStorageService;
+
+    /**
+     * GET /api/songs/{songId}/stream
+     *
+     * Returns a signed S3 URL for the best available audio variant.
+     * The browser streams audio directly from S3 using this URL.
+     * Access is role-based; JWT is validated by Spring Security before this method runs.
+     */
+    @GetMapping("/{songId}/stream")
+    public ResponseEntity<StreamUrlResponse> getStreamUrl(
+            @PathVariable Long songId,
+            @AuthenticationPrincipal UserPrincipal currentUser) {
+
+        // 1. Load and validate song
+        Song song = songRepository.findById(songId)
+            .orElseThrow(() -> new ResourceNotFoundException("Song not found"));
+
+        if (song.getProcessingStatus() != SongProcessingStatus.ACTIVE) {
+            return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE)
+                .body(null); // song not ready
+        }
+
+        // 2. Check visibility
+        streamingService.checkAccess(song, currentUser);
+
+        // 3. Select best variant for this user's role
+        List<AudioVariant> variants = audioVariantRepository.findBySongIdAndStatus(
+            songId, AudioVariantStatus.READY);
+        AudioVariant variant = streamingService.selectVariant(variants, currentUser.getRole());
+
+        // 4. Generate signed URL (15-min TTL, configured in application.properties)
+        String signedUrl = fileStorageService.generateSignedUrl(variant.getStreamingKey());
+
+        // 5. Start streaming session (async, non-blocking)
+        streamingService.startSession(songId, variant.getId(), currentUser);
+
+        // 6. Return URL to Angular — never the S3 key itself
+        return ResponseEntity.ok(StreamUrlResponse.builder()
+            .streamUrl(signedUrl)
+            .expiresAt(Instant.now().plus(15, ChronoUnit.MINUTES))
+            .format(variant.getFormat().name())
+            .bitrateKbps(variant.getBitrateKbps())
+            .durationSec(variant.getDurationSec())
+            .build());
+    }
+}
+```
+
+```java
+// dto/StreamUrlResponse.java
+@Builder
+@Getter
+public class StreamUrlResponse {
+    private String streamUrl;       // The signed S3 URL — expires in 15 minutes
+    private Instant expiresAt;      // When the URL expires (for Angular to know when to refresh)
+    private String format;          // "MP3" or "AAC"
+    private int bitrateKbps;        // 128, 256, or 320
+    private int durationSec;        // total song duration in seconds
+}
+```
+
+---
+
+## 11. Step 10 — Angular Audio Player Integration
+
+### 11.1 Streaming Service
+
+```typescript
+// services/streaming.service.ts
+@Injectable({ providedIn: 'root' })
+export class StreamingService {
+  private apiUrl = environment.apiUrl;
+
+  constructor(private http: HttpClient) {}
+
+  getStreamUrl(songId: number): Observable<StreamUrlResponse> {
+    return this.http.get<StreamUrlResponse>(
+      `${this.apiUrl}/api/songs/${songId}/stream`
+    );
+  }
+}
+
+export interface StreamUrlResponse {
+  streamUrl: string;
+  expiresAt: string;
+  format: string;
+  bitrateKbps: number;
+  durationSec: number;
+}
+```
+
+### 11.2 Audio Player Component
+
+```typescript
+// components/audio-player/audio-player.component.ts
+@Component({
+  selector: 'app-audio-player',
+  template: `
+    <audio #audioEl
+      [src]="currentStreamUrl"
+      (timeupdate)="onTimeUpdate($event)"
+      (ended)="onEnded()"
+      (error)="onError($event)"
+      preload="metadata">
+    </audio>
+
+    <div class="player-controls">
+      <button (click)="togglePlay()">{{ isPlaying ? 'Pause' : 'Play' }}</button>
+      <input type="range" [max]="duration" [value]="currentTime"
+             (input)="seek($event)" />
+      <span>{{ formatTime(currentTime) }} / {{ formatTime(duration) }}</span>
+    </div>
+  `
+})
+export class AudioPlayerComponent {
+  @ViewChild('audioEl') audioEl!: ElementRef<HTMLAudioElement>;
+
+  currentStreamUrl: string | null = null;
+  isPlaying = false;
+  currentTime = 0;
+  duration = 0;
+  private urlExpiresAt: Date | null = null;
+  private sessionId: string | null = null;
+  private progressInterval?: ReturnType<typeof setInterval>;
+
+  constructor(
+    private streamingService: StreamingService,
+    private sessionService: StreamingSessionService
+  ) {}
+
+  loadSong(songId: number): void {
+    this.streamingService.getStreamUrl(songId).subscribe(response => {
+      this.currentStreamUrl = response.streamUrl;
+      this.urlExpiresAt = new Date(response.expiresAt);
+      this.duration = response.durationSec;
+      this.startSession(songId, response);
+    });
+  }
+
+  togglePlay(): void {
+    const audio = this.audioEl.nativeElement;
+    if (this.isPlaying) {
+      audio.pause();
+      this.isPlaying = false;
+    } else {
+      // If the signed URL is about to expire (< 2 min left), refresh it first
+      if (this.isUrlExpiringSoon()) {
+        this.refreshStreamUrl().then(() => audio.play());
+      } else {
+        audio.play();
+      }
+      this.isPlaying = true;
+    }
+  }
+
+  seek(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    const targetSec = Number(input.value);
+    const fromSec = this.currentTime;
+
+    this.audioEl.nativeElement.currentTime = targetSec;
+    // Log seek event to backend
+    this.sessionService.logEvent(this.sessionId!, 'SEEK', fromSec, targetSec);
+  }
+
+  onTimeUpdate(event: Event): void {
+    this.currentTime = (event.target as HTMLAudioElement).currentTime;
+  }
+
+  onEnded(): void {
+    this.isPlaying = false;
+    this.sessionService.endSession(this.sessionId!, true);
+    // auto-advance to next song in playlist here
+  }
+
+  private isUrlExpiringSoon(): boolean {
+    if (!this.urlExpiresAt) return false;
+    const twoMinutes = 2 * 60 * 1000;
+    return (this.urlExpiresAt.getTime() - Date.now()) < twoMinutes;
+  }
+
+  private async refreshStreamUrl(): Promise<void> {
+    // Re-call the stream endpoint to get a fresh signed URL
+    // Implementation: call getStreamUrl() and update currentStreamUrl
+  }
+
+  private startSession(songId: number, response: StreamUrlResponse): void {
+    this.sessionService.startSession(songId).subscribe(session => {
+      this.sessionId = session.sessionId;
+
+      // Send progress update every 10 seconds while playing
+      this.progressInterval = setInterval(() => {
+        if (this.isPlaying) {
+          this.sessionService.updateProgress(
+            this.sessionId!, this.currentTime, this.isPlaying
+          );
+        }
+      }, 10_000);
+    });
+  }
+
+  formatTime(sec: number): string {
+    const m = Math.floor(sec / 60);
+    const s = Math.floor(sec % 60);
+    return `${m}:${s.toString().padStart(2, '0')}`;
+  }
+
+  ngOnDestroy(): void {
+    clearInterval(this.progressInterval);
+    if (this.sessionId) {
+      this.sessionService.endSession(this.sessionId, false);
+    }
+  }
+}
+```
+
+> **Note on signed URL expiry:** The Angular player checks if the URL is about to expire before resuming playback after a long pause. Re-calling `GET /api/songs/{id}/stream` generates a fresh signed URL without restarting the session.
+
+---
+
+## 12. Step 11 — Session & Event Logging
+
+Per the spec (Section 9.2), streaming activity must be logged to feed the recommendation engine.
+
+### 12.1 Session API Calls from Angular
+
+```typescript
+// services/streaming-session.service.ts
+@Injectable({ providedIn: 'root' })
+export class StreamingSessionService {
+  constructor(private http: HttpClient) {}
+
+  startSession(songId: number): Observable<{ sessionId: string }> {
+    return this.http.post<{ sessionId: string }>(
+      '/api/streaming/sessions',
+      { songId, deviceType: 'WEB' }
+    );
+  }
+
+  updateProgress(sessionId: string, positionSec: number, isPlaying: boolean): void {
+    this.http.patch(`/api/streaming/sessions/${sessionId}`, {
+      lastPositionSec: Math.floor(positionSec),
+      playbackStatus: isPlaying ? 'PLAYING' : 'PAUSED'
+    }).subscribe(); // fire-and-forget
+  }
+
+  logEvent(sessionId: string, eventType: string, fromSec?: number, toSec?: number): void {
+    this.http.post('/api/streaming/events', {
+      sessionId,
+      eventType,
+      positionSec: fromSec ?? 0,
+      seekFromSec: fromSec,
+      seekToSec: toSec
+    }).subscribe(); // fire-and-forget
+  }
+
+  endSession(sessionId: string, completed: boolean): void {
+    this.http.post(`/api/streaming/sessions/${sessionId}/end`, {
+      completed,
+      skipped: !completed
+    }).subscribe();
+  }
+}
+```
+
+### 12.2 Signals captured for recommendations
+
+| User action | How it's logged |
+|---|---|
+| Song started | `streaming_events.event_type = START` |
+| Song completed (>90%) | `streaming_sessions.completed = true` |
+| Skipped early (<20%) | `streaming_sessions.skipped = true` + low `listened_seconds` |
+| Seeked forward | `seek_from_sec` vs `seek_to_sec` — if forward, implies disinterest in that segment |
+| Replayed | `streaming_events.event_type = REPLAY` |
+| Paused often | Multiple `PAUSE` events with short `listened_seconds` intervals |
+| Rated highly | Separate `ratings` table — `value >= 8` |
+
+---
+
+## 13. Security Checklist
+
+Go through this before deploying to production.
+
+### S3
+
+- [ ] All public access is blocked on the bucket (verify in Console → Permissions → Block public access — all 4 boxes are green)
+- [ ] No bucket policy that grants `s3:GetObject` to `*` (Principal: "*")
+- [ ] CORS `AllowedOrigins` is set to your production domain only — `localhost` is removed
+- [ ] Lifecycle rule deletes `raw/uploads/` objects after 1 day as a safety net
+- [ ] Server-side encryption (SSE-S3) is enabled
+
+### IAM
+
+- [ ] IAM user has no console access
+- [ ] IAM policy follows least privilege (only the 4 actions listed, only on your bucket)
+- [ ] Access keys are stored as environment variables — never in `application.properties` or committed to git
+- [ ] No other IAM user or role has access to the bucket
+- [ ] Rotate access keys every 90 days (set a calendar reminder)
+
+### Spring Boot
+
+- [ ] `storage_url` (internal S3 key) is never returned in any API response
+- [ ] `streaming_key` is never returned in any API response — only the pre-signed URL
+- [ ] JWT is validated before any signed URL is generated
+- [ ] Song visibility is checked before any signed URL is generated
+- [ ] `processing_status == ACTIVE` is checked before generating a stream URL
+- [ ] File MIME type is validated on upload (don't trust `Content-Type` header alone — use Apache Tika for deep inspection)
+- [ ] File size is validated on upload
+
+### Angular
+
+- [ ] Stream URL (`signedUrl`) is never logged to the browser console
+- [ ] Stream URL is never stored in `localStorage` or `sessionStorage`
+- [ ] Stream URL is used directly in the `<audio>` element — not displayed anywhere
+
+---
+
+## 14. Cost Optimization Strategy
+
+### What costs money on S3
+
+| Cost item | Estimated scale | Strategy |
+|---|---|---|
+| **Storage** | 3 variants × ~8MB avg × N songs | Delete raw files immediately after processing ✅ |
+| **Data Transfer OUT** (streaming) | ~8MB per full stream | The dominant cost; unavoidable. Scales with your user base. |
+| **PUT requests** | Once per variant per upload | Negligible |
+| **GET requests** | Once per stream start | Negligible ($0.0004/1000 requests) |
+
+### Cost progression and when to upgrade
+
+**Phase 1 — Launch (0–10k songs, small audience)**
+- S3 direct signed URLs are sufficient
+- No CDN needed
+- Estimated monthly cost: $5–30 (mostly storage + egress)
+
+**Phase 2 — Growth (10k+ songs, global audience)**
+- Add **CloudFront CDN** in front of S3
+- CloudFront caches popular songs at edge locations
+- Reduces S3 egress significantly (you pay CloudFront prices instead, which are lower at volume)
+- Improves playback latency for users far from your S3 region
+- Your spec (Section 10.3) correctly defers this to later ✅
+
+**Phase 3 — Scale (large catalog, high concurrency)**
+- Consider HLS (HTTP Live Streaming) with chunked `.ts` segments
+- Add Redis to cache signed URLs per user per song (avoid regenerating on every seek)
+
+### Storage estimate calculator
+
+```
+Songs:          1,000
+Variants/song:  3
+Avg size/variant: 8 MB
+
+Storage: 1,000 × 3 × 8 MB = 24 GB
+Monthly cost (S3 Standard): 24 × $0.023 ≈ $0.55/month
+
+Egress (if 100 full streams/day):
+100 streams × 8 MB × 30 days = 24 GB/month
+Egress cost: 24 × $0.09 ≈ $2.16/month
+```
+
+At initial scale, S3 costs are minimal. The dominant future cost is egress as streams grow.
+
+---
+
+## 15. Environment Variables Reference
+
+Set these on your server (as OS environment variables, Docker env, or via a secrets manager):
+
+```bash
+# AWS Credentials
+AWS_ACCESS_KEY_ID=AKIAIOSFODNN7EXAMPLE
+AWS_SECRET_ACCESS_KEY=wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY
+AWS_REGION=eu-central-1
+
+# S3 Configuration
+AWS_S3_BUCKET=your-music-platform-files
+AWS_S3_SIGNED_URL_EXPIRY_MINUTES=15
+```
+
+Map these in `application.properties`:
+
+```properties
+aws.region=${AWS_REGION}
+aws.accessKeyId=${AWS_ACCESS_KEY_ID}
+aws.secretAccessKey=${AWS_SECRET_ACCESS_KEY}
+aws.s3.bucket=${AWS_S3_BUCKET}
+aws.s3.signedUrlExpiryMinutes=${AWS_S3_SIGNED_URL_EXPIRY_MINUTES:15}
+```
+
+> ⚠️ Never set real values directly in `application.properties`. Always use `${ENV_VAR}` references. Add `application.properties` to `.gitignore` if it could ever contain real values.
+
+---
+
+## 16. Troubleshooting
+
+### "Access Denied" when generating signed URL
+
+- Verify the IAM user has `s3:GetObject` on the bucket
+- Verify the bucket key in your code exactly matches the key used when uploading
+- Check that the IAM user's access keys in your env vars are correct and not rotated
+
+### Audio doesn't play in the browser / CORS error in DevTools
+
+- Check the CORS configuration on the bucket includes your frontend origin
+- Ensure `Range` is in `AllowedHeaders` and `Content-Range`, `Accept-Ranges` are in `ExposeHeaders`
+- For local dev, temporarily add `http://localhost:4200` to `AllowedOrigins`
+- Verify you're using `GET` and `HEAD` in `AllowedMethods`
+
+### Seeking doesn't work (audio jumps to beginning)
+
+- Confirm `Range` is in S3 CORS `AllowedHeaders`
+- Confirm `Content-Range` and `Accept-Ranges` are in `ExposeHeaders`
+- Check that your HTML `<audio>` element doesn't have a `crossorigin` attribute mismatch with the signed URL
+
+### Signed URL works once but expires
+
+- This is by design (15-minute TTL)
+- Implement URL refresh in the Angular player: re-call `GET /api/songs/{id}/stream` when less than 2 minutes remain before expiry
+- The `expiresAt` field in `StreamUrlResponse` tells Angular exactly when to refresh
+
+### FFmpeg processing fails silently
+
+- Ensure FFmpeg is installed on the server: `ffmpeg -version`
+- Check `@Async` thread pool configuration — default pool size may be too small for concurrent uploads
+- Check `song.processing_status` — if it's stuck on `PROCESSING` after 10+ minutes, the async job likely threw an exception; check logs
+- The S3 lifecycle rule will clean up the raw file after 1 day even if processing fails
+
+### Uploads time out for large files
+
+- Consider implementing **S3 Multipart Upload** for files > 100MB (split into 5MB parts, upload in parallel)
+- For the initial scale (MP3/WAV up to ~100MB), single-part upload is fine
+- Increase Spring Boot's multipart size limit if needed:
+
+```properties
+spring.servlet.multipart.max-file-size=150MB
+spring.servlet.multipart.max-request-size=160MB
+```
+
+---
+
+*Guide based on `music_platform_spec_updated.md` v2.0 — covers AWS S3 setup, IAM, CORS, Spring Boot integration, upload pipeline, streaming pipeline, Angular player, session logging, security, and cost strategy.*
