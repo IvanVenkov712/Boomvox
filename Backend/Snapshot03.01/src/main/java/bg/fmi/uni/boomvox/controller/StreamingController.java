@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.nio.file.attribute.UserPrincipal;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.Comparator;
@@ -56,7 +57,7 @@ public class StreamingController {
     @GetMapping("/{songId}/stream")
     public ResponseEntity<StreamUrlResponse> getStreamUrl(
         @PathVariable long songId,
-        @AuthenticationPrincipal User currentUser) {
+        @AuthenticationPrincipal UserPrincipal currentUser) {
 
         Song song = songRepository.findById(songId)
             .orElseThrow(() -> new NotFoundException("Song", songId));

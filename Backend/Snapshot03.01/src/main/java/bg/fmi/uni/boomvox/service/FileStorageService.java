@@ -37,9 +37,9 @@ public class FileStorageService {
         this.s3Presigner = s3Presigner;
     }
 
-    // ─────────────────────────────────────────────
+    // --------------------------------------------
     // UPLOAD
-    // ─────────────────────────────────────────────
+    // --------------------------------------------
 
     /**
      * Upload any file to S3. Returns the S3 key (store this in the database).
@@ -83,9 +83,9 @@ public class FileStorageService {
         }
     }
 
-    // ─────────────────────────────────────────────
+    // --------------------------------------------
     // SIGNED URL GENERATION (for streaming)
-    // ─────────────────────────────────────────────
+    // --------------------------------------------
 
     /**
      * Generate a pre-signed GET URL for an S3 object.
@@ -114,9 +114,9 @@ public class FileStorageService {
         }
     }
 
-    // ─────────────────────────────────────────────
+    // --------------------------------------------
     // DELETE
-    // ─────────────────────────────────────────────
+    // --------------------------------------------
 
     /**
      * Delete a single file from S3 (used after FFmpeg processing to remove raw uploads).
@@ -134,9 +134,9 @@ public class FileStorageService {
         }
     }
 
-    // ─────────────────────────────────────────────
+    // --------------------------------------------
     // KEY BUILDERS (keep naming consistent)
-    // ─────────────────────────────────────────────
+    // --------------------------------------------
 
     public static String songKey(String uuid, String extension) {
         return "songs/song_" + uuid + "." + extension.toLowerCase();
