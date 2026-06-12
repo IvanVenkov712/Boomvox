@@ -3,6 +3,7 @@ package bg.fmi.uni.boomvox.controller;
 import bg.fmi.uni.boomvox.domain.AudioVariant;
 import bg.fmi.uni.boomvox.domain.Song;
 import bg.fmi.uni.boomvox.domain.StreamingSession;
+import bg.fmi.uni.boomvox.domain.User;
 import bg.fmi.uni.boomvox.dto.StreamUrlResponse;
 import bg.fmi.uni.boomvox.enums.AudioVariantStatus;
 import bg.fmi.uni.boomvox.enums.SongProcessingStatus;
@@ -20,7 +21,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.nio.file.attribute.UserPrincipal;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.Comparator;
@@ -56,7 +56,7 @@ public class StreamingController {
     @GetMapping("/{songId}/stream")
     public ResponseEntity<StreamUrlResponse> getStreamUrl(
         @PathVariable long songId,
-        @AuthenticationPrincipal UserPrincipal currentUser) {
+        @AuthenticationPrincipal User currentUser) {
 
         Song song = songRepository.findById(songId)
             .orElseThrow(() -> new NotFoundException("Song", songId));
@@ -76,7 +76,7 @@ public class StreamingController {
         String signedUrl = fileStorageService.generateSignedUrl(variant.getStreamingKey());
 
         StreamingSession session = playbackService.startSession(
-            songId, currentUser.getId(), variant.getId()   // pass variantId — see Step 22
+            song, currentUser, variant.getId()
         );
 
         return ResponseEntity.ok(new StreamUrlResponse(

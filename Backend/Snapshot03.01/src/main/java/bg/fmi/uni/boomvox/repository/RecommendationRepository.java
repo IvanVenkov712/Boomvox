@@ -14,6 +14,8 @@ public interface RecommendationRepository extends JpaRepository<Recommendation, 
 
     List<Recommendation> findByUserOrderByPercentDesc(User user);
 
+    void deleteByUser(User user);
+
     Long countBySongId(Long id);
 
     Long countBySong(Song song);
