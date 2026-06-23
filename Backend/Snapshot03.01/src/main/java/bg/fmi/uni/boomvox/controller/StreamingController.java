@@ -21,7 +21,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.nio.file.attribute.UserPrincipal;
+import bg.fmi.uni.boomvox.security.UserPrincipal;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.Comparator;
@@ -77,7 +77,7 @@ public class StreamingController {
         String signedUrl = fileStorageService.generateSignedUrl(variant.getStreamingKey());
 
         StreamingSession session = playbackService.startSession(
-            song, currentUser, variant.getId()
+            song, currentUser.getUser(), variant.getId()
         );
 
         return ResponseEntity.ok(new StreamUrlResponse(
