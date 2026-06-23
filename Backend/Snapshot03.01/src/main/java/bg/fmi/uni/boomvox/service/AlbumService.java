@@ -85,4 +85,10 @@ public class AlbumService extends BaseService {
         return userRepository.findById(id)
             .orElseThrow(() -> new NotFoundException("User", id));
     }
+
+    public AlbumResponse updateAlbum(long id, AlbumRequest request) {
+        Album album = findAlbum(id);
+        album.update(request.name().trim(), request.genre());
+        return AlbumResponse.from(albumRepository.save(album));
+    }
 }

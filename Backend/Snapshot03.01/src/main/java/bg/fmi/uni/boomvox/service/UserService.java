@@ -1,20 +1,30 @@
 package bg.fmi.uni.boomvox.service;
 
 import bg.fmi.uni.boomvox.domain.User;
+import bg.fmi.uni.boomvox.dto.ListeningHistoryResponse;
+import bg.fmi.uni.boomvox.dto.UpdateUserRequest;
 import bg.fmi.uni.boomvox.dto.UserResponse;
 import bg.fmi.uni.boomvox.exception.NotFoundException;
+import bg.fmi.uni.boomvox.repository.ListeningHistoryRepository;
 import bg.fmi.uni.boomvox.repository.UserRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @Transactional
-public class UserService extends BaseService{
+public class UserService extends BaseService {
 
     private final UserRepository userRepository;
+    private final ListeningHistoryRepository listeningHistoryRepository;
 
-    public UserService(UserRepository userRepository) {
+    public UserService(
+        UserRepository userRepository,
+        ListeningHistoryRepository listeningHistoryRepository
+    ) {
         this.userRepository = userRepository;
+        this.listeningHistoryRepository = listeningHistoryRepository;
     }
 
     @Transactional(readOnly = true)
@@ -30,7 +40,6 @@ public class UserService extends BaseService{
         if (user == null) {
             throw new NotFoundException("User not found with username: " + username);
         }
-
         return UserResponse.from(user);
     }
 
@@ -40,15 +49,32 @@ public class UserService extends BaseService{
         if (user == null) {
             throw new NotFoundException("User not found with email: " + email);
         }
-
         return UserResponse.from(user);
+    }
+
+    public UserResponse updateUser(long id, UpdateUserRequest request) {
+        User user = userRepository.findById(id)
+            .orElseThrow(() -> new NotFoundException("User", id));
+
+        user.update(request.username(), request.firstName(), request.lastName());
+
+        return UserResponse.from(userRepository.save(user));
+    }
+
+    @Transactional(readOnly = true)
+    public Page<ListeningHistoryResponse> getListeningHistory(long userId, Pageable pageable) {
+        User user = userRepository.findById(userId)
+            .orElseThrow(() -> new NotFoundException("User", userId));
+
+        return listeningHistoryRepository
+            .findByUserOrderByListenedAtDesc(user, pageable)
+            .map(ListeningHistoryResponse::from);
     }
 
     public void deleteUser(long id) {
         if (!userRepository.existsById(id)) {
             throw new NotFoundException("User", id);
         }
-
         userRepository.deleteById(id);
     }
 }

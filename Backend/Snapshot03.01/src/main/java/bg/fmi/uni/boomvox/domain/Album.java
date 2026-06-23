@@ -12,7 +12,6 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 public class Album extends SongCollection {
 
-    //Possible change: If an album has several authors, not just one
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     @Getter
@@ -26,6 +25,11 @@ public class Album extends SongCollection {
     public Album(String name, LocalDateTime createdAt, User author, Genre genre) {
         super(name, createdAt);
         this.author = author;
+        this.genre = genre;
+    }
+
+    public void update(String name, Genre genre) {
+        setName(name);
         this.genre = genre;
     }
 

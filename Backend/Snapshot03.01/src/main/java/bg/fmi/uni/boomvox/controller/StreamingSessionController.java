@@ -14,6 +14,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.validation.Valid;
+
 @RestController
 @RequestMapping("/api/streaming")
 public class StreamingSessionController {
@@ -36,7 +38,7 @@ public class StreamingSessionController {
     @PatchMapping("/sessions/{id}")
     public ResponseEntity<Void> updateSession(
         @PathVariable long id,
-        @RequestBody UpdateSessionRequest request) {
+        @Valid @RequestBody UpdateSessionRequest request) {
 
         playbackService.endSession(id, request.status());
         return ResponseEntity.noContent().build();
@@ -47,7 +49,7 @@ public class StreamingSessionController {
      * Angular calls this on PAUSE, RESUME, SEEK, REPLAY — fire-and-forget from the client.
      */
     @PostMapping("/events")
-    public ResponseEntity<Void> logEvent(@RequestBody LogEventRequest request) {
+    public ResponseEntity<Void> logEvent(@Valid @RequestBody LogEventRequest request) {
         StreamingSession session = sessionRepository.findById(request.sessionId())
             .orElseThrow(() -> new NotFoundException("StreamingSession", request.sessionId()));
 

@@ -42,10 +42,9 @@ public class PlaylistService extends BaseService {
         this.userRepository = userRepository;
     }
 
-    public PlaylistResponse createPlaylist(PlaylistRequest request) {
-        User owner = findUser(request.ownerId());
+    public PlaylistResponse createPlaylist(long ownerId, PlaylistRequest request) {
+        User owner = findUser(ownerId);
         Playlist playlist = new Playlist(request.name().trim(), LocalDateTime.now(), owner);
-
         return PlaylistResponse.from(playlistRepository.save(playlist));
     }
 

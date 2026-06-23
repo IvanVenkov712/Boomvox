@@ -30,10 +30,13 @@ public abstract class SongCollection {
         this.createdAt = createdAt;
     }
 
+    protected void setName(String name) {
+        this.name = name;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;
-
         SongCollection that = (SongCollection) o;
         return id == that.id;
     }

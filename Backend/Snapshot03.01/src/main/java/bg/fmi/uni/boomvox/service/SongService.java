@@ -2,6 +2,7 @@ package bg.fmi.uni.boomvox.service;
 
 import bg.fmi.uni.boomvox.domain.Album;
 import bg.fmi.uni.boomvox.domain.Song;
+import bg.fmi.uni.boomvox.dto.SongRequest;
 import bg.fmi.uni.boomvox.dto.SongResponse;
 import bg.fmi.uni.boomvox.dto.SongUploadRequest;
 import bg.fmi.uni.boomvox.enums.Genre;
@@ -124,6 +125,18 @@ public class SongService extends BaseService {
         return songRepository.searchCatalog(normalizeQuery(query), albumId, authorId, genre, format, tagId).stream()
             .map(SongResponse::from)
             .toList();
+    }
+
+    public SongResponse updateSong(long id, SongRequest request) {
+        Song song = songRepository.findById(id)
+            .orElseThrow(() -> new NotFoundException("Song", id));
+
+        Album album = albumRepository.findById(request.albumId())
+            .orElseThrow(() -> new NotFoundException("Album", request.albumId()));
+
+        song.update(request.name().trim(), request.duration(), request.fileSize(), request.storageKey());
+
+        return SongResponse.from(songRepository.save(song));
     }
 
     public void deleteSong(long id) {

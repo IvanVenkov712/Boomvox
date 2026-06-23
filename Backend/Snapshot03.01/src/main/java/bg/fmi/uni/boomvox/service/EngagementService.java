@@ -36,8 +36,8 @@ public class EngagementService extends BaseService {
         this.userRepository = userRepository;
     }
 
-    public RatingResponse rateSong(RatingRequest request) {
-        User user = findUser(request.userId());
+    public RatingResponse rateSong(long userId, RatingRequest request) {
+        User user = findUser(userId);
         Song song = findSong(request.songId());
         String comment = normalizeComment(request.comment());
         RatingId id = new RatingId(user.getId(), song.getId());

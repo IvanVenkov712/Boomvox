@@ -1,7 +1,3 @@
 # TODO:
-1. Add Ratings table
-2. Add streaming stats table
-3. Add StreamingSession table
-4. Check User Principle in Streaming Controller
-5. Check the sql changelogs from 15 to 17
-6. Check the newly added dtos and controllers as well as FileStorageService and SongService.
+1. Check all the file changes in the new commit, changes to tables, domains, new dtos, service updates, new controllers and the Controllers .md in the docs.
+2. The missing controllers will be added tomorrow.

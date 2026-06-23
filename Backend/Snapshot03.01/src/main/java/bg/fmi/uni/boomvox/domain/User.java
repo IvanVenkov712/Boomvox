@@ -1,8 +1,11 @@
 package bg.fmi.uni.boomvox.domain;
+
 import bg.fmi.uni.boomvox.enums.UserRole;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "user")
@@ -43,6 +46,14 @@ public class User {
     @JoinColumn(name = "favourites_list_id")
     private FavouritesList favouritesList;
 
+    @Getter
+    @Column(name = "reset_token")
+    private String resetToken;
+
+    @Getter
+    @Column(name = "reset_token_expiry")
+    private LocalDateTime resetTokenExpiry;
+
     @Version
     private long version;
 
@@ -56,10 +67,37 @@ public class User {
         this.favouritesList = favouritesList;
     }
 
+    public void update(String username, String firstName, String lastName) {
+        this.username = username;
+        this.firstName = firstName;
+        this.lastName = lastName;
+    }
+
+    public void setResetToken(String token, LocalDateTime expiry) {
+        this.resetToken = token;
+        this.resetTokenExpiry = expiry;
+    }
+
+    public void clearResetToken() {
+        this.resetToken = null;
+        this.resetTokenExpiry = null;
+    }
+
+    public void resetPassword(String newPasswordHash) {
+        this.passwordHash = newPasswordHash;
+        clearResetToken();
+    }
+
+    public boolean isResetTokenValid(String token) {
+        return resetToken != null
+            && resetToken.equals(token)
+            && resetTokenExpiry != null
+            && resetTokenExpiry.isAfter(LocalDateTime.now());
+    }
+
     @Override
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;
-
         User user = (User) o;
         return id == user.id;
     }

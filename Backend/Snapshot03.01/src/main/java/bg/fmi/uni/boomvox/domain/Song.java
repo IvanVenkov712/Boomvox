@@ -79,6 +79,13 @@ public class Song {
         this.stats = new SongStats(0, 0, 0, 0, 0);
     }
 
+    public void update(String name, long duration, long fileSize, String storageKey) {
+        this.name = name;
+        this.duration = duration;
+        this.fileSize = fileSize;
+        this.storageKey = storageKey;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;
