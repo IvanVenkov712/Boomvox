@@ -2,7 +2,7 @@
 
 > Reflects actual DTOs and enums in the project as of this writing.
 > Enums available: `AudioVariantStatus`, `Genre`, `SessionStatus`, `SongFormat`, `SongProcessingStatus`, `StreamingEventType`, `UserRole`.
-> No separate `Style` or `Artist` entities/DTOs — `Genre` is an enum field on songs; artist info is embedded in `SongResponse`/`UserResponse` where relevant.
+> No separate `Style` entity/DTOs — `Genre` is an enum field on songs. No separate `Artist` entity either — artists are `User` entities with `UserRole.ARTIST`, exposed via dedicated `/api/artists` endpoints on `LibraryController` (list, detail, songs, albums) backed by `UserResponse`/`SongResponse`/`AlbumResponse`.
 > Comments, Reports, and Admin controllers are **not yet built** — pending DTOs.
 
 ---
@@ -100,7 +100,7 @@ Notes:
 ## 6. LibraryController
 
 **Base path:** `/api`
-**Services:** `SongService`, `SongTagService`, `TagService`, `AlbumService`
+**Services:** `SongService`, `SongTagService`, `TagService`, `AlbumService`, `UserService`
 
 ### Songs
 
@@ -136,9 +136,22 @@ Notes:
 | POST | `/albums` | `ARTIST`/`ADMIN` | `AlbumRequest` | `AlbumResponse` (201) |
 | PUT | `/albums/{albumId}` | `ARTIST`/`ADMIN` | `AlbumRequest` | `AlbumResponse` |
 
+### Artists
+
+| Method | Path | Auth | Request DTO | Response DTO |
+|--------|------|------|-------------|---------------|
+| GET | `/artists` | none | — | `List<UserResponse>` |
+| GET | `/artists/{artistId}` | none | — | `UserResponse` |
+| GET | `/artists/{artistId}/songs` | none | — | `List<SongResponse>` |
+| GET | `/artists/{artistId}/albums` | none | — | `List<AlbumResponse>` |
+
 Notes:
 - Ownership checks for update/delete live in the service layer.
 - `Genre` filtering uses the enum directly; there is no `Style` concept in this project.
+- There is no `Artist` entity — artists are `User` entities with `UserRole.ARTIST`. `GET /artists` is backed by `UserRepository.findByRole(UserRole)` and `UserService.getArtists()`, reusing the same `UserResponse` mapping as `/api/users/me` and `/api/users/{userId}`.
+- No pagination or search/filter params on `/artists` — returns the full list, matching the spec's lack of query params for this endpoint.
+- `GET /artists/{artistId}` reuses `UserService.getUserById`, the same lookup used by `/api/users/{userId}`.
+- `GET /artists/{artistId}/songs` and `GET /artists/{artistId}/albums` are dedicated artist-page endpoints (`SongService.getSongsByArtist`, `AlbumService.getAlbumsByAuthor`) — together with the artist's `UserResponse`, these three calls back a full artist profile page on the frontend.
 
 ---
 
@@ -175,12 +188,54 @@ Notes:
 
 ---
 
-## 8. Pending — Not Yet Built
+## 8. EngagementController
+
+**Base path:** `/api`
+**Service:** `EngagementService`
+
+| Method | Path | Auth | Request DTO | Response DTO |
+|--------|------|------|-------------|---------------|
+| POST | `/songs/{songId}/ratings` | Bearer | `RatingRequest` | `RatingResponse` (201) |
+| GET | `/songs/{songId}/ratings/me` | Bearer | — | `RatingResponse` |
+| DELETE | `/songs/{songId}/ratings/me` | Bearer | — | — (204) |
+| GET | `/songs/{songId}/ratings` | none | — | `List<RatingResponse>` |
+| GET | `/songs/{songId}/ratings/average` | none | — | `Double` |
+| GET | `/users/me/ratings` | Bearer | — | `List<RatingResponse>` |
+| GET | `/songs/{songId}/stats` | none | — | `SongStatsResponse` |
+
+Notes:
+- `RatingRequest` no longer contains `userId` — user is always taken from the authenticated principal.
+- Rating is upserted (create or update) — `POST` returns 201 on both create and update.
+- `DELETE /songs/{songId}/ratings/me` deletes the current user's rating and recomputes song stats.
+- `GET /songs/{songId}/stats` triggers a live recompute of rating stats before returning.
+
+---
+
+## 9. RecommendationController
+
+**Base path:** `/api/recommendations`
+**Service:** `RecommendationService`
+
+| Method | Path | Auth | Request DTO | Response DTO |
+|--------|------|------|-------------|---------------|
+| GET | `/me` | Bearer | query params (see below) | `List<RecommendationResponse>` |
+| GET | `/similar/{songId}` | none | `limit` query param | `List<RecommendationResponse>` |
+| POST | `/{recommendationId}/click` | Bearer | — | `RecommendationResponse` |
+
+**`/me` query params:** `limit` (default 20), `sourceType` (`RecommendationSource`-style filter — generated client-side from `CONTENT_BASED`, `COLLABORATIVE`, `ML_MODEL`, `GENRE_BASED`, `MANUAL`).
+
+Notes:
+- `/me` generates/fetches personalized recommendations for the authenticated user based on ratings, listening history, favourites, and preferred genres; backed by `RecommendationService` and `RecommendationRequest`/`RecommendationResponse`.
+- `/similar/{songId}` is public and returns songs similar to a given song — no personalization, no auth required.
+- `POST /{recommendationId}/click` logs that the user engaged with a recommendation (improves future ranking) and returns the updated `RecommendationResponse`.
+- User identity for `/me` and `/{recommendationId}/click` is always taken from `UserPrincipal`, never from the request body.
+
+---
+
+## 10. Pending — Not Yet Built
 
 | Controller | Blocked on | Notes |
 |------------|------------|-------|
-| `EngagementController` | none — `RatingRequest`/`RatingResponse` exist | Ratings only. Maps to ratings CRUD + average-rating recompute side effect. |
-| `RecommendationController` | none — `RecommendationRequest`/`RecommendationResponse` exist | Generate/fetch/save recommendations; uses `RecommendationService`. |
 | `CommentController` | no Comment DTOs | Skipped per current decision. |
 | `ReportController` | no Report DTOs | Skipped per current decision. |
 | `AdminController` | no admin-user/report DTOs | Skipped; would cover user status changes and song visibility once decided. |
@@ -193,3 +248,4 @@ Notes:
 - Ownership/ACL checks live in the **service layer**, not the controller — controllers only declare role-level `@PreAuthorize` where the check is role-based.
 - 201 Created for all resource-creation endpoints; 204 No Content for deletions and fire-and-forget updates.
 - `@Valid` on all `@RequestBody` and `@RequestPart` parameters.
+- User identity is never trusted from the request body — always taken from `UserPrincipal` (applies to `RatingRequest`, `PlaylistRequest`).

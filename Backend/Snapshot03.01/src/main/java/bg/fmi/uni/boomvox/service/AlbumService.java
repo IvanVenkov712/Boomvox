@@ -91,4 +91,14 @@ public class AlbumService extends BaseService {
         album.update(request.name().trim(), request.genre());
         return AlbumResponse.from(albumRepository.save(album));
     }
+
+    @Transactional(readOnly = true)
+    public List<AlbumResponse> getAlbumsByAuthor(long authorId) {
+        if (!userRepository.existsById(authorId)) {
+            throw new NotFoundException("User", authorId);
+        }
+        return albumRepository.findByAuthorId(authorId).stream()
+            .map(AlbumResponse::from)
+            .toList();
+    }
 }

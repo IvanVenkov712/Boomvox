@@ -3,16 +3,15 @@ package bg.fmi.uni.boomvox.controller;
 import bg.fmi.uni.boomvox.dto.*;
 import bg.fmi.uni.boomvox.enums.Genre;
 import bg.fmi.uni.boomvox.enums.SongFormat;
-import bg.fmi.uni.boomvox.security.UserPrincipal;
 import bg.fmi.uni.boomvox.service.AlbumService;
 import bg.fmi.uni.boomvox.service.SongService;
 import bg.fmi.uni.boomvox.service.SongTagService;
 import bg.fmi.uni.boomvox.service.TagService;
+import bg.fmi.uni.boomvox.service.UserService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -25,17 +24,20 @@ public class LibraryController {
     private final SongTagService songTagService;
     private final TagService tagService;
     private final AlbumService albumService;
+    private final UserService userService;
 
     public LibraryController(
         SongService songService,
         SongTagService songTagService,
         TagService tagService,
-        AlbumService albumService
+        AlbumService albumService,
+        UserService userService
     ) {
         this.songService = songService;
         this.songTagService = songTagService;
         this.tagService = tagService;
         this.albumService = albumService;
+        this.userService = userService;
     }
 
     // ── Songs ────────────────────────────────────────────────────────────────
@@ -156,5 +158,27 @@ public class LibraryController {
         @Valid @RequestBody AlbumRequest request
     ) {
         return ResponseEntity.ok(albumService.updateAlbum(albumId, request));
+    }
+
+    // ── Artists ───────────────────────────────────────────────────────────────
+
+    @GetMapping("/artists")
+    public ResponseEntity<List<UserResponse>> getArtists() {
+        return ResponseEntity.ok(userService.getArtists());
+    }
+
+    @GetMapping("/artists/{artistId}")
+    public ResponseEntity<UserResponse> getArtist(@PathVariable long artistId) {
+        return ResponseEntity.ok(userService.getUserById(artistId));
+    }
+
+    @GetMapping("/artists/{artistId}/songs")
+    public ResponseEntity<List<SongResponse>> getArtistSongs(@PathVariable long artistId) {
+        return ResponseEntity.ok(songService.getSongsByArtist(artistId));
+    }
+
+    @GetMapping("/artists/{artistId}/albums")
+    public ResponseEntity<List<AlbumResponse>> getArtistAlbums(@PathVariable long artistId) {
+        return ResponseEntity.ok(albumService.getAlbumsByAuthor(artistId));
     }
 }

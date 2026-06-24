@@ -181,4 +181,14 @@ public class SongService extends BaseService {
             // extend as SongFormat grows
         };
     }
+
+    @Transactional(readOnly = true)
+    public List<SongResponse> getSongsByArtist(long artistId) {
+        if (!userRepository.existsById(artistId)) {
+            throw new NotFoundException("User", artistId);
+        }
+        return songRepository.findByAlbumAuthorId(artistId).stream()
+            .map(SongResponse::from)
+            .toList();
+    }
 }

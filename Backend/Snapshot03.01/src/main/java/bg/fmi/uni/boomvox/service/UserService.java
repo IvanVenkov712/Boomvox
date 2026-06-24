@@ -4,6 +4,7 @@ import bg.fmi.uni.boomvox.domain.User;
 import bg.fmi.uni.boomvox.dto.ListeningHistoryResponse;
 import bg.fmi.uni.boomvox.dto.UpdateUserRequest;
 import bg.fmi.uni.boomvox.dto.UserResponse;
+import bg.fmi.uni.boomvox.enums.UserRole;
 import bg.fmi.uni.boomvox.exception.NotFoundException;
 import bg.fmi.uni.boomvox.repository.ListeningHistoryRepository;
 import bg.fmi.uni.boomvox.repository.UserRepository;
@@ -11,6 +12,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 @Service
 @Transactional
@@ -76,5 +79,12 @@ public class UserService extends BaseService {
             throw new NotFoundException("User", id);
         }
         userRepository.deleteById(id);
+    }
+
+    public List<UserResponse> getArtists() {
+        return userRepository.findByRole(UserRole.AUTHOR)
+            .stream()
+            .map(UserResponse::from) // reuse whatever mapper you already use for UserResponse
+            .toList();
     }
 }
