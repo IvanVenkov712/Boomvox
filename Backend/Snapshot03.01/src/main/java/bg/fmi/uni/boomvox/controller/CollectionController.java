@@ -76,7 +76,7 @@ public class CollectionController {
         @Valid @RequestBody PlaylistSongRequest request
     ) {
         return ResponseEntity.status(HttpStatus.CREATED)
-            .body(playlistService.addSongToPlaylist(currentUser.getUser().getId(), request));
+            .body(playlistService.addSongToPlaylist(currentUser.getUser().getId(), playlistId, request));
     }
 
     @DeleteMapping("/playlists/{playlistId}/songs/{songId}")

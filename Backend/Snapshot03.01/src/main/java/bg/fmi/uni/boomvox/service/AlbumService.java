@@ -26,8 +26,8 @@ public class AlbumService extends BaseService {
         this.userRepository = userRepository;
     }
 
-    public AlbumResponse createAlbum(AlbumRequest request) {
-        User author = findUser(request.authorId());
+    public AlbumResponse createAlbum(long authorId, AlbumRequest request) {
+        User author = findUser(authorId);
         Album album = new Album(request.name().trim(), LocalDateTime.now(), author, request.genre());
 
         return AlbumResponse.from(albumRepository.save(album));

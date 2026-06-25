@@ -4,8 +4,6 @@ import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.PositiveOrZero;
 
 public record PlaylistSongRequest(
-    @Positive
-    long playlistId,
 
     @Positive
     long songId,
@@ -13,7 +11,7 @@ public record PlaylistSongRequest(
     @PositiveOrZero
     int position
 ) {
-    public static PlaylistSongRequest of(long playlistId, long songId, int position) {
-        return new PlaylistSongRequest(playlistId, songId, position);
+    public static PlaylistSongRequest of(long songId, int position) {
+        return new PlaylistSongRequest(songId, position);
     }
 }

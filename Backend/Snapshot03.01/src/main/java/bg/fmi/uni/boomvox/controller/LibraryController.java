@@ -3,6 +3,7 @@ package bg.fmi.uni.boomvox.controller;
 import bg.fmi.uni.boomvox.dto.*;
 import bg.fmi.uni.boomvox.enums.Genre;
 import bg.fmi.uni.boomvox.enums.SongFormat;
+import bg.fmi.uni.boomvox.security.UserPrincipal;
 import bg.fmi.uni.boomvox.service.AlbumService;
 import bg.fmi.uni.boomvox.service.SongService;
 import bg.fmi.uni.boomvox.service.SongTagService;
@@ -12,6 +13,7 @@ import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -147,8 +149,8 @@ public class LibraryController {
 
     @PostMapping("/albums")
     @PreAuthorize("hasAnyRole('ARTIST', 'ADMIN')")
-    public ResponseEntity<AlbumResponse> createAlbum(@Valid @RequestBody AlbumRequest request) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(albumService.createAlbum(request));
+    public ResponseEntity<AlbumResponse> createAlbum(@AuthenticationPrincipal UserPrincipal currentUser, @Valid @RequestBody AlbumRequest request) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(albumService.createAlbum(currentUser.getUser().getId(), request));
     }
 
     @PutMapping("/albums/{albumId}")

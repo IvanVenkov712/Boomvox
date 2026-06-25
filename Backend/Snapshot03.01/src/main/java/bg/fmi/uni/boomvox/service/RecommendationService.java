@@ -10,6 +10,7 @@ import bg.fmi.uni.boomvox.dto.UserPreferenceResponse;
 import bg.fmi.uni.boomvox.enums.SongProcessingStatus;
 import bg.fmi.uni.boomvox.exception.NotFoundException;
 import bg.fmi.uni.boomvox.exception.ValidationException;
+import bg.fmi.uni.boomvox.ids.RecommendationId;
 import bg.fmi.uni.boomvox.repository.FavouritesListSongRepository;
 import bg.fmi.uni.boomvox.repository.ListeningHistoryRepository;
 import bg.fmi.uni.boomvox.repository.RecommendationRepository;
@@ -165,5 +166,12 @@ public class RecommendationService {
     }
 
     private record ScoredSong(Song song, double score) {
+    }
+
+    public RecommendationResponse clickRecommendation(long userId, long songId) {
+        RecommendationId id = new RecommendationId(userId, songId);
+        Recommendation recommendation = recommendationRepository.findById(id)
+            .orElseThrow(() -> new NotFoundException("Recommendation", songId));
+        return RecommendationResponse.from(recommendation);
     }
 }

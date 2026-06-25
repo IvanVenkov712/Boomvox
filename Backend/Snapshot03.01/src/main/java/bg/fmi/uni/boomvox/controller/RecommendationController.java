@@ -38,4 +38,13 @@ public class RecommendationController {
             recommendationService.getRecommendations(currentUser.getUser().getId(), limit)
         );
     }
+
+    @PostMapping("/{songId}/click")
+    public ResponseEntity<RecommendationResponse> click(
+        @PathVariable long songId,
+        @AuthenticationPrincipal UserPrincipal currentUser) {
+        return ResponseEntity.ok(
+            recommendationService.clickRecommendation(currentUser.getUser().getId(), songId)
+        );
+    }
 }

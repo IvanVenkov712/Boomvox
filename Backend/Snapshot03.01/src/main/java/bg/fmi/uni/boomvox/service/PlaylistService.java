@@ -69,8 +69,8 @@ public class PlaylistService extends BaseService {
         playlistRepository.delete(playlist);
     }
 
-    public PlaylistSongResponse addSongToPlaylist(long userId, PlaylistSongRequest request) {
-        Playlist playlist = findOwnedPlaylist(userId, request.playlistId());
+    public PlaylistSongResponse addSongToPlaylist(long userId, long playlistId, PlaylistSongRequest request) {
+        Playlist playlist = findOwnedPlaylist(userId, playlistId);
         Song song = findSong(request.songId());
         PlaylistSongId id = new PlaylistSongId(playlist.getId(), song.getId());
 
