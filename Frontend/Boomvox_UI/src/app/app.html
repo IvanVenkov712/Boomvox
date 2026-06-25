@@ -1,0 +1,16 @@
+@if (!isLoginPage) {
+  <app-navbar />
+}
+
+<div class="app-body">
+  @if (!isLoginPage) {
+    <app-sidebar-browser />
+  }
+  <main>
+    <router-outlet />
+  </main>
+</div>
+
+@if (!isLoginPage) {
+  <app-player-bar />
+}
