@@ -1,0 +1,78 @@
+.songs {
+  max-width: 800px;
+  margin: 2rem auto;
+  padding: 0 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+
+  &__filters {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+
+    input, select {
+      padding: 0.4rem 0.6rem;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      font-size: 0.9rem;
+    }
+
+    input { flex: 1; min-width: 180px; }
+
+    button {
+      padding: 0.4rem 1rem;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+  }
+
+  &__list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  &__item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem 1rem;
+    border: 1px solid #eee;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background 0.15s;
+
+    &:hover { background: #f9f9f9; }
+  }
+
+  &__item-name {
+    font-weight: 500;
+  }
+
+  &__item-meta {
+    display: flex;
+    gap: 0.75rem;
+    font-size: 0.8rem;
+    opacity: 0.7;
+    align-items: center;
+  }
+
+  &__status { opacity: 0.6; }
+  &__error { color: red; }
+
+  &__status-badge {
+    padding: 0.15rem 0.5rem;
+    border-radius: 999px;
+    font-size: 0.75rem;
+    font-weight: 500;
+
+    &--active { background: #d4edda; color: #155724; }
+    &--processing { background: #fff3cd; color: #856404; }
+    &--failed { background: #f8d7da; color: #721c24; }
+  }
+}
