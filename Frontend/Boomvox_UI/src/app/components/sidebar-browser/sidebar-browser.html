@@ -1,1 +1,110 @@
-<p>sidebar-browser works!</p>
+@if (mode() !== 'hidden') {
+<aside class="sidebar" [class.sidebar--collapsed]="collapsed()">
+
+  <button class="sidebar__toggle" (click)="layoutService.toggleSidebar()">
+    {{ collapsed() ? '→' : '←' }}
+  </button>
+
+  @if (!collapsed()) {
+
+  <!-- Search / Songs mode -->
+  @if (mode() === 'search') {
+  <div class="sidebar__filters">
+    <input
+      type="text"
+      [(ngModel)]="searchQuery"
+      placeholder="Search songs…"
+      (keyup.enter)="loadSongs()"
+    />
+    <button (click)="loadSongs()">Go</button>
+  </div>
+
+  @if (loading()) {
+  <p class="sidebar__status">Loading…</p>
+  } @else if (songs().length === 0) {
+  <p class="sidebar__status">No songs found.</p>
+  } @else {
+  <ul class="sidebar__list">
+    @for (song of songs(); track song.id) {
+    <li class="sidebar__item" (click)="goToSong(song.id)">
+      <span class="sidebar__item-name">{{ song.name }}</span>
+      <span class="sidebar__item-meta">{{ song.format }}</span>
+    </li>
+    }
+  </ul>
+  }
+  }
+
+  <!-- Artists mode -->
+  @if (mode() === 'artists') {
+  @if (loading()) {
+  <p class="sidebar__status">Loading…</p>
+  } @else if (artists().length === 0) {
+  <p class="sidebar__status">No artists found.</p>
+  } @else {
+  <ul class="sidebar__list">
+    @for (artist of artists(); track artist.id) {
+    <li class="sidebar__item" (click)="goToArtist(artist.id)">
+      <span class="sidebar__item-name">{{ artist.username }}</span>
+    </li>
+    }
+  </ul>
+  }
+  }
+
+  <!-- Album tracks mode -->
+  @if (mode() === 'album') {
+  @if (loading()) {
+  <p class="sidebar__status">Loading…</p>
+  } @else if (albumSongs().length === 0) {
+  <p class="sidebar__status">No tracks.</p>
+  } @else {
+  <ul class="sidebar__list">
+    @for (song of albumSongs(); track song.id) {
+    <li class="sidebar__item" (click)="goToSong(song.id)">
+      <span class="sidebar__item-name">{{ song.name }}</span>
+      <span class="sidebar__item-meta">{{ song.format }}</span>
+    </li>
+    }
+  </ul>
+  }
+  }
+
+  <!-- Playlist songs mode -->
+  @if (mode() === 'playlist') {
+  @if (loading()) {
+  <p class="sidebar__status">Loading…</p>
+  } @else if (playlistSongs().length === 0) {
+  <p class="sidebar__status">No songs.</p>
+  } @else {
+  <ul class="sidebar__list">
+    @for (entry of playlistSongs(); track entry.songId) {
+    <li class="sidebar__item" (click)="goToSong(entry.songId)">
+      <span class="sidebar__item-name">Song #{{ entry.songId }}</span>
+      <span class="sidebar__item-meta">#{{ entry.position }}</span>
+    </li>
+    }
+  </ul>
+  }
+  }
+
+  <!-- Favourites mode -->
+  @if (mode() === 'favourites') {
+  @if (loading()) {
+  <p class="sidebar__status">Loading…</p>
+  } @else if (favouriteSongs().length === 0) {
+  <p class="sidebar__status">No favourites.</p>
+  } @else {
+  <ul class="sidebar__list">
+    @for (entry of favouriteSongs(); track entry.songId) {
+    <li class="sidebar__item" (click)="goToSong(entry.songId)">
+      <span class="sidebar__item-name">Song #{{ entry.songId }}</span>
+    </li>
+    }
+  </ul>
+  }
+  }
+
+  }
+</aside>
+}

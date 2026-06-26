@@ -45,4 +45,8 @@ export class ArtistService {
   getAlbums(artistId: number): Observable<AlbumResponse[]> {
     return this.http.get<AlbumResponse[]>(`${this.url}/${artistId}/albums`);
   }
+
+  getAll(): Observable<UserResponse[]> {
+    return this.http.get<UserResponse[]>(this.url);
+  }
 }
