@@ -6,6 +6,29 @@
   } @else if (user()) {
   <h1>{{ user()!.username }}</h1>
   <p>{{ user()!.firstName }} {{ user()!.lastName }}</p>
+  <p class="user-detail__email">{{ user()!.email }}</p>
   <p class="user-detail__role">{{ user()!.role }}</p>
+
+  @if (isAdmin) {
+  <div class="user-detail__promote">
+    <h2>Set Role</h2>
+    @if (promoteSuccess()) {
+    <p class="user-detail__success">Role updated successfully.</p>
+    }
+    <div class="user-detail__promote-form">
+      <select [(ngModel)]="selectedRole">
+        @for (role of roles; track role) {
+        <option [value]="role">{{ role }}</option>
+        }
+      </select>
+      <button
+        (click)="promoteUser()"
+        [disabled]="promoting() || selectedRole === user()!.role"
+      >
+        {{ promoting() ? 'Saving…' : 'Set Role' }}
+      </button>
+    </div>
+  </div>
+  }
   }
 </div>

@@ -1,0 +1,83 @@
+.admin-users {
+  max-width: 800px;
+  margin: 2rem auto;
+  padding: 0 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.admin-users h1 { margin: 0; }
+
+.admin-users__filters {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.admin-users__filters input,
+.admin-users__filters select {
+  padding: 0.4rem 0.6rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 0.9rem;
+}
+
+.admin-users__filters input { flex: 1; min-width: 200px; }
+
+.admin-users__filters button {
+  padding: 0.4rem 1rem;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.admin-users__list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.admin-users__item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem 1rem;
+  border: 1px solid #eee;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.admin-users__item:hover { background: #f9f9f9; }
+
+.admin-users__info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.admin-users__username { font-weight: 500; }
+
+.admin-users__email {
+  font-size: 0.8rem;
+  opacity: 0.6;
+}
+
+.admin-users__role {
+  font-size: 0.8rem;
+  font-weight: 500;
+  padding: 0.2rem 0.6rem;
+  border-radius: 999px;
+}
+
+.admin-users__role--ordinary_user { background: #e8e8e8; color: #444; }
+.admin-users__role--author { background: #d4edda; color: #155724; }
+.admin-users__role--admin { background: #cce5ff; color: #004085; }
+.admin-users__role--guest { background: #fff3cd; color: #856404; }
+
+.admin-users__status { opacity: 0.6; }
+.admin-users__error { color: red; }

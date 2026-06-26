@@ -16,4 +16,8 @@ export class Navbar {
     const role = this.auth.getRole();
     return role === 'AUTHOR' || role === 'ADMIN';
   }
+
+  get isAdmin(): boolean {
+    return this.auth.getRole() === 'ADMIN';
+  }
 }

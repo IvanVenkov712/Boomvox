@@ -13,6 +13,7 @@ import { Favourites } from './pages/favourites/favourites';
 import { UserDetail } from './pages/user-detail/user-detail';
 import { Upload } from './pages/upload/upload';
 import { authGuard } from './guards/auth-guard';
+import { AdminUsers } from './pages/admin-users/admin-users';
 
 export const routes: Routes = [
   { path: '', redirectTo: 'home', pathMatch: 'full' },
@@ -29,4 +30,5 @@ export const routes: Routes = [
   { path: 'favourites', component: Favourites, canActivate: [authGuard] },
   { path: 'users/:id', component: UserDetail, canActivate: [authGuard] },
   { path: 'upload', component: Upload, canActivate: [authGuard] },
+  { path: 'admin/users', component: AdminUsers, canActivate: [authGuard] },
 ];

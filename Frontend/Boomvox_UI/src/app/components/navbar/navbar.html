@@ -8,6 +8,9 @@
     @if (isAuthor) {
     <a [routerLink]="['/upload']">Upload</a>
     }
+    @if (isAdmin) {
+    <a [routerLink]="['/admin/users']">Admin</a>
+    }
   </div>
   <button (click)="auth.logout()">Logout</button>
 </nav>
