@@ -1,5 +1,4 @@
-import { Component, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component, inject, OnInit, signal } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { UserService } from '../../services/user';
 import { UserResponse } from '../../models/users';
@@ -7,31 +6,28 @@ import { UserResponse } from '../../models/users';
 @Component({
   selector: 'app-user-detail',
   standalone: true,
-  imports: [CommonModule],
+  imports: [],
   templateUrl: './user-detail.html',
   styleUrl: './user-detail.css',
 })
 export class UserDetail implements OnInit {
+  private readonly route = inject(ActivatedRoute);
+  private readonly userService = inject(UserService);
 
-  user: UserResponse | null = null;
-  loading = true;
-  error: string | null = null;
-
-  constructor(
-    private route: ActivatedRoute,
-    private userService: UserService,
-  ) {}
+  readonly user = signal<UserResponse | null>(null);
+  readonly loading = signal(true);
+  readonly error = signal<string | null>(null);
 
   ngOnInit() {
     const id = Number(this.route.snapshot.paramMap.get('id'));
     this.userService.getById(id).subscribe({
       next: (user) => {
-        this.user = user;
-        this.loading = false;
+        this.user.set(user);
+        this.loading.set(false);
       },
       error: () => {
-        this.error = 'User not found';
-        this.loading = false;
+        this.error.set('User not found');
+        this.loading.set(false);
       },
     });
   }

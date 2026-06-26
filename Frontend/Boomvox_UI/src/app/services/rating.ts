@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../environments/environment';
@@ -8,10 +8,8 @@ import { RatingRequest, RatingResponse, SongStatsResponse } from '../models/rati
   providedIn: 'root',
 })
 export class RatingService {
-
+  private readonly http = inject(HttpClient);
   private readonly url = `${environment.apiUrl}/songs`;
-
-  constructor(private http: HttpClient) {}
 
   submit(songId: number, req: RatingRequest): Observable<RatingResponse> {
     return this.http.post<RatingResponse>(`${this.url}/${songId}/ratings`, req);

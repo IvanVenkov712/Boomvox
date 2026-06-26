@@ -1,8 +1,7 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { ArtistService } from '../../services/artist';
-import { UserResponse } from '../../models/users';
 
 @Component({
   selector: 'app-artists',
@@ -12,29 +11,18 @@ import { UserResponse } from '../../models/users';
   styleUrl: './artists.css',
 })
 export class Artists implements OnInit {
-  artists: UserResponse[] = [];
-  loading = true;
-  error: string | null = null;
+  private readonly artistService = inject(ArtistService);
+  private readonly router = inject(Router);
 
-  constructor(
-    private artistService: ArtistService,
-    private router: Router,
-  ) {}
+  readonly artists = this.artistService.artists;
+  readonly loading = this.artistService.loading;
+  readonly error = this.artistService.error;
 
-  ngOnInit() {
-    this.artistService.getAll().subscribe({
-      next: (artists) => {
-        this.artists = artists;
-        this.loading = false;
-      },
-      error: () => {
-        this.error = 'Could not load artists';
-        this.loading = false;
-      },
-    });
+  ngOnInit(): void {
+    this.artistService.loadAll();
   }
 
-  goToArtist(id: number) {
+  goToArtist(id: number): void {
     this.router.navigate(['/artists', id]);
   }
 }

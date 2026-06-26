@@ -1,5 +1,4 @@
-import { Component, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component, inject, OnInit, signal } from '@angular/core';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { SongService } from '../../services/song';
 import { SongResponse } from '../../models/songs';
@@ -8,31 +7,29 @@ import { Rating } from '../../components/rating/rating';
 @Component({
   selector: 'app-song-detail',
   standalone: true,
-  imports: [CommonModule, Rating, RouterLink],
+  imports: [Rating, RouterLink],
   templateUrl: './song-detail.html',
   styleUrl: './song-detail.css',
 })
 export class SongDetail implements OnInit {
-  song: SongResponse | null = null;
-  loading = true;
-  error: string | null = null;
+  private readonly route = inject(ActivatedRoute);
+  private readonly router = inject(Router);
+  private readonly songService = inject(SongService);
 
-  constructor(
-    private route: ActivatedRoute,
-    private router: Router,
-    private songService: SongService,
-  ) {}
+  readonly song = signal<SongResponse | null>(null);
+  readonly loading = signal(true);
+  readonly error = signal<string | null>(null);
 
   ngOnInit() {
     const id = Number(this.route.snapshot.paramMap.get('id'));
-    this.songService.getById(id).subscribe({
+    this.songService.fetchById(id).subscribe({
       next: (song) => {
-        this.song = song;
-        this.loading = false;
+        this.song.set(song);
+        this.loading.set(false);
       },
       error: () => {
-        this.error = 'Song not found';
-        this.loading = false;
+        this.error.set('Song not found');
+        this.loading.set(false);
       },
     });
   }

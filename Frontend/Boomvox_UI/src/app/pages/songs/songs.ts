@@ -1,23 +1,27 @@
-import { Component, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component, inject, OnInit, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
-import { SongService, SongBrowseParams } from '../../services/song';
-import { SongResponse } from '../../models/songs';
-import { Genre, SongFormat} from '../../models/enums';
+import { SongService } from '../../services/song';
+import { SongResponse, SongBrowseParams } from '../../models/songs';
+import { Genre, SongFormat } from '../../models/enums';
 
 @Component({
   selector: 'app-songs',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [FormsModule],
   templateUrl: './songs.html',
   styleUrl: './songs.css',
 })
 export class Songs implements OnInit {
+  private readonly songService = inject(SongService);
+  private readonly router = inject(Router);
 
-  songs: SongResponse[] = [];
-  loading = true;
-  error: string | null = null;
+  readonly songs = signal<SongResponse[]>([]);
+  readonly loading = signal(true);
+  readonly error = signal<string | null>(null);
+
+  readonly genres: Genre[] = Object.values(Genre);
+  readonly formats: SongFormat[] = Object.values(SongFormat);
 
   filters: SongBrowseParams = {
     search: '',
@@ -25,30 +29,21 @@ export class Songs implements OnInit {
     format: '',
   };
 
-  genres: Genre[] = ['METAL' , 'POP_FOLK' , 'POP' , 'ROCK' , 'COUNTRY' , 'TECHNO'];
-
-  formats: SongFormat[] = ['MP3', 'WAV', 'AAC'];
-
-  constructor(
-    private songService: SongService,
-    private router: Router,
-  ) {}
-
   ngOnInit() {
     this.search();
   }
 
   search() {
-    this.loading = true;
-    this.error = null;
+    this.loading.set(true);
+    this.error.set(null);
     this.songService.browse(this.filters).subscribe({
       next: (songs) => {
-        this.songs = songs;
-        this.loading = false;
+        this.songs.set(songs);
+        this.loading.set(false);
       },
       error: () => {
-        this.error = 'Could not load songs';
-        this.loading = false;
+        this.error.set('Could not load songs');
+        this.loading.set(false);
       },
     });
   }

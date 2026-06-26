@@ -1,8 +1,13 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { UserService } from '../../services/user';
-import { UserResponse, UpdateUserRequest, ListeningHistoryResponse, UserPreferenceResponse, Page } from '../../models/users';
+import {
+  UpdateUserRequest,
+  ListeningHistoryResponse,
+  UserPreferenceResponse,
+  Page,
+} from '../../models/users';
 
 @Component({
   selector: 'app-profile',
@@ -12,99 +17,88 @@ import { UserResponse, UpdateUserRequest, ListeningHistoryResponse, UserPreferen
   styleUrl: './profile.css',
 })
 export class Profile implements OnInit {
+  private readonly userService = inject(UserService);
 
-  user: UserResponse | null = null;
-  preferences: UserPreferenceResponse | null = null;
-  historyPage: Page<ListeningHistoryResponse> | null = null;
+  readonly user = this.userService.currentUser;
+  readonly loading = this.userService.loading;
+  readonly error = this.userService.error;
 
-  editMode = false;
+  readonly preferences = signal<UserPreferenceResponse | null>(null);
+  readonly historyPage = signal<Page<ListeningHistoryResponse> | null>(null);
+
+  readonly editMode = signal(false);
+  readonly saving = signal(false);
+  readonly saveError = signal<string | null>(null);
+  readonly saveSuccess = signal(false);
+
+  readonly currentPage = signal(0);
+  readonly pageSize = 20;
+
   editData: UpdateUserRequest = { username: '', firstName: '', lastName: '' };
 
-  currentPage = 0;
-  pageSize = 20;
-
-  loading = true;
-  saving = false;
-  error: string | null = null;
-  saveError: string | null = null;
-  saveSuccess = false;
-
-  constructor(private userService: UserService) {}
-
-  ngOnInit() {
-    this.loadProfile();
+  ngOnInit(): void {
+    this.userService.loadMe();
     this.loadHistory();
     this.loadPreferences();
   }
 
-  loadProfile() {
-    this.userService.getMe().subscribe({
-      next: (user) => {
-        this.user = user;
-        this.editData = {
-          username: user.username,
-          firstName: user.firstName,
-          lastName: user.lastName,
-        };
-        this.loading = false;
-      },
-      error: () => {
-        this.error = 'Could not load profile';
-        this.loading = false;
-      },
-    });
-  }
-
-  loadHistory(page = 0) {
+  loadHistory(page = 0): void {
     this.userService.getHistory(page, this.pageSize).subscribe({
-      next: (h) => (this.historyPage = h),
+      next: (h) => this.historyPage.set(h),
     });
   }
 
-  loadPreferences() {
+  loadPreferences(): void {
     this.userService.getPreferences().subscribe({
-      next: (p) => (this.preferences = p),
+      next: (p) => this.preferences.set(p),
     });
   }
 
-  toggleEdit() {
-    this.editMode = !this.editMode;
-    this.saveError = null;
-    this.saveSuccess = false;
+  toggleEdit(): void {
+    const user = this.user();
+    if (user && !this.editMode()) {
+      this.editData = {
+        username: user.username,
+        firstName: user.firstName,
+        lastName: user.lastName,
+      };
+    }
+    this.editMode.update((v) => !v);
+    this.saveError.set(null);
+    this.saveSuccess.set(false);
   }
 
-  saveProfile() {
-    this.saving = true;
-    this.saveError = null;
-    this.saveSuccess = false;
+  saveProfile(): void {
+    this.saving.set(true);
+    this.saveError.set(null);
+    this.saveSuccess.set(false);
     this.userService.updateMe(this.editData).subscribe({
-      next: (user) => {
-        this.user = user;
-        this.saving = false;
-        this.saveSuccess = true;
-        this.editMode = false;
+      next: () => {
+        this.saving.set(false);
+        this.saveSuccess.set(true);
+        this.editMode.set(false);
       },
       error: (err) => {
-        this.saveError = err.error?.message ?? 'Could not save profile';
-        this.saving = false;
+        this.saveError.set(err.error?.message ?? 'Could not save profile.');
+        this.saving.set(false);
       },
     });
   }
 
-  goToPage(page: number) {
-    this.currentPage = page;
+  goToPage(page: number): void {
+    this.currentPage.set(page);
     this.loadHistory(page);
   }
 
   get preferenceGenres(): [string, number][] {
-    return Object.entries(this.preferences?.genreScores ?? {}).sort((a, b) => b[1] - a[1]);
+    return Object.entries(this.preferences()?.genreScores ?? {}).sort((a, b) => b[1] - a[1]);
   }
 
   get preferenceArtists(): [string, number][] {
-    return Object.entries(this.preferences?.artistScores ?? {}).sort((a, b) => b[1] - a[1]);
+    return Object.entries(this.preferences()?.artistScores ?? {}).sort((a, b) => b[1] - a[1]);
   }
 
   get preferenceTags(): [string, number][] {
-    return Object.entries(this.preferences?.tagScores ?? {}).sort((a, b) => b[1] - a[1]);
+    return Object.entries(this.preferences()?.tagScores ?? {}).sort((a, b) => b[1] - a[1]);
   }
 }

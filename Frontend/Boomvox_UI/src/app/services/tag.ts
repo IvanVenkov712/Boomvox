@@ -1,6 +1,6 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject, signal } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { Observable, catchError, finalize, of, tap } from 'rxjs';
 import { environment } from '../../environments/environment';
 import { TagResponse } from '../models/tags';
 
@@ -8,10 +8,29 @@ import { TagResponse } from '../models/tags';
   providedIn: 'root',
 })
 export class TagService {
-
+  private readonly http = inject(HttpClient);
   private readonly url = `${environment.apiUrl}/tags`;
 
-  constructor(private http: HttpClient) {}
+  private readonly _tags = signal<TagResponse[]>([]);
+  readonly tags = this._tags.asReadonly();
+  readonly loading = signal(false);
+  readonly error = signal<string | null>(null);
+
+  loadAll(): void {
+    this.loading.set(true);
+    this.error.set(null);
+    this.http
+      .get<TagResponse[]>(this.url)
+      .pipe(
+        tap((res) => this._tags.set(res)),
+        catchError(() => {
+          this.error.set('Failed to load tags.');
+          return of([]);
+        }),
+        finalize(() => this.loading.set(false)),
+      )
+      .subscribe();
+  }
 
   search(query: string): Observable<TagResponse[]> {
     const params = new HttpParams().set('search', query);
@@ -19,6 +38,8 @@ export class TagService {
   }
 
   create(name: string): Observable<TagResponse> {
-    return this.http.post<TagResponse>(this.url, { name });
+    return this.http
+      .post<TagResponse>(this.url, { name })
+      .pipe(tap((created) => this._tags.update((list) => [...list, created])));
   }
 }

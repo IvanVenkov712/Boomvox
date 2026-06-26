@@ -7,11 +7,11 @@
       <button [class.active]="activeTab === 'register'" (click)="switchTab('register')">Register</button>
     </div>
 
-    @if (error) {
-    <div class="error">{{ error }}</div>
+    @if (error()) {
+    <div class="error">{{ error() }}</div>
     }
 
-    @if (activeTab === 'login') {
+    @if (activeTab() === 'login') {
     <form (ngSubmit)="onLogin()">
       <label>Email
         <input type="email" [(ngModel)]="loginData.email" name="email" required />
@@ -20,12 +20,12 @@
         <input type="password" [(ngModel)]="loginData.password" name="password" required />
       </label>
       <button type="submit" [disabled]="loading">
-        {{ loading ? 'Logging in…' : 'Login' }}
+        {{ loading() ? 'Logging in…' : 'Login' }}
       </button>
     </form>
     }
 
-    @if (activeTab === 'register') {
+    @if (activeTab() === 'register') {
     <form (ngSubmit)="onRegister()">
       <label>Username
         <input type="text" [(ngModel)]="registerData.username" name="username" required />
@@ -43,7 +43,7 @@
         <input type="password" [(ngModel)]="registerData.password" name="password" required />
       </label>
       <button type="submit" [disabled]="loading">
-        {{ loading ? 'Registering…' : 'Register' }}
+        {{ loading() ? 'Registering…' : 'Register' }}
       </button>
     </form>
     }

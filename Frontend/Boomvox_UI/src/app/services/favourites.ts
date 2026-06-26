@@ -1,20 +1,39 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { Observable, catchError, finalize, of, tap } from 'rxjs';
 import { environment } from '../../environments/environment';
-import { FavouritesListResponse, FavouritesListSongResponse, FavouritesListSongRequest } from '../models/favourites';
+import {
+  FavouritesListResponse,
+  FavouritesListSongResponse,
+  FavouritesListSongRequest,
+} from '../models/favourites';
 
 @Injectable({
   providedIn: 'root',
 })
 export class FavouritesService {
-
+  private readonly http = inject(HttpClient);
   private readonly url = `${environment.apiUrl}/favourites`;
 
-  constructor(private http: HttpClient) {}
+  private readonly _favourites = signal<FavouritesListResponse | null>(null);
+  readonly favourites = this._favourites.asReadonly();
+  readonly loading = signal(false);
+  readonly error = signal<string | null>(null);
 
-  getList(): Observable<FavouritesListResponse> {
-    return this.http.get<FavouritesListResponse>(this.url);
+  load(): void {
+    this.loading.set(true);
+    this.error.set(null);
+    this.http
+      .get<FavouritesListResponse>(this.url)
+      .pipe(
+        tap((res) => this._favourites.set(res)),
+        catchError(() => {
+          this.error.set('Failed to load favourites.');
+          return of(null);
+        }),
+        finalize(() => this.loading.set(false)),
+      )
+      .subscribe();
   }
 
   addSong(songId: number): Observable<FavouritesListSongResponse> {
@@ -22,7 +41,16 @@ export class FavouritesService {
     return this.http.post<FavouritesListSongResponse>(`${this.url}/songs`, body);
   }
 
-  removeSong(songId: number): Observable<void> {
-    return this.http.delete<void>(`${this.url}/songs/${songId}`);
+  removeSong(songId: number): void {
+    this.http
+      .delete<void>(`${this.url}/songs/${songId}`)
+      .pipe(
+        tap(() => this.load()),
+        catchError(() => {
+          this.error.set('Failed to remove song from favourites.');
+          return of(null);
+        }),
+      )
+      .subscribe();
   }
 }

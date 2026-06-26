@@ -1,11 +1,40 @@
-export type UserRole = 'ADMIN' | 'AUTHOR' | 'ORDINARY_USER' | 'GUEST';
+export enum UserRole {
+  ADMIN = 'ADMIN',
+  AUTHOR = 'AUTHOR',
+  ORDINARY_USER = 'ORDINARY_USER',
+}
 
-export type Genre = 'METAL' | 'POP_FOLK' | 'POP' | 'ROCK' | 'COUNTRY' | 'TECHNO';
+export enum Genre {
+  METAL = 'METAL',
+  POP_FOLK = 'POP_FOLK',
+  POP = 'POP',
+  ROCK = 'ROCK',
+  COUNTRY = 'COUNTRY',
+  TECHNO = 'TECHNO',
+}
 
-export type SongFormat = 'MP3' | 'WAV' | 'AAC';
+export enum SongFormat {
+  MP3 = 'MP3',
+  WAV = 'WAV',
+  AAC = 'AAC',
+}
 
-export type SongProcessingStatus = 'PROCESSING' | 'ACTIVE' | 'FAILED';
+export enum SongProcessingStatus {
+  PROCESSING = 'PROCESSING',
+  ACTIVE = 'ACTIVE',
+  FAILED = 'FAILED',
+}
 
-export type SessionStatus = 'ACTIVE' | 'COMPLETED' | 'INTERRUPTED' | 'SKIPPED';
+export enum SessionStatus {
+  ACTIVE = 'ACTIVE',
+  COMPLETED = 'COMPLETED',
+  INTERRUPTED = 'INTERRUPTED',
+  SKIPPED = 'SKIPPED',
+}
 
-export type StreamingEventType = 'PAUSE' | 'RESUME' | 'SEEK' | 'REPLAY';
+export enum StreamingEventType {
+  PAUSE = 'PAUSE',
+  RESUME = 'RESUME',
+  SEEK = 'SEEK',
+  REPLAY = 'REPLAY',
+}

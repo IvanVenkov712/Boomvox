@@ -1,23 +1,23 @@
 <div class="artist-detail">
-  @if (loading) {
+  @if (loading()) {
   <p>Loading…</p>
-  } @else if (error) {
-  <p class="artist-detail__error">{{ error }}</p>
-  } @else if (artist) {
+  } @else if (error()) {
+  <p class="artist-detail__error">{{ error() }}</p>
+  } @else if (artist()) {
 
   <div class="artist-detail__header">
-    <h1>{{ artist.username }}</h1>
-    <p>{{ artist.firstName }} {{ artist.lastName }}</p>
+    <h1>{{ artist().username }}</h1>
+    <p>{{ artist().firstName }} {{ artist().lastName }}</p>
   </div>
 
   <!-- Songs -->
   <section class="artist-detail__section">
     <h2>Songs</h2>
-    @if (songs.length === 0) {
+    @if (songs().length === 0) {
     <p>No songs yet.</p>
     } @else {
     <ul class="artist-detail__list">
-      @for (song of songs; track song.id) {
+      @for (song of songs(); track song.id) {
       <li class="artist-detail__item" (click)="goToSong(song.id)">
         <span>{{ song.name }}</span>
         <span class="artist-detail__meta">
@@ -32,11 +32,11 @@
   <!-- Albums -->
   <section class="artist-detail__section">
     <h2>Albums</h2>
-    @if (albums.length === 0) {
+    @if (albums().length === 0) {
     <p>No albums yet.</p>
     } @else {
     <ul class="artist-detail__list">
-      @for (album of albums; track album.id) {
+      @for (album of albums(); track album.id) {
       <li class="artist-detail__item" (click)="goToAlbum(album.id)">
         <span>{{ album.name }}</span>
         <span class="artist-detail__meta">{{ album.genre }}</span>

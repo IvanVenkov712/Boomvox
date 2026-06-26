@@ -1,30 +1,29 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
-import { tap } from 'rxjs/operators';
-import { Observable } from 'rxjs';
+import { Observable, tap } from 'rxjs';
 import { environment } from '../../environments/environment';
 import { AuthResponse, LoginRequest, RegisterRequest } from '../models/auth';
+import { UserRole } from '../models/enums';
 
 @Injectable({
   providedIn: 'root',
 })
 export class AuthService {
-
+  private readonly http = inject(HttpClient);
+  private readonly router = inject(Router);
   private readonly url = `${environment.apiUrl}/auth`;
 
-  constructor(private http: HttpClient, private router: Router) {}
-
   login(req: LoginRequest): Observable<AuthResponse> {
-    return this.http.post<AuthResponse>(`${this.url}/login`, req).pipe(
-      tap(res => this.storeSession(res))
-    );
+    return this.http
+      .post<AuthResponse>(`${this.url}/login`, req)
+      .pipe(tap((res) => this.storeSession(res)));
   }
 
   register(req: RegisterRequest): Observable<AuthResponse> {
-    return this.http.post<AuthResponse>(`${this.url}/register`, req).pipe(
-      tap(res => this.storeSession(res))
-    );
+    return this.http
+      .post<AuthResponse>(`${this.url}/register`, req)
+      .pipe(tap((res) => this.storeSession(res)));
   }
 
   logout(): void {
@@ -38,15 +37,15 @@ export class AuthService {
     return !!localStorage.getItem('token');
   }
 
-  getToken(): string|null {
+  getToken(): string | null {
     return localStorage.getItem('token');
   }
 
-  getRole(): string|null {
-    return localStorage.getItem('role');
+  getRole(): UserRole | null {
+    return localStorage.getItem('role') as UserRole | null;
   }
 
-  getEmail(): string|null {
+  getEmail(): string | null {
     return localStorage.getItem('email');
   }
 

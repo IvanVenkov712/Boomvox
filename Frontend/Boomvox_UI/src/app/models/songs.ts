@@ -22,5 +22,14 @@ export interface SongUploadRequest {
 export interface SongRequest {
   name: string;
   genre: Genre;
-  albumId: number|null;
+  albumId: number | null;
+}
+
+export interface SongBrowseParams {
+  search?: string;
+  genre?: string;
+  format?: string;
+  albumId?: number;
+  artistId?: number;
+  tagId?: number;
 }

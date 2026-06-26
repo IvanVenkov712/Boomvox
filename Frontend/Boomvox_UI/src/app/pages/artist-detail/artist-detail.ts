@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 import { forkJoin } from 'rxjs';
@@ -15,42 +15,41 @@ import { AlbumResponse } from '../../models/albums';
   styleUrl: './artist-detail.css',
 })
 export class ArtistDetail implements OnInit {
-  artist: UserResponse | null = null;
-  songs: SongResponse[] = [];
-  albums: AlbumResponse[] = [];
-  loading = true;
-  error: string | null = null;
+  private readonly route = inject(ActivatedRoute);
+  private readonly router = inject(Router);
+  private readonly artistService = inject(ArtistService);
 
-  constructor(
-    private route: ActivatedRoute,
-    private router: Router,
-    private artistService: ArtistService,
-  ) {}
+  readonly artist = signal<UserResponse | null>(null);
+  readonly songs = signal<SongResponse[]>([]);
+  readonly albums = signal<AlbumResponse[]>([]);
+  readonly loading = signal(true);
+  readonly error = signal<string | null>(null);
 
-  ngOnInit() {
+  ngOnInit(): void {
     const id = Number(this.route.snapshot.paramMap.get('id'));
     forkJoin({
-      artist: this.artistService.getById(id),
       songs: this.artistService.getSongs(id),
       albums: this.artistService.getAlbums(id),
     }).subscribe({
-      next: ({ artist, songs, albums }) => {
-        this.artist = artist;
-        this.songs = songs;
-        this.albums = albums;
-        this.loading = false;
+      next: ({ songs, albums }) => {
+        const artist = this.artistService.getById(id);
+        this.artist.set(artist ?? null);
+        this.songs.set(songs);
+        this.albums.set(albums);
+        this.loading.set(false);
       },
       error: () => {
-        this.error = 'Could not load artist';
-        this.loading = false;
+        this.error.set('Could not load artist.');
+        this.loading.set(false);
       },
     });
   }
 
-  goToSong(id: number) {
+  goToSong(id: number): void {
     this.router.navigate(['/songs', id]);
   }
-  goToAlbum(id: number) {
+
+  goToAlbum(id: number): void {
     this.router.navigate(['/albums', id]);
   }
 

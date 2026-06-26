@@ -1,15 +1,15 @@
 <div class="artists">
   <h1>Artists</h1>
 
-  @if (loading) {
+  @if (loading()) {
   <p>Loading…</p>
-  } @else if (error) {
-  <p class="artists__error">{{ error }}</p>
-  } @else if (artists.length === 0) {
+  } @else if (error()) {
+  <p class="artists__error">{{ error() }}</p>
+  } @else if (artists().length === 0) {
   <p>No artists found.</p>
   } @else {
   <ul class="artists__list">
-    @for (artist of artists; track artist.id) {
+    @for (artist of artists(); track artist.id) {
     <li class="artists__item" (click)="goToArtist(artist.id)">
       <span class="artists__name">{{ artist.username }}</span>
       <span class="artists__meta">{{ artist.firstName }} {{ artist.lastName }}</span>

@@ -13,7 +13,7 @@ import { RatingResponse, SongStatsResponse } from '../../models/ratingsAndStats'
   templateUrl: './rating.html',
   styleUrl: './rating.css',
 })
-export class Rating {
+export class Rating implements OnInit {
 
   @Input() songId!: number;
 

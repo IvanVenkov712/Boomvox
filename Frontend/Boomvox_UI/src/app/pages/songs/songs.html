@@ -8,13 +8,13 @@
     />
     <select [(ngModel)]="filters.genre">
       <option value="">All genres</option>
-      @for (g of genres; track g) {
+      @for (g of genres(); track g) {
       <option [value]="g">{{ g }}</option>
       }
     </select>
     <select [(ngModel)]="filters.format">
       <option value="">All formats</option>
-      @for (f of formats; track f) {
+      @for (f of formats(); track f) {
       <option [value]="f">{{ f }}</option>
       }
     </select>
@@ -22,15 +22,15 @@
     <button (click)="clearFilters()">Clear</button>
   </div>
 
-  @if (loading) {
+  @if (loading()) {
   <p class="songs__status">Loading…</p>
-  } @else if (error) {
-  <p class="songs__error">{{ error }}</p>
-  } @else if (songs.length === 0) {
+  } @else if (error()) {
+  <p class="songs__error">{{ error() }}</p>
+  } @else if (songs().length === 0) {
   <p class="songs__status">No songs found.</p>
   } @else {
   <ul class="songs__list">
-    @for (song of songs; track song.id) {
+    @for (song of songs(); track song.id) {
     <li class="songs__item" (click)="goToSong(song.id)">
       <div class="songs__item-name">{{ song.name }}</div>
       <div class="songs__item-meta">
