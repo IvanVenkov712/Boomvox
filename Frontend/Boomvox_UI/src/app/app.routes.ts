@@ -11,6 +11,7 @@ import { Playlists } from './pages/playlists/playlists';
 import { PlaylistDetail } from './pages/playlist-detail/playlist-detail';
 import { Favourites } from './pages/favourites/favourites';
 import { UserDetail } from './pages/user-detail/user-detail';
+import { Upload } from './pages/upload/upload';
 import { authGuard } from './guards/auth-guard';
 
 export const routes: Routes = [
@@ -27,4 +28,5 @@ export const routes: Routes = [
   { path: 'playlists/:id', component: PlaylistDetail, canActivate: [authGuard] },
   { path: 'favourites', component: Favourites, canActivate: [authGuard] },
   { path: 'users/:id', component: UserDetail, canActivate: [authGuard] },
+  { path: 'upload', component: Upload, canActivate: [authGuard] },
 ];

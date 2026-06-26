@@ -1,4 +1,13 @@
 <nav class="navbar">
-  <span class="brand">BoomVox</span>
+  <a class="navbar__brand" [routerLink]="['/home']">BoomVox</a>
+  <div class="navbar__links">
+    <a [routerLink]="['/songs']">Songs</a>
+    <a [routerLink]="['/artists']">Artists</a>
+    <a [routerLink]="['/playlists']">Playlists</a>
+    <a [routerLink]="['/favourites']">Favourites</a>
+    @if (isAuthor) {
+    <a [routerLink]="['/upload']">Upload</a>
+    }
+  </div>
   <button (click)="auth.logout()">Logout</button>
 </nav>
