@@ -8,7 +8,7 @@ import { SongResponse } from '../models/songs';
 @Injectable({
   providedIn: 'root',
 })
-export class Album {
+export class AlbumService {
 
   private readonly url = `${environment.apiUrl}/albums`;
 

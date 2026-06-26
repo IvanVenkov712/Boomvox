@@ -7,7 +7,7 @@ import { StreamUrlResponse, StreamingEventRequest, SessionStatusRequest } from '
 @Injectable({
   providedIn: 'root',
 })
-export class Streaming {
+export class StreamingService {
 
   private readonly url = `${environment.apiUrl}/streaming`;
 

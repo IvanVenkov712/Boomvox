@@ -17,7 +17,7 @@ export interface SongBrowseParams {
 @Injectable({
   providedIn: 'root',
 })
-export class Song {
+export class SongService {
   private readonly url = `${environment.apiUrl}/songs`;
 
   constructor(private http: HttpClient) {}

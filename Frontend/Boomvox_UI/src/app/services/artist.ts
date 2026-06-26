@@ -9,7 +9,7 @@ import { AlbumResponse } from '../models/albums';
 @Injectable({
   providedIn: 'root',
 })
-export class Artist {
+export class ArtistService {
 
   private readonly url = `${environment.apiUrl}/artists`;
 

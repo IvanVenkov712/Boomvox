@@ -7,7 +7,7 @@ import { FavouritesListResponse, FavouritesListSongResponse, FavouritesListSongR
 @Injectable({
   providedIn: 'root',
 })
-export class Favourites {
+export class FavouritesService {
 
   private readonly url = `${environment.apiUrl}/favourites`;
 

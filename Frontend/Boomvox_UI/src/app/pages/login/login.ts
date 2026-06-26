@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
-import { Auth } from '../../services/auth';
+import { AuthService } from '../../services/auth';
 
 @Component({
   selector: 'app-login',
@@ -26,7 +26,7 @@ export class Login {
     password: ''
   };
 
-  constructor(private auth: Auth, private router: Router) {}
+  constructor(private auth: AuthService, private router: Router) {}
 
   switchTab(tab: 'login'|'register') {
     this.activeTab = tab;

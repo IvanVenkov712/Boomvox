@@ -7,7 +7,7 @@ import { PlaylistResponse, PlaylistRequest, PlaylistSongResponse, PlaylistSongRe
 @Injectable({
   providedIn: 'root',
 })
-export class Playlist {
+export class PlaylistService {
 
   private readonly url = `${environment.apiUrl}/playlists`;
 

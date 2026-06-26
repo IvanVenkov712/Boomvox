@@ -7,7 +7,7 @@ import { UserResponse, UpdateUserRequest, ListeningHistoryResponse, UserPreferen
 @Injectable({
   providedIn: 'root',
 })
-export class User {
+export class UserService {
 
   private readonly url = `${environment.apiUrl}/users`;
 

@@ -9,7 +9,7 @@ import { AuthResponse, LoginRequest, RegisterRequest } from '../models/auth';
 @Injectable({
   providedIn: 'root',
 })
-export class Auth {
+export class AuthService {
 
   private readonly url = `${environment.apiUrl}/auth`;
 

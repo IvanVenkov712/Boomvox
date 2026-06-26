@@ -7,7 +7,7 @@ import { TagResponse } from '../models/tags';
 @Injectable({
   providedIn: 'root',
 })
-export class Tag {
+export class TagService {
 
   private readonly url = `${environment.apiUrl}/tags`;
 

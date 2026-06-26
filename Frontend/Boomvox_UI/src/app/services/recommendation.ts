@@ -7,7 +7,7 @@ import { RecommendationResponse } from '../models/recommendations';
 @Injectable({
   providedIn: 'root',
 })
-export class Recommendation {
+export class RecommendationService {
 
   private readonly url = `${environment.apiUrl}/recommendations`;
 

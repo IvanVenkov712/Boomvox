@@ -7,7 +7,7 @@ import { RatingRequest, RatingResponse, SongStatsResponse } from '../models/rati
 @Injectable({
   providedIn: 'root',
 })
-export class Rating {
+export class RatingService {
 
   private readonly url = `${environment.apiUrl}/songs`;
 

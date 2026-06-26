@@ -3,7 +3,7 @@ import { Injectable, signal } from '@angular/core';
 @Injectable({
   providedIn: 'root',
 })
-export class Layout {
+export class LayoutService {
 
   sidebarCollapsed = signal(false);
 
