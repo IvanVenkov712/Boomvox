@@ -95,6 +95,10 @@ public class User {
             && resetTokenExpiry.isAfter(LocalDateTime.now());
     }
 
+    public void setRole(UserRole role) {
+        this.role = role;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;
