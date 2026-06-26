@@ -10,6 +10,7 @@ import { AlbumDetail } from './pages/album-detail/album-detail';
 import { Playlists } from './pages/playlists/playlists';
 import { PlaylistDetail } from './pages/playlist-detail/playlist-detail';
 import { Favourites } from './pages/favourites/favourites';
+import { UserDetail } from './pages/user-detail/user-detail';
 import { authGuard } from './guards/auth-guard';
 
 export const routes: Routes = [
@@ -25,4 +26,5 @@ export const routes: Routes = [
   { path: 'playlists', component: Playlists, canActivate: [authGuard] },
   { path: 'playlists/:id', component: PlaylistDetail, canActivate: [authGuard] },
   { path: 'favourites', component: Favourites, canActivate: [authGuard] },
+  { path: 'users/:id', component: UserDetail, canActivate: [authGuard] },
 ];
