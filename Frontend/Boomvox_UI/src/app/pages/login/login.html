@@ -3,8 +3,8 @@
     <h1 class="brand">BoomVox</h1>
 
     <div class="tabs">
-      <button [class.active]="activeTab === 'login'" (click)="switchTab('login')">Login</button>
-      <button [class.active]="activeTab === 'register'" (click)="switchTab('register')">Register</button>
+      <button [class.active]="activeTab() === 'login'" (click)="switchTab('login')">Login</button>
+      <button [class.active]="activeTab() === 'register'" (click)="switchTab('register')">Register</button>
     </div>
 
     @if (error()) {
@@ -19,7 +19,7 @@
       <label>Password
         <input type="password" [(ngModel)]="loginData.password" name="password" required />
       </label>
-      <button type="submit" [disabled]="loading">
+      <button type="submit" [disabled]="loading()">
         {{ loading() ? 'Logging in…' : 'Login' }}
       </button>
     </form>
@@ -42,7 +42,7 @@
       <label>Password
         <input type="password" [(ngModel)]="registerData.password" name="password" required />
       </label>
-      <button type="submit" [disabled]="loading">
+      <button type="submit" [disabled]="loading()">
         {{ loading() ? 'Registering…' : 'Register' }}
       </button>
     </form>

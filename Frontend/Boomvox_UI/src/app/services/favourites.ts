@@ -41,16 +41,11 @@ export class FavouritesService {
     return this.http.post<FavouritesListSongResponse>(`${this.url}/songs`, body);
   }
 
-  removeSong(songId: number): void {
-    this.http
-      .delete<void>(`${this.url}/songs/${songId}`)
-      .pipe(
-        tap(() => this.load()),
-        catchError(() => {
-          this.error.set('Failed to remove song from favourites.');
-          return of(null);
-        }),
-      )
-      .subscribe();
+  getSongs(): Observable<FavouritesListSongResponse[]> {
+    return this.http.get<FavouritesListSongResponse[]>(`${this.url}/songs`);
+  }
+
+  removeSong(songId: number): Observable<void> {
+    return this.http.delete<void>(`${this.url}/songs/${songId}`);
   }
 }

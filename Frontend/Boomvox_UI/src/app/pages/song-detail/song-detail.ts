@@ -1,4 +1,5 @@
 import { Component, inject, OnInit, signal } from '@angular/core';
+import { DatePipe, LowerCasePipe } from '@angular/common';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { SongService } from '../../services/song';
 import { SongResponse } from '../../models/songs';
@@ -7,7 +8,7 @@ import { Rating } from '../../components/rating/rating';
 @Component({
   selector: 'app-song-detail',
   standalone: true,
-  imports: [Rating, RouterLink],
+  imports: [Rating, RouterLink, DatePipe, LowerCasePipe],
   templateUrl: './song-detail.html',
   styleUrl: './song-detail.css',
 })

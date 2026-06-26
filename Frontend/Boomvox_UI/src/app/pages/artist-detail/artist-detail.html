@@ -6,8 +6,8 @@
   } @else if (artist()) {
 
   <div class="artist-detail__header">
-    <h1>{{ artist().username }}</h1>
-    <p>{{ artist().firstName }} {{ artist().lastName }}</p>
+    <h1>{{ artist()!.username }}</h1>
+    <p>{{ artist()!.firstName }} {{ artist()!.lastName }}</p>
   </div>
 
   <!-- Songs -->

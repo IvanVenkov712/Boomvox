@@ -5,141 +5,141 @@
   display: flex;
   flex-direction: column;
   gap: 2rem;
-
-  &__header {
-    display: flex;
-    align-items: flex-start;
-    justify-content: space-between;
-
-    h1 { margin: 0; }
-
-    button {
-      padding: 0.4rem 1rem;
-      border: 1px solid currentColor;
-      border-radius: 4px;
-      background: transparent;
-      cursor: pointer;
-    }
-  }
-
-  &__meta {
-    opacity: 0.6;
-    font-size: 0.9rem;
-    margin-top: 0.25rem;
-  }
-
-  &__edit {
-    display: flex;
-    flex-direction: column;
-    gap: 0.75rem;
-
-    label {
-      display: flex;
-      flex-direction: column;
-      gap: 0.25rem;
-      font-size: 0.875rem;
-    }
-
-    input {
-      padding: 0.4rem 0.5rem;
-      border: 1px solid #ccc;
-      border-radius: 4px;
-      font-size: 1rem;
-    }
-
-    button {
-      align-self: flex-start;
-      padding: 0.4rem 1rem;
-      border: none;
-      border-radius: 4px;
-      cursor: pointer;
-
-      &:disabled { opacity: 0.5; cursor: not-allowed; }
-    }
-  }
-
-  &__error { color: red; font-size: 0.875rem; }
-  &__success { color: green; font-size: 0.875rem; }
-
-  &__section {
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-
-    h2 { margin: 0; font-size: 1.1rem; }
-    h3 { margin: 0 0 0.5rem; font-size: 0.9rem; opacity: 0.7; }
-  }
-
-  &__prefs {
-    display: flex;
-    flex-direction: column;
-    gap: 0.4rem;
-    margin-bottom: 1rem;
-  }
-
-  &__pref-row {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-    font-size: 0.875rem;
-
-    span:first-child { width: 120px; }
-    span:last-child { width: 40px; text-align: right; }
-  }
-
-  &__pref-bar {
-    flex: 1;
-    height: 6px;
-    background: #e0e0e0;
-    border-radius: 3px;
-    overflow: hidden;
-  }
-
-  &__pref-fill {
-    height: 100%;
-    background: currentColor;
-    border-radius: 3px;
-    transition: width 0.3s ease;
-  }
-
-  &__history {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
-
-    li {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 0.5rem 0;
-      border-bottom: 1px solid #eee;
-      font-size: 0.9rem;
-    }
-  }
-
-  &__history-meta {
-    opacity: 0.6;
-    font-size: 0.8rem;
-  }
-
-  &__pagination {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-
-    button {
-      padding: 0.3rem 0.75rem;
-      border: 1px solid #ccc;
-      border-radius: 4px;
-      background: transparent;
-      cursor: pointer;
-
-      &:disabled { opacity: 0.4; cursor: not-allowed; }
-    }
-
-    span { font-size: 0.875rem; }
-  }
 }
+
+.profile__header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+}
+
+.profile__header h1 { margin: 0; }
+
+.profile__header button {
+  padding: 0.4rem 1rem;
+  border: 1px solid currentColor;
+  border-radius: 4px;
+  background: transparent;
+  cursor: pointer;
+}
+
+.profile__meta {
+  opacity: 0.6;
+  font-size: 0.9rem;
+  margin-top: 0.25rem;
+}
+
+.profile__edit {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.profile__edit label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  font-size: 0.875rem;
+}
+
+.profile__edit input {
+  padding: 0.4rem 0.5rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 1rem;
+}
+
+.profile__edit button {
+  align-self: flex-start;
+  padding: 0.4rem 1rem;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.profile__edit button:disabled { opacity: 0.5; cursor: not-allowed; }
+
+.profile__error { color: red; font-size: 0.875rem; }
+.profile__success { color: green; font-size: 0.875rem; }
+
+.profile__section {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.profile__section h2 { margin: 0; font-size: 1.1rem; }
+.profile__section h3 { margin: 0 0 0.5rem; font-size: 0.9rem; opacity: 0.7; }
+
+.profile__prefs {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  margin-bottom: 1rem;
+}
+
+.profile__pref-row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-size: 0.875rem;
+}
+
+.profile__pref-row span:first-child { width: 120px; }
+.profile__pref-row span:last-child { width: 40px; text-align: right; }
+
+.profile__pref-bar {
+  flex: 1;
+  height: 6px;
+  background: #e0e0e0;
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.profile__pref-fill {
+  height: 100%;
+  background: currentColor;
+  border-radius: 3px;
+  transition: width 0.3s ease;
+}
+
+.profile__history {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.profile__history li {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid #eee;
+  font-size: 0.9rem;
+}
+
+.profile__history-meta {
+  opacity: 0.6;
+  font-size: 0.8rem;
+}
+
+.profile__pagination {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.profile__pagination button {
+  padding: 0.3rem 0.75rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background: transparent;
+  cursor: pointer;
+}
+
+.profile__pagination button:disabled { opacity: 0.4; cursor: not-allowed; }
+
+.profile__pagination span { font-size: 0.875rem; }

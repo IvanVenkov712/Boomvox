@@ -8,8 +8,8 @@
   <!-- Header -->
   <div class="profile__header">
     <div>
-      <h1>{{ user().username }}</h1>
-      <p class="profile__meta">{{ user().email }} · {{ user().role }}</p>
+      <h1>{{ user()!.username }}</h1>
+      <p class="profile__meta">{{ user()!.email }} · {{ user()!.role }}</p>
     </div>
     <button (click)="toggleEdit()">{{ editMode() ? 'Cancel' : 'Edit' }}</button>
   </div>
@@ -29,14 +29,14 @@
     <label>Last Name
       <input type="text" [(ngModel)]="editData.lastName" name="lastName" />
     </label>
-    <button (click)="saveProfile()" [disabled]="saving">
+    <button (click)="saveProfile()" [disabled]="saving()">
       {{ saving() ? 'Saving…' : 'Save' }}
     </button>
   </div>
   } @else {
   <div class="profile__info">
-    <p><strong>Name:</strong> {{ user().firstName }} {{ user().lastName }}</p>
-    <p><strong>Role:</strong> {{ user().role }}</p>
+    <p><strong>Name:</strong> {{ user()!.firstName }} {{ user()!.lastName }}</p>
+    <p><strong>Role:</strong> {{ user()!.role }}</p>
     @if (saveSuccess()) {
     <p class="profile__success">Profile updated!</p>
     }
@@ -47,10 +47,10 @@
   @if (preferences()) {
   <section class="profile__section">
     <h2>Your Taste</h2>
-    @if (preferenceGenres().length) {
+    @if (preferenceGenres.length) {
     <div class="profile__prefs">
       <h3>Genres</h3>
-      @for (entry of preferenceGenres(); track entry[0]) {
+      @for (entry of preferenceGenres; track entry[0]) {
       <div class="profile__pref-row">
         <span>{{ entry[0] }}</span>
         <div class="profile__pref-bar">
@@ -61,10 +61,10 @@
       }
     </div>
     }
-    @if (preferenceArtists().length) {
+    @if (preferenceArtists.length) {
     <div class="profile__prefs">
       <h3>Artists</h3>
-      @for (entry of preferenceArtists(); track entry[0]) {
+      @for (entry of preferenceArtists; track entry[0]) {
       <div class="profile__pref-row">
         <span>Artist #{{ entry[0] }}</span>
         <div class="profile__pref-bar">
@@ -75,10 +75,10 @@
       }
     </div>
     }
-    @if (preferenceTags().length) {
+    @if (preferenceTags.length) {
     <div class="profile__prefs">
       <h3>Tags</h3>
-      @for (entry of preferenceTags(); track entry[0]) {
+      @for (entry of preferenceTags; track entry[0]) {
       <div class="profile__pref-row">
         <span>{{ entry[0] }}</span>
         <div class="profile__pref-bar">
@@ -96,29 +96,28 @@
   @if (historyPage()) {
   <section class="profile__section">
     <h2>Listening History</h2>
-    @if (historyPage().content.length === 0) {
+    @if (historyPage()!.content.length === 0) {
     <p>No history yet.</p>
     } @else {
     <ul class="profile__history">
-      @for (entry of historyPage().content; track entry.id) {
+      @for (entry of historyPage()!.content; track entry.id) {
       <li>
         <span class="profile__history-title">{{ entry.songTitle }}</span>
         <span class="profile__history-meta">
-                  {{ entry.listenedDurationSec }}s ·
+                  {{ entry.listenedDurationSeconds }}s ·
                   {{ entry.listenedAt | date:'medium' }}
                 </span>
       </li>
       }
     </ul>
 
-    <!-- Pagination -->
-    @if (historyPage().totalPages > 1) {
+    @if (historyPage()!.totalPages > 1) {
     <div class="profile__pagination">
-      <button (click)="goToPage(currentPage - 1)" [disabled]="currentPage === 0">
+      <button (click)="goToPage(currentPage() - 1)" [disabled]="currentPage() === 0">
         Previous
       </button>
-      <span>Page {{ currentPage() + 1 }} of {{ historyPage().totalPages }}</span>
-      <button (click)="goToPage(currentPage + 1)" [disabled]="currentPage >= historyPage.totalPages - 1">
+      <span>Page {{ currentPage() + 1 }} of {{ historyPage()!.totalPages }}</span>
+      <button (click)="goToPage(currentPage() + 1)" [disabled]="currentPage() >= historyPage()!.totalPages - 1">
         Next
       </button>
     </div>

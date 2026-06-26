@@ -8,13 +8,13 @@
     />
     <select [(ngModel)]="filters.genre">
       <option value="">All genres</option>
-      @for (g of genres(); track g) {
+      @for (g of genres; track g) {
       <option [value]="g">{{ g }}</option>
       }
     </select>
     <select [(ngModel)]="filters.format">
       <option value="">All formats</option>
-      @for (f of formats(); track f) {
+      @for (f of formats; track f) {
       <option [value]="f">{{ f }}</option>
       }
     </select>

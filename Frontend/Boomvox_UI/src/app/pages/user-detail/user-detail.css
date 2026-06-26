@@ -2,13 +2,13 @@
   max-width: 480px;
   margin: 2rem auto;
   padding: 0 1rem;
-
-  h1 { margin-bottom: 0.25rem; }
-
-  &__role {
-    opacity: 0.6;
-    font-size: 0.875rem;
-  }
-
-  &__error { color: red; }
 }
+
+.user-detail h1 { margin-bottom: 0.25rem; }
+
+.user-detail__role {
+  opacity: 0.6;
+  font-size: 0.875rem;
+}
+
+.user-detail__error { color: red; }

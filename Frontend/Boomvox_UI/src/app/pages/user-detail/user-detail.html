@@ -4,8 +4,8 @@
   } @else if (error()) {
   <p class="user-detail__error">{{ error() }}</p>
   } @else if (user()) {
-  <h1>{{ user().username }}</h1>
-  <p>{{ user().firstName }} {{ user().lastName }}</p>
-  <p class="user-detail__role">{{ user().role }}</p>
+  <h1>{{ user()!.username }}</h1>
+  <p>{{ user()!.firstName }} {{ user()!.lastName }}</p>
+  <p class="user-detail__role">{{ user()!.role }}</p>
   }
 </div>

@@ -69,4 +69,8 @@ export class AlbumService {
       )
       .subscribe();
   }
+
+  fetchById(id: number): Observable<AlbumResponse> {
+    return this.http.get<AlbumResponse>(`${this.url}/${id}`);
+  }
 }

@@ -1,4 +1,5 @@
 import { Component, inject, OnInit, signal } from '@angular/core';
+import { LowerCasePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { SongService } from '../../services/song';
@@ -8,7 +9,7 @@ import { Genre, SongFormat } from '../../models/enums';
 @Component({
   selector: 'app-songs',
   standalone: true,
-  imports: [FormsModule],
+  imports: [FormsModule, LowerCasePipe],
   templateUrl: './songs.html',
   styleUrl: './songs.css',
 })
