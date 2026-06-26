@@ -39,6 +39,7 @@
   </div>
 
   @if (song()!.processingStatus === 'ACTIVE') {
+  <button (click)="playerService.play(song()!)">▶ Play</button>
   <div class="song-detail__rating">
     <h2>Ratings</h2>
     <app-rating [songId]="song()!.id" />

@@ -4,6 +4,7 @@ import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { SongService } from '../../services/song';
 import { SongResponse } from '../../models/songs';
 import { Rating } from '../../components/rating/rating';
+import { PlayerService } from '../../services/player';
 
 @Component({
   selector: 'app-song-detail',
@@ -16,6 +17,7 @@ export class SongDetail implements OnInit {
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
   private readonly songService = inject(SongService);
+  readonly playerService = inject(PlayerService);
 
   readonly song = signal<SongResponse | null>(null);
   readonly loading = signal(true);

@@ -1,0 +1,80 @@
+.player-bar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 72px;
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  padding: 0 1.5rem;
+  border-top: 1px solid #eee;
+  background: white;
+  z-index: 100;
+}
+
+.player-bar__song {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  min-width: 160px;
+}
+
+.player-bar__title {
+  font-weight: 500;
+  font-size: 0.9rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 200px;
+}
+
+.player-bar__format {
+  font-size: 0.75rem;
+  opacity: 0.5;
+}
+
+.player-bar__controls {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.player-bar__btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 1.1rem;
+  padding: 0.25rem 0.4rem;
+  border-radius: 4px;
+  transition: background 0.15s;
+}
+
+.player-bar__btn:hover { background: #f0f0f0; }
+
+.player-bar__btn--play {
+  font-size: 1.3rem;
+}
+
+.player-bar__progress {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex: 1;
+}
+
+.player-bar__seek {
+  flex: 1;
+  cursor: pointer;
+}
+
+.player-bar__time {
+  font-size: 0.75rem;
+  opacity: 0.6;
+  min-width: 36px;
+  text-align: center;
+}
+
+.player-bar__rating {
+  min-width: 200px;
+}

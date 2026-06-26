@@ -1,1 +1,33 @@
-<p>player-bar works!</p>
+@if (song) {
+<div class="player-bar">
+  <div class="player-bar__song">
+    <span class="player-bar__title">{{ song.name }}</span>
+    <span class="player-bar__format">{{ song.format }}</span>
+  </div>
+
+  <div class="player-bar__controls">
+    <button class="player-bar__btn" (click)="playerService.previous()">⏮</button>
+    <button class="player-bar__btn player-bar__btn--play" (click)="togglePlay()">
+      {{ playing ? '⏸' : '▶' }}
+    </button>
+    <button class="player-bar__btn" (click)="playerService.next()">⏭</button>
+  </div>
+
+  <div class="player-bar__progress">
+    <span class="player-bar__time">{{ formatTime(currentTime) }}</span>
+    <input
+      class="player-bar__seek"
+      type="range"
+      [min]="0"
+      [max]="duration"
+      [value]="currentTime"
+      (change)="onSeek($event)"
+    />
+    <span class="player-bar__time">{{ formatTime(duration) }}</span>
+  </div>
+
+  <div class="player-bar__rating">
+    <app-rating [songId]="song.id" />
+  </div>
+</div>
+}
