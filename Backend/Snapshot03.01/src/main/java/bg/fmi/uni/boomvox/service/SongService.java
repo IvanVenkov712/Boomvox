@@ -84,7 +84,7 @@ public class SongService extends BaseService {
 
     @Transactional(readOnly = true)
     public List<SongResponse> browseSongs() {
-        return songRepository.findAll().stream()
+        return songRepository.findByProcessingStatus(SongProcessingStatus.ACTIVE).stream()
             .map(SongResponse::from)
             .toList();
     }
@@ -123,11 +123,11 @@ public class SongService extends BaseService {
     ) {
         validateOptionalReferences(albumId, authorId, tagId);
 
-        return songRepository.searchCatalog(normalizeQuery(query), albumId, authorId, genre, format, tagId).stream()
+        return songRepository.searchCatalog(normalizeQuery(query), albumId, authorId, genre != null ? genre.name() : null,
+                format != null ? format.name() : null, tagId).stream()
             .map(SongResponse::from)
             .toList();
     }
-
     public SongResponse updateSong(long id, SongRequest request) {
         Song song = songRepository.findById(id)
             .orElseThrow(() -> new NotFoundException("Song", id));

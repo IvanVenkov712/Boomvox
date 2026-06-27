@@ -109,8 +109,12 @@ public class RecommendationService {
     }
 
     private double calculateScore(Song song, UserPreferenceResponse preferences) {
-        double genreScore = preferences.genreScores().getOrDefault(song.getAlbum().getGenre(), 0.0);
-        double artistScore = preferences.artistScores().getOrDefault(song.getAlbum().getAuthor().getId(), 0.0);
+        double genreScore = song.getAlbum() != null
+            ? preferences.genreScores().getOrDefault(song.getAlbum().getGenre(), 0.0)
+            : 0.0;
+        double artistScore = song.getAlbum() != null
+            ? preferences.artistScores().getOrDefault(song.getAlbum().getAuthor().getId(), 0.0)
+            : 0.0;
         double tagScore = songTagRepository.findBySong(song).stream()
             .map(SongTag::getTag)
             .mapToDouble(tag -> preferences.tagScores().getOrDefault(tag.getWord(), 0.0))
