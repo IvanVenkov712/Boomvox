@@ -5,6 +5,7 @@ import { SongService } from '../../services/song';
 import { SongResponse } from '../../models/songs';
 import { Rating } from '../../components/rating/rating';
 import { PlayerService } from '../../services/player';
+import { FavouritesService } from '../../services/favourites';
 
 @Component({
   selector: 'app-song-detail',
@@ -22,6 +23,11 @@ export class SongDetail implements OnInit {
   readonly song = signal<SongResponse | null>(null);
   readonly loading = signal(true);
   readonly error = signal<string | null>(null);
+
+  readonly favouritesService = inject(FavouritesService);
+  readonly addedToFavourites = signal(false);
+  readonly addingToFavourites = signal(false);
+
 
   ngOnInit() {
     const id = Number(this.route.snapshot.paramMap.get('id'));
@@ -49,5 +55,18 @@ export class SongDetail implements OnInit {
 
   goBack() {
     this.router.navigate(['/songs']);
+  }
+
+  addToFavourites() {
+    const song = this.song();
+    if (!song) return;
+    this.addingToFavourites.set(true);
+    this.favouritesService.addSong(song.id).subscribe({
+      next: () => {
+        this.addedToFavourites.set(true);
+        this.addingToFavourites.set(false);
+      },
+      error: () => this.addingToFavourites.set(false),
+    });
   }
 }
