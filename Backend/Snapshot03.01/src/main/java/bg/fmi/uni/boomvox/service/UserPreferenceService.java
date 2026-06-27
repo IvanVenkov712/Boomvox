@@ -57,11 +57,11 @@ public class UserPreferenceService {
         Map<Song, Double> songScores = buildSongScores(user);
         Map<Genre, Double> genreScores = aggregateScores(
             songScores,
-            song -> song.getAlbum().getGenre()
+            song -> song.getAlbum() != null ? song.getAlbum().getGenre() : null
         );
         Map<Long, Double> artistScores = aggregateScores(
             songScores,
-            song -> song.getAlbum().getAuthor().getId()
+            song -> song.getAlbum() != null ? song.getAlbum().getAuthor().getId() : null
         );
         Map<String, Double> tagScores = buildTagScores(songScores);
 
@@ -118,6 +118,7 @@ public class UserPreferenceService {
         Function<Song, K> classifier
     ) {
         Map<K, Double> scores = songScores.entrySet().stream()
+            .filter(entry -> classifier.apply(entry.getKey()) != null)
             .collect(Collectors.toMap(
                 entry -> classifier.apply(entry.getKey()),
                 Map.Entry::getValue,

@@ -5,8 +5,8 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
 public record SongUploadRequest(
-    @NotNull  long      albumId,
-    @NotBlank String    name,
-    @NotNull SongFormat format,
+    Long albumId,
+    @NotBlank String name,
+    SongFormat format,
     long duration   // seconds
 ) {}

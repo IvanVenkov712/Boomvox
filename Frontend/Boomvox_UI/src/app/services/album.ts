@@ -1,5 +1,5 @@
 import { Injectable, inject, signal } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable, catchError, finalize, of, tap } from 'rxjs';
 import { environment } from '../../environments/environment';
 import { AlbumResponse, AlbumRequest } from '../models/albums';
@@ -72,5 +72,17 @@ export class AlbumService {
 
   fetchById(id: number): Observable<AlbumResponse> {
     return this.http.get<AlbumResponse>(`${this.url}/${id}`);
+  }
+
+  browse(filters: { search?: string; artistId?: number; genre?: string } = {}): Observable<AlbumResponse[]> {
+    let params = new HttpParams();
+    Object.entries(filters).forEach(([key, val]) => {
+      if (val !== undefined && val !== null && val !== '') {
+        params = params.set(key, String(val));
+      }
+    });
+    return this.http
+      .get<AlbumResponse[]>(this.url, { params })
+      .pipe(tap((res) => this._albums.set(res)));
   }
 }

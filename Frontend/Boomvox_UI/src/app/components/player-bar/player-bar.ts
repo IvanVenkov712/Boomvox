@@ -1,11 +1,10 @@
 import { Component, inject } from '@angular/core';
 import { PlayerService } from '../../services/player';
-import { Rating } from '../rating/rating';
 
 @Component({
   selector: 'app-player-bar',
   standalone: true,
-  imports: [Rating],
+  imports: [],
   templateUrl: './player-bar.html',
   styleUrl: './player-bar.css',
 })

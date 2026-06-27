@@ -2,29 +2,22 @@
   <h1>Favourites</h1>
 
   @if (loading()) {
-  <p>Loading…</p>
+    <p>Loading…</p>
   } @else if (error()) {
-  <p class="favourites__error">{{ error() }}</p>
+    <p class="favourites__error">{{ error() }}</p>
   } @else if (songs().length === 0) {
-  <p>No favourites yet.</p>
+    <p>No favourites yet.</p>
   } @else {
-  <ul class="favourites__list">
-    @for (entry of songs(); track entry.songId) {
-    <li class="favourites__item">
-          <span
-            class="favourites__name"
-            (click)="goToSong(entry.songId)"
-          >
-            Song #{{ entry.songId }}
+    <ul class="favourites__list">
+      @for (entry of songs(); track entry.songId) {
+        <li class="favourites__item">
+          <span class="favourites__name" (click)="playSong(entry.songId)">
+            {{ songNames().get(entry.songId) ?? 'Song #' + entry.songId }}
           </span>
-      <span class="favourites__meta">
-            Added {{ entry.addedAt | date:'mediumDate' }}
-          </span>
-      <button class="favourites__remove" (click)="remove(entry.songId)">
-        Remove
-      </button>
-    </li>
-    }
-  </ul>
+          <span class="favourites__meta">Added {{ entry.addedAt | date:'mediumDate' }}</span>
+          <button class="favourites__remove" (click)="remove(entry.songId)">Remove</button>
+        </li>
+      }
+    </ul>
   }
 </div>

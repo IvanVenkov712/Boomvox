@@ -21,14 +21,15 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     Optional<User> findByResetToken(String resetToken);
 
-    @Query("SELECT u FROM User u WHERE " +
-        "(:search IS NULL OR LOWER(u.username) LIKE LOWER(CONCAT('%', :search, '%')) OR " +
-        "LOWER(u.email) LIKE LOWER(CONCAT('%', :search, '%')) OR " +
-        "LOWER(u.firstName) LIKE LOWER(CONCAT('%', :search, '%')) OR " +
-        "LOWER(u.lastName) LIKE LOWER(CONCAT('%', :search, '%'))) AND " +
-        "(:role IS NULL OR u.role = :role)")
+    @Query(value = "SELECT * FROM boomvox.\"user\" u WHERE " +
+        "(:search IS NULL OR u.username ILIKE CONCAT('%', :search, '%') OR " +
+        "u.email ILIKE CONCAT('%', :search, '%') OR " +
+        "u.first_name ILIKE CONCAT('%', :search, '%') OR " +
+        "u.last_name ILIKE CONCAT('%', :search, '%')) AND " +
+        "(:role IS NULL OR u.role = CAST(:role AS VARCHAR))",
+        nativeQuery = true)
     List<User> findBySearchAndRole(
         @Param("search") String search,
-        @Param("role") UserRole role
+        @Param("role") String role
     );
 }

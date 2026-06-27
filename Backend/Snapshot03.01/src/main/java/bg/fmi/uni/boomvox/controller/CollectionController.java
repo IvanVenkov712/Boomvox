@@ -1,5 +1,9 @@
 package bg.fmi.uni.boomvox.controller;
 
+import bg.fmi.uni.boomvox.domain.FavouritesList;
+import bg.fmi.uni.boomvox.domain.FavouritesListSong;
+import bg.fmi.uni.boomvox.domain.Song;
+import bg.fmi.uni.boomvox.domain.User;
 import bg.fmi.uni.boomvox.dto.FavouritesListResponse;
 import bg.fmi.uni.boomvox.dto.FavouritesListSongRequest;
 import bg.fmi.uni.boomvox.dto.FavouritesListSongResponse;
@@ -7,15 +11,26 @@ import bg.fmi.uni.boomvox.dto.PlaylistRequest;
 import bg.fmi.uni.boomvox.dto.PlaylistResponse;
 import bg.fmi.uni.boomvox.dto.PlaylistSongRequest;
 import bg.fmi.uni.boomvox.dto.PlaylistSongResponse;
+import bg.fmi.uni.boomvox.exception.NotFoundException;
+import bg.fmi.uni.boomvox.exception.ValidationException;
+import bg.fmi.uni.boomvox.ids.FavouritesListSongId;
+import bg.fmi.uni.boomvox.repository.FavouritesListRepository;
+import bg.fmi.uni.boomvox.repository.FavouritesListSongRepository;
+import bg.fmi.uni.boomvox.repository.SongRepository;
+import bg.fmi.uni.boomvox.repository.UserRepository;
 import bg.fmi.uni.boomvox.security.UserPrincipal;
+import bg.fmi.uni.boomvox.service.BaseService;
 import bg.fmi.uni.boomvox.service.FavouritesService;
 import bg.fmi.uni.boomvox.service.PlaylistService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @RestController
@@ -38,6 +53,16 @@ public class CollectionController {
     ) {
         return ResponseEntity.ok(
             playlistService.getPlaylistsByOwner(currentUser.getUser().getId())
+        );
+    }
+
+    @GetMapping("/playlists/{playlistId}/songs")
+    public ResponseEntity<List<PlaylistSongResponse>> getPlaylistSongs(
+        @AuthenticationPrincipal UserPrincipal currentUser,
+        @PathVariable long playlistId
+    ) {
+        return ResponseEntity.ok(
+            playlistService.getPlaylistSongs(currentUser.getUser().getId(), playlistId)
         );
     }
 
@@ -97,6 +122,15 @@ public class CollectionController {
     ) {
         return ResponseEntity.ok(
             favouritesService.getFavouritesList(currentUser.getUser().getId())
+        );
+    }
+
+    @GetMapping("/favourites/songs")
+    public ResponseEntity<List<FavouritesListSongResponse>> getFavouriteSongs(
+        @AuthenticationPrincipal UserPrincipal currentUser
+    ) {
+        return ResponseEntity.ok(
+            favouritesService.getFavouriteSongs(currentUser.getUser().getId())
         );
     }
 

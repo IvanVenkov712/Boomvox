@@ -1,10 +1,67 @@
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  background: #1A1A1A;
+  color: #E8E0CC;
+  font-family: 'Verdana', Arial, sans-serif;
+  font-size: 16px;
+  min-height: 100vh;
+}
+
+a {
+  color: #E8E0CC;
+  text-decoration: none;
+}
+
+a:hover {
+  color: #C09A4A;
+}
+
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: #1A1A1A;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #4A4A52;
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #A8A9AD;
+}
+
+::selection {
+  background: rgba(178, 34, 52, 0.3);
+  color: #E8E0CC;
+}
+
+:host {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background: #1A1A1A;
+}
+
 .app-body {
   display: flex;
-  min-height: calc(100vh - 56px);
+  flex: 1;
+  min-height: calc(100vh - 64px);
+  background: #1A1A1A;
 }
 
 .app-main {
   flex: 1;
   overflow-y: auto;
   padding-bottom: 80px;
+  background: #1A1A1A;
+  color: #E8E0CC;
+  font-family: 'Verdana', Arial, sans-serif;
 }

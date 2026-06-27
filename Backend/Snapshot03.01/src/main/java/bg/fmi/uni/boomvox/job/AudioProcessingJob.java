@@ -19,6 +19,7 @@ import net.bramp.ffmpeg.probe.FFmpegProbeResult;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.GetObjectRequest;
 
@@ -53,6 +54,7 @@ public class AudioProcessingJob {
         this.s3Client               = s3Client;
     }
 
+    @Transactional
     @Async("audioProcessingExecutor")
     public void process(long songId, String rawS3Key) {
         Path tempInput  = null;
@@ -141,6 +143,7 @@ public class AudioProcessingJob {
 
     private Path downloadToTemp(String s3Key) throws IOException {
         Path temp = Files.createTempFile("raw_", ".audio");
+        Files.delete(temp);
         s3Client.getObject(
             GetObjectRequest.builder().bucket(bucket).key(s3Key).build(),
             temp

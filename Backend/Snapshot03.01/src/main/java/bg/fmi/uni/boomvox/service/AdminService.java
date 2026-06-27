@@ -18,7 +18,7 @@ public class AdminService {
     private final UserRepository userRepository;
 
     public List<UserResponse> getUsers(String search, UserRole role) {
-        return userRepository.findBySearchAndRole(search, role)
+        return userRepository.findBySearchAndRole(search, role == null ? null : role.name())
             .stream()
             .map(this::toResponse)
             .collect(Collectors.toList());

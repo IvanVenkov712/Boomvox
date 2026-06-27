@@ -39,3 +39,5 @@ databaseChangeLog:
       file: db/changelog/changes/019-restore-streaming-session-variant-id.sql
   - include:
       file: db/changelog/changes/020-add-password-reset-to-user.sql
+  - include:
+      file: db/changelog/changes/021-make-song-album-nullable.sql

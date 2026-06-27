@@ -32,6 +32,8 @@ export class SidebarBrowser implements OnInit {
 
   readonly mode = this.layoutService.sidebarMode;
   readonly collapsed = this.layoutService.sidebarCollapsed;
+  readonly playlistSongNames = signal<Map<number, string>>(new Map());
+  readonly favouriteSongNames = signal<Map<number, string>>(new Map());
 
   // search/songs mode
   readonly songs = signal<SongResponse[]>([]);
@@ -155,6 +157,18 @@ export class SidebarBrowser implements OnInit {
       next: (songs) => {
         this.playlistSongs.set(songs);
         this.loading.set(false);
+        if (songs.length === 0) return;
+        const map = new Map<number, string>();
+        let done = 0;
+        songs.forEach(entry => {
+          this.songService.fetchById(entry.songId).subscribe({
+            next: (song) => {
+              map.set(song.id, song.name);
+              if (++done === songs.length) this.playlistSongNames.set(new Map(map));
+            },
+            error: () => { if (++done === songs.length) this.playlistSongNames.set(new Map(map)); }
+          });
+        });
       },
       error: () => this.loading.set(false),
     });
@@ -166,6 +180,18 @@ export class SidebarBrowser implements OnInit {
       next: (songs) => {
         this.favouriteSongs.set(songs);
         this.loading.set(false);
+        if (songs.length === 0) return;
+        const map = new Map<number, string>();
+        let done = 0;
+        songs.forEach(entry => {
+          this.songService.fetchById(entry.songId).subscribe({
+            next: (song) => {
+              map.set(song.id, song.name);
+              if (++done === songs.length) this.favouriteSongNames.set(new Map(map));
+            },
+            error: () => { if (++done === songs.length) this.favouriteSongNames.set(new Map(map)); }
+          });
+        });
       },
       error: () => this.loading.set(false),
     });

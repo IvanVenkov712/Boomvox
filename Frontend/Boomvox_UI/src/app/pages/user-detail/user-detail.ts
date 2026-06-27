@@ -1,4 +1,5 @@
 import { Component, inject, OnInit, signal } from '@angular/core';
+import { FormsModule } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { UserService } from '../../services/user';
 import { UserResponse } from '../../models/users';
@@ -9,7 +10,7 @@ import { UserRole } from '../../models/enums';
 @Component({
   selector: 'app-user-detail',
   standalone: true,
-  imports: [],
+  imports: [FormsModule],
   templateUrl: './user-detail.html',
   styleUrl: './user-detail.css',
 })

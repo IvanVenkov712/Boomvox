@@ -22,25 +22,27 @@ public interface SongRepository extends JpaRepository<Song, Long> {
 
     List<Song> findByNameContainingIgnoreCase(String name);
 
-    @Query("""
-        SELECT DISTINCT s
-        FROM Song s
-        LEFT JOIN SongTag st ON st.song = s
-        WHERE (:query IS NULL
-            OR LOWER(s.name) LIKE LOWER(CONCAT('%', :query, '%'))
-            OR LOWER(s.album.name) LIKE LOWER(CONCAT('%', :query, '%')))
-          AND (:albumId IS NULL OR s.album.id = :albumId)
-          AND (:authorId IS NULL OR s.album.author.id = :authorId)
-          AND (:genre IS NULL OR s.album.genre = :genre)
-          AND (:format IS NULL OR s.format = :format)
-          AND (:tagId IS NULL OR st.tag.id = :tagId)
-        """)
+    @Query(value = """
+    SELECT DISTINCT s.*
+    FROM boomvox.song s
+    LEFT JOIN boomvox.song_tag st ON st.song_id = s.id
+    LEFT JOIN boomvox.album a ON a.id = s.album_id
+    WHERE s.processing_status = 'ACTIVE'
+      AND (:query IS NULL
+          OR LOWER(s.name) ILIKE CONCAT('%', :query, '%')
+          OR LOWER(a.name) ILIKE CONCAT('%', :query, '%'))
+      AND (:albumId IS NULL OR s.album_id = :albumId)
+      AND (:authorId IS NULL OR a.user_id = :authorId)
+      AND (:genre IS NULL OR a.genre = CAST(:genre AS VARCHAR))
+      AND (:format IS NULL OR s.format = CAST(:format AS VARCHAR))
+      AND (:tagId IS NULL OR st.tag_id = :tagId)
+    """, nativeQuery = true)
     List<Song> searchCatalog(
         @Param("query") String query,
         @Param("albumId") Long albumId,
         @Param("authorId") Long authorId,
-        @Param("genre") Genre genre,
-        @Param("format") SongFormat format,
+        @Param("genre") String genre,
+        @Param("format") String format,
         @Param("tagId") Long tagId
     );
 
@@ -48,4 +50,6 @@ public interface SongRepository extends JpaRepository<Song, Long> {
     @Query("UPDATE Song s SET s.processingStatus = :status WHERE s.id = :id")
     void updateProcessingStatus(@Param("id") long id,
                                 @Param("status") SongProcessingStatus status);
+
+    List<Song> findByProcessingStatus(SongProcessingStatus status);
 }

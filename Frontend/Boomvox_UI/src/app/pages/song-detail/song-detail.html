@@ -39,7 +39,15 @@
   </div>
 
   @if (song()!.processingStatus === 'ACTIVE') {
-  <button (click)="playerService.play(song()!)">▶ Play</button>
+  <div class="song-detail__actions">
+    <button (click)="playerService.play(song()!)">▶ Play</button>
+    <button 
+    (click)="addToFavourites()" 
+    [disabled]="addingToFavourites() || addedToFavourites()"
+  >
+    {{ addedToFavourites() ? '♥ Added' : addingToFavourites() ? 'Adding…' : '♡ Add to Favourites' }}
+    </button>
+  </div>
   <div class="song-detail__rating">
     <h2>Ratings</h2>
     <app-rating [songId]="song()!.id" />

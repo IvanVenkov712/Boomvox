@@ -51,6 +51,7 @@ public class SongService extends BaseService {
 
     public SongResponse uploadSong(MultipartFile audioFile, SongUploadRequest request) {
         Album album = findAlbum(request.albumId());
+        SongFormat format = audioFile.getContentType().equals("audio/mpeg") ? SongFormat.MP3 : SongFormat.WAV;
 
         String uuid      = UUID.randomUUID().toString();
         String rawS3Key = FileStorageService.rawUploadKey(uuid, audioFile.getOriginalFilename());
@@ -61,7 +62,7 @@ public class SongService extends BaseService {
             album,
             request.name().trim(),
             LocalDateTime.now(),
-            request.format(),
+            format,
             request.duration(),
             audioFile.getSize(),
             rawS3Key
@@ -83,7 +84,7 @@ public class SongService extends BaseService {
 
     @Transactional(readOnly = true)
     public List<SongResponse> browseSongs() {
-        return songRepository.findAll().stream()
+        return songRepository.findByProcessingStatus(SongProcessingStatus.ACTIVE).stream()
             .map(SongResponse::from)
             .toList();
     }
@@ -122,11 +123,11 @@ public class SongService extends BaseService {
     ) {
         validateOptionalReferences(albumId, authorId, tagId);
 
-        return songRepository.searchCatalog(normalizeQuery(query), albumId, authorId, genre, format, tagId).stream()
+        return songRepository.searchCatalog(normalizeQuery(query), albumId, authorId, genre != null ? genre.name() : null,
+                format != null ? format.name() : null, tagId).stream()
             .map(SongResponse::from)
             .toList();
     }
-
     public SongResponse updateSong(long id, SongRequest request) {
         Song song = songRepository.findById(id)
             .orElseThrow(() -> new NotFoundException("Song", id));
@@ -153,7 +154,8 @@ public class SongService extends BaseService {
             .orElseThrow(() -> new NotFoundException("Song", id));
     }
 
-    private Album findAlbum(long id) {
+    private Album findAlbum(Long id) {
+        if (id == null) return null;
         return albumRepository.findById(id)
             .orElseThrow(() -> new NotFoundException("Album", id));
     }

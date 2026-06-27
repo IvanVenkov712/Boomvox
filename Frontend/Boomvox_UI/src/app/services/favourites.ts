@@ -1,6 +1,6 @@
 import { Injectable, inject, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable, catchError, finalize, of, tap } from 'rxjs';
+import { Observable, catchError, finalize, of, tap, switchMap } from 'rxjs';
 import { environment } from '../../environments/environment';
 import {
   FavouritesListResponse,
@@ -37,9 +37,17 @@ export class FavouritesService {
   }
 
   addSong(songId: number): Observable<FavouritesListSongResponse> {
-    const body: FavouritesListSongRequest = { songId };
-    return this.http.post<FavouritesListSongResponse>(`${this.url}/songs`, body);
-  }
+  return this.http.get<FavouritesListResponse>(this.url).pipe(
+    switchMap(list => {
+      const body = { 
+        favouritesListId: list.id, 
+        songId, 
+        position: 0 
+      };
+      return this.http.post<FavouritesListSongResponse>(`${this.url}/songs`, body);
+    })
+  );
+}
 
   getSongs(): Observable<FavouritesListSongResponse[]> {
     return this.http.get<FavouritesListSongResponse[]>(`${this.url}/songs`);

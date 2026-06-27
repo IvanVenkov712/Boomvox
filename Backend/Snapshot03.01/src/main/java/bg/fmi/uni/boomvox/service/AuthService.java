@@ -3,6 +3,7 @@ package bg.fmi.uni.boomvox.service;
 import bg.fmi.uni.boomvox.domain.FavouritesList;
 import bg.fmi.uni.boomvox.domain.User;
 import bg.fmi.uni.boomvox.dto.*;
+import bg.fmi.uni.boomvox.enums.UserRole;
 import bg.fmi.uni.boomvox.exception.NotFoundException;
 import bg.fmi.uni.boomvox.exception.ValidationException;
 import bg.fmi.uni.boomvox.repository.FavouritesListRepository;
@@ -54,14 +55,14 @@ public class AuthService extends BaseService {
             request.username(),
             request.email(),
             passwordEncoder.encode(request.password()),
-            null,
-            null,
-            null,
+            request.firstName(),
+            request.lastName(),
+            UserRole.ORDINARY_USER,
             favouritesList
         );
 
         User saved = userRepository.save(user);
-        String token = jwtService.generateToken(saved.getUsername());
+        String token = jwtService.generateToken(saved.getUsername(), saved.getRole().name());
         return new AuthResponse(token, saved.getEmail(), saved.getRole().name());
     }
 
@@ -71,12 +72,12 @@ public class AuthService extends BaseService {
             throw new ValidationException("Invalid email or password");
         }
 
-        String token = jwtService.generateToken(user.getUsername());
+        String token = jwtService.generateToken(user.getUsername(), user.getRole().name());
         return new AuthResponse(token, user.getEmail(), user.getRole().name());
     }
 
     public RefreshResponse refresh(User user) {
-        String token = jwtService.generateToken(user.getUsername());
+        String token = jwtService.generateToken(user.getUsername(), user.getRole().name());
         return new RefreshResponse(token);
     }
 
