@@ -42,7 +42,7 @@ export class FavouritesService {
   }
 
   getSongs(): Observable<FavouritesListSongResponse[]> {
-    return this.http.get<FavouritesListSongResponse[]>(`${this.url}/songs`);
+    return this.http.get<FavouritesListSongResponse[]>(this.url);
   }
 
   removeSong(songId: number): Observable<void> {
