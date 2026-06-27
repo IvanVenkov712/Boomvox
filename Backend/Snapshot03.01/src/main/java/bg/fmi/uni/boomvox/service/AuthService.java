@@ -62,7 +62,7 @@ public class AuthService extends BaseService {
         );
 
         User saved = userRepository.save(user);
-        String token = jwtService.generateToken(saved.getUsername());
+        String token = jwtService.generateToken(saved.getUsername(), saved.getRole().name());
         return new AuthResponse(token, saved.getEmail(), saved.getRole().name());
     }
 
@@ -72,12 +72,12 @@ public class AuthService extends BaseService {
             throw new ValidationException("Invalid email or password");
         }
 
-        String token = jwtService.generateToken(user.getUsername());
+        String token = jwtService.generateToken(user.getUsername(), user.getRole().name());
         return new AuthResponse(token, user.getEmail(), user.getRole().name());
     }
 
     public RefreshResponse refresh(User user) {
-        String token = jwtService.generateToken(user.getUsername());
+        String token = jwtService.generateToken(user.getUsername(), user.getRole().name());
         return new RefreshResponse(token);
     }
 
