@@ -1,0 +1,197 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="4317b6ed-f033-40e5-9a15-57807b132c30" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.gitattributes" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/compiler.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/encodings.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/jarRepositories.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/vcs.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.mvn/wrapper/maven-wrapper.properties" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/TODO.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/mvnw" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/mvnw.cmd" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/pom.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/bg/fmi/uni/boomvox/BoomvoxApplication.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/bg/fmi/uni/boomvox/cli/StartupEnvironmentLogger.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/bg/fmi/uni/boomvox/config/AppLogger.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/bg/fmi/uni/boomvox/config/BoomvoxProperties.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/bg/fmi/uni/boomvox/config/ConsoleAppLogger.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/bg/fmi/uni/boomvox/config/FileAppLogger.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/bg/fmi/uni/boomvox/config/LogLevel.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/bg/fmi/uni/boomvox/domain/Album.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/bg/fmi/uni/boomvox/domain/FavouritesList.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/bg/fmi/uni/boomvox/domain/FavouritesListSong.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/bg/fmi/uni/boomvox/domain/Playlist.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/bg/fmi/uni/boomvox/domain/PlaylistSong.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/bg/fmi/uni/boomvox/domain/Rating.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/bg/fmi/uni/boomvox/domain/Recommendation.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/bg/fmi/uni/boomvox/domain/Song.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/bg/fmi/uni/boomvox/domain/SongCollection.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/bg/fmi/uni/boomvox/domain/SongStats.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/bg/fmi/uni/boomvox/domain/SongTag.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/bg/fmi/uni/boomvox/domain/StreamingSession.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/bg/fmi/uni/boomvox/domain/Tag.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/bg/fmi/uni/boomvox/domain/User.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/bg/fmi/uni/boomvox/dto/ErrorResponse.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/bg/fmi/uni/boomvox/dto/PageResponse.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/bg/fmi/uni/boomvox/enums/Genre.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/bg/fmi/uni/boomvox/enums/SessionStatus.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/bg/fmi/uni/boomvox/enums/SongFormat.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/bg/fmi/uni/boomvox/enums/UserRole.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/bg/fmi/uni/boomvox/ids/FavouritesListSongId.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/bg/fmi/uni/boomvox/ids/PlaylistSongId.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/bg/fmi/uni/boomvox/ids/RatingId.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/bg/fmi/uni/boomvox/ids/RecommendationId.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/bg/fmi/uni/boomvox/ids/SongTagId.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/application-dev.yml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/application-prod.yml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/application-test.yml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/application.properties" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/application.yml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/db/changelog/changes/001-create-favourites-list-table.sql" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/db/changelog/changes/002-create-user-table.sql" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/db/changelog/changes/003-create-album-table.sql" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/db/changelog/changes/004-create-playlist-table.sql" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/db/changelog/changes/005-create-song-stats-table.sql" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/db/changelog/changes/006-create-song-table.sql" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/db/changelog/changes/007-create-tag-table.sql" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/db/changelog/changes/008-create-playlist-song-table.sql" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/db/changelog/changes/009-create-favourites-list-song-table.sql" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/db/changelog/changes/010-create-rating-table.sql" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/db/changelog/changes/011-create-recommendation-table.sql" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/db/changelog/changes/012-create-song-tag-table.sql" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/db/changelog/changes/013-create-streaming-session-table.sql" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/db/changelog/db.changelog-master.yaml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/java/bg/fmi/uni/boomvox/BoomvoxApplicationTests.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/java/bg/fmi/uni/boomvox/TestBoomvoxApplication.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/java/bg/fmi/uni/boomvox/TestcontainersConfiguration.java" beforeDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="CopilotChats">
+    <option name="panelChat">
+      <chat>
+        <option name="activeSessionId" value="7093971b-a423-43c0-9e4f-266a061250cd" />
+        <option name="sessions">
+          <session>
+            <option name="chatType" value="PANEL" />
+            <option name="id" value="7093971b-a423-43c0-9e4f-266a061250cd" />
+            <option name="modeId" value="Ask" />
+            <option name="modelType" value="builtin_family" />
+            <option name="modelValue" value="auto" />
+            <option name="targetType" value="LOCAL" />
+          </session>
+        </option>
+        <option name="type" value="PANEL" />
+      </chat>
+    </option>
+  </component>
+  <component name="CopilotPersistence">
+    <persistenceIdMap>
+      <entry key="_C:/Users/ivanv/FMI/WebJava/Boomvox" value="3DqEZ3VI790PESp7mG3Hla0WDDx" />
+    </persistenceIdMap>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="GitHubPullRequestSearchHistory">{
+  &quot;lastFilter&quot;: {
+    &quot;state&quot;: &quot;OPEN&quot;,
+    &quot;assignee&quot;: &quot;IvanVenkov712&quot;
+  }
+}</component>
+  <component name="GithubPullRequestsUISettings">{
+  &quot;selectedUrlAndAccountId&quot;: {
+    &quot;url&quot;: &quot;https://github.com/IvanVenkov712/Boomvox&quot;,
+    &quot;accountId&quot;: &quot;81f4aac8-f8db-42cb-9786-6cc0300cd61e&quot;
+  }
+}</component>
+  <component name="MavenImportPreferences">
+    <option name="generalSettings">
+      <MavenGeneralSettings>
+        <option name="mavenHomeTypeForPersistence" value="WRAPPER" />
+      </MavenGeneralSettings>
+    </option>
+  </component>
+  <component name="ProjectColorInfo">{
+  &quot;customColor&quot;: &quot;&quot;,
+  &quot;associatedIndex&quot;: 1
+}</component>
+  <component name="ProjectId" id="3DqEZ3VI790PESp7mG3Hla0WDDx" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "ModuleVcsDetector.initialDetectionPerformed": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "RunOnceActivity.typescript.service.memoryLimit.init": "true",
+    "codeWithMe.voiceChat.enabledByDefault": "false",
+    "git-widget-placeholder": "feature-Ivan",
+    "kotlin-language-version-configured": "true",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "settings.editor.selected.configurable": "org.infernus.idea.checkstyle.CheckStyleConfigurable"
+  }
+}]]></component>
+  <component name="SharedIndexes">
+    <attachedChunks>
+      <set>
+        <option value="bundled-jdk-30f59d01ecdd-37e91769500f-intellij.indexing.shared.core-IU-261.24374.151" />
+        <option value="bundled-js-predefined-d6986cc7102b-31caf2ab9e3c-JavaScript-IU-261.24374.151" />
+      </set>
+    </attachedChunks>
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="4317b6ed-f033-40e5-9a15-57807b132c30" name="Changes" comment="" />
+      <created>1779001252624</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1779001252624</updated>
+    </task>
+    <servers />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State>
+              <option name="FILTERS">
+                <map>
+                  <entry key="branch">
+                    <value>
+                      <list>
+                        <option value="feature-Ivan" />
+                      </list>
+                    </value>
+                  </entry>
+                </map>
+              </option>
+            </State>
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+  <component name="github-copilot-workspace">
+    <instructionFileLocations>
+      <option value=".github/instructions" />
+    </instructionFileLocations>
+    <promptFileLocations>
+      <option value=".github/prompts" />
+    </promptFileLocations>
+  </component>
+</project>

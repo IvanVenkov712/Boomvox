@@ -1,0 +1,22 @@
+spring:
+  application:
+    name: boomvox
+  profiles:
+    active: dev
+
+server:
+  port: 8099
+
+boomvox:
+  default-page-size: 10
+  log-level: INFO
+  log-file: logs/boomvox.log
+
+logging:
+  level:
+    root: WARN
+    bg.fmi.uni.boomvox: INFO
+
+jwt:
+  secret: LEiBU74aHIYDXxuwD1dNnld0n4nI5ZjuXdnvnxbpEHo=
+  expiration-ms: 3600000
