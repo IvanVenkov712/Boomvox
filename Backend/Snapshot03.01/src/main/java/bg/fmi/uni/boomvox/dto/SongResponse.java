@@ -8,7 +8,7 @@ import java.time.LocalDateTime;
 
 public record SongResponse(
     long id,
-    long albumId,
+    Long albumId,
     String name,
     LocalDateTime uploadedAt,
     SongFormat format,
@@ -22,14 +22,14 @@ public record SongResponse(
     public static SongResponse from(Song song) {
         return new SongResponse(
             song.getId(),
-            song.getAlbum().getId(),
+            song.getAlbum() != null ? song.getAlbum().getId() : null,
             song.getName(),
             song.getUploadedAt(),
             song.getFormat(),
             song.getDuration(),
             song.getFileSize(),
             song.getStorageKey(),
-            song.getStats().getId(),
+            song.getStats() != null ? song.getStats().getId() : null,
             song.getProcessingStatus()
         );
     }

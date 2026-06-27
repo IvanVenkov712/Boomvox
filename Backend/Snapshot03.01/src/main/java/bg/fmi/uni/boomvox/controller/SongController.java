@@ -26,7 +26,7 @@ public class SongController {
     }
 
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    @PreAuthorize("hasRole('ARTIST')")
+    @PreAuthorize("hasAnyAuthority('AUTHOR', 'ADMIN')")
     public ResponseEntity<SongResponse> uploadSong(
         @RequestPart("audio") MultipartFile audioFile,
         @RequestPart("metadata") @Valid SongUploadRequest metadata) {

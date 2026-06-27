@@ -69,7 +69,7 @@ public class LibraryController {
     }
 
     @PutMapping("/songs/{songId}")
-    @PreAuthorize("hasAnyRole('ARTIST', 'ADMIN')")
+    @PreAuthorize("hasAnyAuthority('AUTHOR', 'ADMIN')")
     public ResponseEntity<SongResponse> updateSong(
         @PathVariable long songId,
         @Valid @RequestBody SongRequest request
@@ -78,7 +78,7 @@ public class LibraryController {
     }
 
     @DeleteMapping("/songs/{songId}")
-    @PreAuthorize("hasAnyRole('ARTIST', 'ADMIN')")
+    @PreAuthorize("hasAnyAuthority('AUTHOR', 'ADMIN')")
     public ResponseEntity<Void> deleteSong(@PathVariable long songId) {
         songService.deleteSong(songId);
         return ResponseEntity.noContent().build();
@@ -87,7 +87,7 @@ public class LibraryController {
     // ── Song ↔ Tag ───────────────────────────────────────────────────────────
 
     @PostMapping("/songs/{songId}/tags")
-    @PreAuthorize("hasAnyRole('ARTIST', 'ADMIN')")
+    @PreAuthorize("hasAnyAuthority('AUTHOR', 'ADMIN')")
     public ResponseEntity<SongTagResponse> attachTag(
         @PathVariable long songId,
         @Valid @RequestBody SongTagRequest request
@@ -97,7 +97,7 @@ public class LibraryController {
     }
 
     @DeleteMapping("/songs/{songId}/tags/{tagId}")
-    @PreAuthorize("hasAnyRole('ARTIST', 'ADMIN')")
+    @PreAuthorize("hasAnyAuthority('AUTHOR', 'ADMIN')")
     public ResponseEntity<Void> detachTag(
         @PathVariable long songId,
         @PathVariable long tagId
@@ -120,7 +120,7 @@ public class LibraryController {
     }
 
     @PostMapping("/tags")
-    @PreAuthorize("hasAnyRole('ARTIST', 'ADMIN')")
+    @PreAuthorize("hasAnyAuthority('AUTHOR', 'ADMIN')")
     public ResponseEntity<TagResponse> createTag(@Valid @RequestBody TagRequest request) {
         return ResponseEntity.status(HttpStatus.CREATED).body(tagService.createTag(request));
     }
@@ -148,13 +148,17 @@ public class LibraryController {
     }
 
     @PostMapping("/albums")
-    @PreAuthorize("hasAnyRole('ARTIST', 'ADMIN')")
-    public ResponseEntity<AlbumResponse> createAlbum(@AuthenticationPrincipal UserPrincipal currentUser, @Valid @RequestBody AlbumRequest request) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(albumService.createAlbum(currentUser.getUser().getId(), request));
+    @PreAuthorize("hasAnyAuthority('AUTHOR', 'ADMIN')")
+    public ResponseEntity<AlbumResponse> createAlbum(
+        @AuthenticationPrincipal UserPrincipal currentUser,
+        @Valid @RequestBody AlbumRequest request
+    ) {
+        return ResponseEntity.status(HttpStatus.CREATED)
+            .body(albumService.createAlbum(currentUser.getUser().getId(), request));
     }
 
     @PutMapping("/albums/{albumId}")
-    @PreAuthorize("hasAnyRole('ARTIST', 'ADMIN')")
+    @PreAuthorize("hasAnyAuthority('AUTHOR', 'ADMIN')")
     public ResponseEntity<AlbumResponse> updateAlbum(
         @PathVariable long albumId,
         @Valid @RequestBody AlbumRequest request
