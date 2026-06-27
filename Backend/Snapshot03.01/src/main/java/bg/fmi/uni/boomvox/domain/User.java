@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "user")
+@Table(name = "\"user\"", schema = "boomvox")
 @NoArgsConstructor
 public class User {
     @Getter

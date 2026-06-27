@@ -3,6 +3,7 @@ package bg.fmi.uni.boomvox.service;
 import bg.fmi.uni.boomvox.domain.FavouritesList;
 import bg.fmi.uni.boomvox.domain.User;
 import bg.fmi.uni.boomvox.dto.*;
+import bg.fmi.uni.boomvox.enums.UserRole;
 import bg.fmi.uni.boomvox.exception.NotFoundException;
 import bg.fmi.uni.boomvox.exception.ValidationException;
 import bg.fmi.uni.boomvox.repository.FavouritesListRepository;
@@ -54,9 +55,9 @@ public class AuthService extends BaseService {
             request.username(),
             request.email(),
             passwordEncoder.encode(request.password()),
-            null,
-            null,
-            null,
+            request.firstName(),
+            request.lastName(),
+            UserRole.ORDINARY_USER,
             favouritesList
         );
 
