@@ -1,0 +1,96 @@
+.favourites {
+  max-width: 720px;
+  margin: 2rem auto;
+  padding: 0 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.favourites h1 {
+  margin: 0;
+  font-family: 'Arial Black', sans-serif;
+  font-size: 1.8rem;
+  letter-spacing: 0.04em;
+  color: #E8E0CC;
+  text-shadow:
+    0 0 8px rgba(232, 224, 204, 0.3),
+    0 0 24px rgba(232, 224, 204, 0.1);
+}
+
+.favourites__list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.favourites__item {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.65rem 1rem;
+  border: 1px solid #4A4A52;
+  border-radius: 6px;
+  background: rgba(74, 74, 82, 0.08);
+  transition: background 0.15s, border-color 0.15s, box-shadow 0.15s;
+}
+
+.favourites__item:hover {
+  background: rgba(74, 74, 82, 0.22);
+  border-color: #C09A4A;
+  box-shadow: 0 0 8px rgba(192, 154, 74, 0.15);
+}
+
+.favourites__name {
+  flex: 1;
+  font-family: 'Verdana', Arial, sans-serif;
+  font-size: 0.82rem;
+  font-weight: bold;
+  color: #E8E0CC;
+  cursor: pointer;
+  transition: color 0.15s, text-shadow 0.15s;
+}
+
+.favourites__name:hover {
+  color: #C09A4A;
+  text-shadow: 0 0 6px rgba(192, 154, 74, 0.5);
+}
+
+.favourites__meta {
+  font-family: 'Verdana', Arial, sans-serif;
+  font-size: 0.72rem;
+  color: #4A4A52;
+  letter-spacing: 0.03em;
+  flex-shrink: 0;
+}
+
+.favourites__remove {
+  font-family: 'Verdana', Arial, sans-serif;
+  font-size: 0.72rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 0.25rem 0.6rem;
+  border: 1px solid #4A4A52;
+  border-radius: 4px;
+  background: transparent;
+  color: #A8A9AD;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: border-color 0.15s, color 0.15s, box-shadow 0.15s;
+}
+
+.favourites__remove:hover {
+  border-color: #B22234;
+  color: #B22234;
+  box-shadow: 0 0 6px rgba(178, 34, 52, 0.3);
+}
+
+.favourites__error {
+  font-family: 'Verdana', Arial, sans-serif;
+  font-size: 0.8rem;
+  color: #B22234;
+  text-shadow: 0 0 6px rgba(178, 34, 52, 0.5);
+}

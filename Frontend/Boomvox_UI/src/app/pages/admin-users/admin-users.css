@@ -1,0 +1,189 @@
+.admin-users {
+  max-width: 800px;
+  margin: 2rem auto;
+  padding: 0 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.admin-users h1 {
+  margin: 0;
+  font-family: 'Arial Black', sans-serif;
+  font-size: 1.6rem;
+  letter-spacing: 0.04em;
+  color: #E8E0CC;
+  text-shadow:
+    0 0 6px rgba(232, 224, 204, 0.3),
+    0 0 20px rgba(232, 224, 204, 0.1);
+}
+
+.admin-users__filters {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.admin-users__filters input,
+.admin-users__filters select {
+  font-family: 'Verdana', Arial, sans-serif;
+  font-size: 0.8rem;
+  padding: 0.4rem 0.6rem;
+  background: #1A1A1A;
+  border: 1px solid #4A4A52;
+  border-radius: 4px;
+  color: #E8E0CC;
+  outline: none;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.admin-users__filters input {
+  flex: 1;
+  min-width: 200px;
+}
+
+.admin-users__filters input::placeholder {
+  color: #4A4A52;
+}
+
+.admin-users__filters input:focus,
+.admin-users__filters select:focus {
+  border-color: #C09A4A;
+  box-shadow: 0 0 6px rgba(192, 154, 74, 0.25);
+}
+
+.admin-users__filters select option {
+  background: #1A1A1A;
+  color: #E8E0CC;
+}
+
+.admin-users__filters button {
+  font-family: 'Verdana', Arial, sans-serif;
+  font-size: 0.75rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 0.4rem 1rem;
+  background: transparent;
+  border: 1px solid #4A4A52;
+  border-radius: 4px;
+  color: #A8A9AD;
+  cursor: pointer;
+  transition: border-color 0.15s, color 0.15s, box-shadow 0.15s;
+}
+
+.admin-users__filters button:first-of-type {
+  border-color: #B22234;
+  color: #B22234;
+  text-shadow: 0 0 6px rgba(178, 34, 52, 0.5);
+  box-shadow: 0 0 6px rgba(178, 34, 52, 0.15);
+}
+
+.admin-users__filters button:first-of-type:hover {
+  background: rgba(178, 34, 52, 0.1);
+  color: #E8E0CC;
+  box-shadow: 0 0 12px rgba(178, 34, 52, 0.4);
+}
+
+.admin-users__filters button:last-of-type:hover {
+  border-color: #A8A9AD;
+  color: #E8E0CC;
+}
+
+.admin-users__list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.admin-users__item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem 1rem;
+  border: 1px solid #4A4A52;
+  border-radius: 6px;
+  cursor: pointer;
+  background: rgba(74, 74, 82, 0.08);
+  transition: background 0.15s, border-color 0.15s, box-shadow 0.15s;
+}
+
+.admin-users__item:hover {
+  background: rgba(74, 74, 82, 0.22);
+  border-color: #A8A9AD;
+  box-shadow: 0 0 8px rgba(168, 169, 173, 0.1);
+}
+
+.admin-users__info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.admin-users__username {
+  font-family: 'Verdana', Arial, sans-serif;
+  font-size: 0.85rem;
+  font-weight: bold;
+  color: #E8E0CC;
+}
+
+.admin-users__email {
+  font-family: 'Verdana', Arial, sans-serif;
+  font-size: 0.75rem;
+  color: #4A4A52;
+  letter-spacing: 0.02em;
+}
+
+.admin-users__role {
+  font-family: 'Verdana', Arial, sans-serif;
+  font-size: 0.7rem;
+  font-weight: bold;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 0.2rem 0.7rem;
+  border-radius: 999px;
+  border: 1px solid transparent;
+}
+
+.admin-users__role--ordinary_user {
+  background: rgba(168, 169, 173, 0.1);
+  color: #A8A9AD;
+  border-color: #4A4A52;
+}
+
+.admin-users__role--author {
+  background: rgba(192, 154, 74, 0.1);
+  color: #C09A4A;
+  border-color: #C09A4A;
+  text-shadow: 0 0 6px rgba(192, 154, 74, 0.5);
+}
+
+.admin-users__role--admin {
+  background: rgba(178, 34, 52, 0.1);
+  color: #B22234;
+  border-color: #B22234;
+  text-shadow: 0 0 6px rgba(178, 34, 52, 0.6);
+  box-shadow: 0 0 6px rgba(178, 34, 52, 0.15);
+}
+
+.admin-users__role--guest {
+  background: rgba(74, 74, 82, 0.2);
+  color: #4A4A52;
+  border-color: #4A4A52;
+}
+
+.admin-users__status {
+  font-family: 'Verdana', Arial, sans-serif;
+  font-size: 0.8rem;
+  color: #4A4A52;
+  letter-spacing: 0.03em;
+}
+
+.admin-users__error {
+  font-family: 'Verdana', Arial, sans-serif;
+  font-size: 0.8rem;
+  color: #B22234;
+  text-shadow: 0 0 6px rgba(178, 34, 52, 0.5);
+}

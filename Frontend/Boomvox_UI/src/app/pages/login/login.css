@@ -1,0 +1,141 @@
+.login-page {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  background: #1A1A1A;
+}
+
+.login-card {
+  width: 380px;
+  padding: 2.5rem;
+  border-radius: 8px;
+  border: 1px solid #4A4A52;
+  background: rgba(74, 74, 82, 0.12);
+  box-shadow:
+    0 0 40px rgba(0, 0, 0, 0.6),
+    0 0 1px rgba(192, 154, 74, 0.2);
+}
+
+.brand {
+  font-family: 'Arial Black', sans-serif;
+  font-size: 2.2rem;
+  letter-spacing: 0.06em;
+  text-align: center;
+  margin: 0 0 2rem;
+  color: #E8E0CC;
+  text-shadow:
+    0 0 8px rgba(192, 154, 74, 0.9),
+    0 0 28px rgba(192, 154, 74, 0.5),
+    0 0 56px rgba(192, 154, 74, 0.2);
+}
+
+.tabs {
+  display: flex;
+  margin-bottom: 1.75rem;
+  border-bottom: 1px solid #4A4A52;
+}
+
+.tabs button {
+  flex: 1;
+  font-family: 'Verdana', Arial, sans-serif;
+  font-size: 0.78rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 0.6rem;
+  border: none;
+  background: transparent;
+  color: #4A4A52;
+  border-bottom: 2px solid transparent;
+  cursor: pointer;
+  transition: color 0.15s, border-color 0.15s, text-shadow 0.15s;
+  margin-bottom: -1px;
+}
+
+.tabs button:hover {
+  color: #A8A9AD;
+}
+
+.tabs button.active {
+  color: #C09A4A;
+  border-bottom-color: #C09A4A;
+  text-shadow: 0 0 6px rgba(192, 154, 74, 0.6);
+}
+
+form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+form label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  font-family: 'Verdana', Arial, sans-serif;
+  font-size: 0.72rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #A8A9AD;
+}
+
+form input {
+  font-family: 'Verdana', Arial, sans-serif;
+  font-size: 0.85rem;
+  padding: 0.5rem 0.65rem;
+  background: #1A1A1A;
+  border: 1px solid #4A4A52;
+  border-radius: 4px;
+  color: #E8E0CC;
+  outline: none;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+form input:focus {
+  border-color: #C09A4A;
+  box-shadow: 0 0 8px rgba(192, 154, 74, 0.3);
+}
+
+form input::placeholder {
+  color: #4A4A52;
+}
+
+form button[type="submit"] {
+  font-family: 'Verdana', Arial, sans-serif;
+  font-size: 0.82rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 0.7rem;
+  margin-top: 0.5rem;
+  border: 1px solid #B22234;
+  border-radius: 4px;
+  background: transparent;
+  color: #B22234;
+  cursor: pointer;
+  text-shadow: 0 0 6px rgba(178, 34, 52, 0.7);
+  box-shadow: 0 0 8px rgba(178, 34, 52, 0.2);
+  transition: background 0.15s, color 0.15s, box-shadow 0.15s;
+}
+
+form button[type="submit"]:hover {
+  background: rgba(178, 34, 52, 0.12);
+  color: #E8E0CC;
+  box-shadow: 0 0 16px rgba(178, 34, 52, 0.5);
+}
+
+form button[type="submit"]:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.error {
+  font-family: 'Verdana', Arial, sans-serif;
+  font-size: 0.78rem;
+  color: #B22234;
+  text-shadow: 0 0 6px rgba(178, 34, 52, 0.5);
+  margin-bottom: 1rem;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid rgba(178, 34, 52, 0.3);
+  border-radius: 4px;
+  background: rgba(178, 34, 52, 0.08);
+}

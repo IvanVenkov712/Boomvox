@@ -1,0 +1,37 @@
+@if (song) {
+<div class="player-bar">
+
+  <div class="player-bar__song">
+    <span class="player-bar__title">{{ song.name }}</span>
+    <span class="player-bar__format">{{ song.format }}</span>
+  </div>
+
+  <div class="player-bar__controls">
+    <button class="player-bar__btn" (click)="playerService.previous()" aria-label="Previous">⏮</button>
+    <button class="player-bar__btn player-bar__btn--play" (click)="togglePlay()" aria-label="Play/Pause">
+      {{ playing ? '⏸' : '▶' }}
+    </button>
+    <button class="player-bar__btn" (click)="playerService.next()" aria-label="Next">⏭</button>
+  </div>
+
+  <div class="player-bar__progress">
+    <span class="player-bar__time">{{ formatTime(currentTime) }}</span>
+    <div class="player-bar__track">
+      <div
+        class="player-bar__fill"
+        [style.width.%]="duration > 0 ? (currentTime / duration) * 100 : 0"
+      ></div>
+      <input
+        class="player-bar__seek"
+        type="range"
+        [min]="0"
+        [max]="duration"
+        [value]="currentTime"
+        (change)="onSeek($event)"
+      />
+    </div>
+    <span class="player-bar__time">{{ formatTime(duration) }}</span>
+  </div>
+
+</div>
+}

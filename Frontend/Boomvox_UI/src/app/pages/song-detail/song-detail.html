@@ -1,0 +1,61 @@
+<div class="song-detail">
+  @if (loading()) {
+  <p>Loading…</p>
+  } @else if (error()) {
+  <p class="song-detail__error">{{ error() }}</p>
+  } @else if (song()) {
+  <button class="song-detail__back" (click)="goBack()">← Back to songs</button>
+
+  <div class="song-detail__header">
+    <h1>{{ song()!.name }}</h1>
+    <span class="song-detail__badge song-detail__badge--{{ song()!.processingStatus | lowercase }}">
+        {{ song()!.processingStatus }}
+      </span>
+  </div>
+
+  <div class="song-detail__meta">
+    <div class="song-detail__meta-item">
+      <span class="song-detail__meta-label">Format</span>
+      <span>{{ song()!.format }}</span>
+    </div>
+    <div class="song-detail__meta-item">
+      <span class="song-detail__meta-label">Duration</span>
+      <span>{{ formatDuration(song()!.duration) }}</span>
+    </div>
+    <div class="song-detail__meta-item">
+      <span class="song-detail__meta-label">File size</span>
+      <span>{{ formatFileSize(song()!.fileSize) }}</span>
+    </div>
+    <div class="song-detail__meta-item">
+      <span class="song-detail__meta-label">Uploaded</span>
+      <span>{{ song()!.uploadedAt | date:'mediumDate' }}</span>
+    </div>
+    @if (song()!.albumId) {
+    <div class="song-detail__meta-item">
+      <span class="song-detail__meta-label">Album</span>
+      <a [routerLink]="['/albums', song()!.albumId]">View album</a>
+    </div>
+    }
+  </div>
+
+  @if (song()!.processingStatus === 'ACTIVE') {
+  <div class="song-detail__actions">
+    <button (click)="playerService.play(song()!)">▶ Play</button>
+    <button 
+    (click)="addToFavourites()" 
+    [disabled]="addingToFavourites() || addedToFavourites()"
+  >
+    {{ addedToFavourites() ? '♥ Added' : addingToFavourites() ? 'Adding…' : '♡ Add to Favourites' }}
+    </button>
+  </div>
+  <div class="song-detail__rating">
+    <h2>Ratings</h2>
+    <app-rating [songId]="song()!.id" />
+  </div>
+  } @else {
+  <p class="song-detail__processing">
+    This song is still processing and cannot be rated yet.
+  </p>
+  }
+  }
+</div>

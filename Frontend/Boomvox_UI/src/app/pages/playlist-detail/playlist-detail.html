@@ -1,0 +1,69 @@
+<div class="playlist-detail">
+  @if (loading()) {
+    <p>Loading…</p>
+  } @else if (error()) {
+    <p class="playlist-detail__error">{{ error() }}</p>
+  } @else if (playlist()) {
+    <div class="playlist-detail__header">
+      <div>
+        <h1>{{ playlist()!.name }}</h1>
+        <p class="playlist-detail__meta">
+          Created {{ playlist()!.createdAt | date:'mediumDate' }}
+        </p>
+      </div>
+      <button
+        class="playlist-detail__delete"
+        (click)="deletePlaylist()"
+        [disabled]="deleting()"
+      >
+        {{ deleting() ? 'Deleting…' : 'Delete Playlist' }}
+      </button>
+    </div>
+
+    <!-- Add song search -->
+    <div class="playlist-detail__add-song">
+      <h3>Add a song</h3>
+      <div class="playlist-detail__search-wrap">
+        <input
+          type="text"
+          [value]="songSearch()"
+          (input)="songSearch.set($any($event.target).value); searchSongs()"
+          placeholder="Search by song name…"
+        />
+      </div>
+      @if (showSongDropdown()) {
+        <ul class="playlist-detail__song-dropdown">
+          @for (song of songResults(); track song.id) {
+            <li>
+              <span>{{ song.name }}</span>
+              <button
+                (click)="addSong(song)"
+                [disabled]="isAdding(song.id)"
+              >
+                {{ isAdding(song.id) ? 'Adding…' : '+ Add' }}
+              </button>
+            </li>
+          }
+        </ul>
+      }
+    </div>
+
+    <!-- Song list -->
+    @if (songs().length === 0) {
+      <p>No songs in this playlist yet.</p>
+    } @else {
+      <ul class="playlist-detail__list">
+      @for (entry of songs(); track entry.songId) {
+        <li class="playlist-detail__item">
+          <span class="playlist-detail__name" (click)="playSong(entry.songId)">
+            {{ songNames().get(entry.songId) ?? 'Song #' + entry.songId }}
+          </span>
+          <button class="playlist-detail__remove" (click)="removeSong(entry.songId)">
+            Remove
+          </button>
+        </li>
+      }
+    </ul>
+    }
+  }
+</div>

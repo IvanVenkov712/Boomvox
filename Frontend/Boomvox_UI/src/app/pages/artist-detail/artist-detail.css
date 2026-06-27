@@ -1,0 +1,111 @@
+.artist-detail {
+  max-width: 720px;
+  margin: 2rem auto;
+  padding: 0 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.artist-detail__header {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  padding-bottom: 1.25rem;
+  border-bottom: 1px solid #4A4A52;
+  position: relative;
+}
+
+.artist-detail__header::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 60px;
+  height: 1px;
+  background: #B22234;
+  box-shadow: 0 0 8px rgba(178, 34, 52, 0.6);
+}
+
+.artist-detail__header h1 {
+  margin: 0;
+  font-family: 'Arial Black', sans-serif;
+  font-size: 1.8rem;
+  letter-spacing: 0.04em;
+  color: #E8E0CC;
+  text-shadow:
+    0 0 8px rgba(232, 224, 204, 0.3),
+    0 0 24px rgba(232, 224, 204, 0.1);
+}
+
+.artist-detail__header p {
+  margin: 0;
+  font-family: 'Verdana', Arial, sans-serif;
+  font-size: 0.82rem;
+  color: #A8A9AD;
+  letter-spacing: 0.04em;
+}
+
+.artist-detail__section {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.artist-detail__section h2 {
+  margin: 0;
+  font-family: 'Arial Black', sans-serif;
+  font-size: 1rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #A8A9AD;
+}
+
+.artist-detail__list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.artist-detail__item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.65rem 1rem;
+  border: 1px solid #4A4A52;
+  border-radius: 6px;
+  cursor: pointer;
+  background: rgba(74, 74, 82, 0.08);
+  transition: background 0.15s, border-color 0.15s, box-shadow 0.15s;
+}
+
+.artist-detail__item:hover {
+  background: rgba(74, 74, 82, 0.22);
+  border-color: #B22234;
+  box-shadow: 0 0 8px rgba(178, 34, 52, 0.15);
+}
+
+.artist-detail__item span:first-child {
+  font-family: 'Verdana', Arial, sans-serif;
+  font-size: 0.82rem;
+  font-weight: bold;
+  color: #E8E0CC;
+}
+
+.artist-detail__meta {
+  font-family: 'Verdana', Arial, sans-serif;
+  font-size: 0.72rem;
+  color: #4A4A52;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.artist-detail__error {
+  font-family: 'Verdana', Arial, sans-serif;
+  font-size: 0.8rem;
+  color: #B22234;
+  text-shadow: 0 0 6px rgba(178, 34, 52, 0.5);
+}

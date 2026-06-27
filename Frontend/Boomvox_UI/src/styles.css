@@ -1,0 +1,57 @@
+html, body {
+  margin: 0;
+  padding: 0;
+  background: #1A1A1A;
+  min-height: 100vh;
+}
+
+input, select, textarea {
+  background: #1A1A1A !important;
+  color: #E8E0CC !important;
+  border: 1px solid #4A4A52;
+  border-radius: 4px;
+  font-family: 'Verdana', Arial, sans-serif;
+}
+
+input::placeholder {
+  color: #4A4A52 !important;
+}
+
+input:focus, select:focus, textarea:focus {
+  outline: none;
+  border-color: #C09A4A !important;
+  box-shadow: 0 0 6px rgba(192, 154, 74, 0.25) !important;
+}
+
+option {
+  background: #1A1A1A !important;
+  color: #E8E0CC !important;
+}
+
+/* Chrome autofill override */
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus {
+  -webkit-box-shadow: 0 0 0px 1000px #1A1A1A inset !important;
+  -webkit-text-fill-color: #E8E0CC !important;
+  caret-color: #E8E0CC !important;
+}
+
+button {
+  background: transparent;
+  color: #E8E0CC;
+  font-family: 'Verdana', Arial, sans-serif;
+  cursor: pointer;
+}
+
+/* File input button (webkit) */
+input[type="file"]::-webkit-file-upload-button {
+  background: transparent;
+  border: 1px solid #4A4A52;
+  border-radius: 4px;
+  color: #A8A9AD;
+  font-family: 'Verdana', Arial, sans-serif;
+  font-size: 0.75rem;
+  padding: 0.3rem 0.75rem;
+  cursor: pointer;
+}

@@ -1,0 +1,210 @@
+.song-detail {
+  max-width: 720px;
+  margin: 2rem auto;
+  padding: 0 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.song-detail__back {
+  align-self: flex-start;
+  font-family: 'Verdana', Arial, sans-serif;
+  font-size: 0.75rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  background: none;
+  border: none;
+  color: #4A4A52;
+  cursor: pointer;
+  padding: 0;
+  transition: color 0.15s, text-shadow 0.15s;
+}
+
+.song-detail__back:hover {
+  color: #A8A9AD;
+  text-shadow: 0 0 6px rgba(168, 169, 173, 0.3);
+}
+
+.song-detail__header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding-bottom: 1.25rem;
+  border-bottom: 1px solid #4A4A52;
+  position: relative;
+}
+
+.song-detail__header::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 60px;
+  height: 1px;
+  background: #C09A4A;
+  box-shadow: 0 0 8px rgba(192, 154, 74, 0.6);
+}
+
+.song-detail__header h1 {
+  margin: 0;
+  font-family: 'Arial Black', sans-serif;
+  font-size: 1.8rem;
+  letter-spacing: 0.04em;
+  color: #E8E0CC;
+  text-shadow:
+    0 0 8px rgba(232, 224, 204, 0.3),
+    0 0 24px rgba(232, 224, 204, 0.1);
+}
+
+.song-detail__badge {
+  font-family: 'Verdana', Arial, sans-serif;
+  font-size: 0.68rem;
+  font-weight: bold;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 0.2rem 0.65rem;
+  border-radius: 999px;
+  border: 1px solid transparent;
+  flex-shrink: 0;
+}
+
+.song-detail__badge--active {
+  background: rgba(192, 154, 74, 0.1);
+  color: #C09A4A;
+  border-color: #C09A4A;
+  text-shadow: 0 0 6px rgba(192, 154, 74, 0.5);
+}
+
+.song-detail__badge--processing {
+  background: rgba(168, 169, 173, 0.1);
+  color: #A8A9AD;
+  border-color: #4A4A52;
+}
+
+.song-detail__badge--failed {
+  background: rgba(178, 34, 52, 0.1);
+  color: #B22234;
+  border-color: #B22234;
+  text-shadow: 0 0 6px rgba(178, 34, 52, 0.5);
+}
+
+.song-detail__meta {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 1rem;
+  padding: 1rem 1.25rem;
+  border: 1px solid #4A4A52;
+  border-radius: 8px;
+  background: rgba(74, 74, 82, 0.08);
+}
+
+.song-detail__meta-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.song-detail__meta-label {
+  font-family: 'Verdana', Arial, sans-serif;
+  font-size: 0.68rem;
+  color: #4A4A52;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.song-detail__meta-item span:last-child,
+.song-detail__meta-item a {
+  font-family: 'Verdana', Arial, sans-serif;
+  font-size: 0.82rem;
+  color: #E8E0CC;
+}
+
+.song-detail__meta-item a {
+  color: #C09A4A;
+  text-decoration: none;
+  transition: text-shadow 0.15s;
+}
+
+.song-detail__meta-item a:hover {
+  text-shadow: 0 0 6px rgba(192, 154, 74, 0.5);
+}
+
+.song-detail__actions {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.song-detail__actions button {
+  font-family: 'Verdana', Arial, sans-serif;
+  font-size: 0.78rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 0.5rem 1.25rem;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s, box-shadow 0.15s;
+}
+
+.song-detail__actions button:first-child {
+  background: transparent;
+  border: 1px solid #B22234;
+  color: #B22234;
+  text-shadow: 0 0 6px rgba(178, 34, 52, 0.7);
+  box-shadow: 0 0 6px rgba(178, 34, 52, 0.2);
+}
+
+.song-detail__actions button:first-child:hover {
+  background: rgba(178, 34, 52, 0.12);
+  color: #E8E0CC;
+  box-shadow: 0 0 14px rgba(178, 34, 52, 0.45);
+}
+
+.song-detail__actions button:last-child {
+  background: transparent;
+  border: 1px solid #C09A4A;
+  color: #C09A4A;
+  text-shadow: 0 0 6px rgba(192, 154, 74, 0.5);
+  box-shadow: 0 0 6px rgba(192, 154, 74, 0.15);
+}
+
+.song-detail__actions button:last-child:hover {
+  background: rgba(192, 154, 74, 0.1);
+  color: #E8E0CC;
+  box-shadow: 0 0 12px rgba(192, 154, 74, 0.35);
+}
+
+.song-detail__actions button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.song-detail__rating {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.song-detail__rating h2 {
+  margin: 0;
+  font-family: 'Arial Black', sans-serif;
+  font-size: 1rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #A8A9AD;
+}
+
+.song-detail__processing {
+  font-family: 'Verdana', Arial, sans-serif;
+  font-size: 0.82rem;
+  color: #4A4A52;
+  font-style: italic;
+}
+
+.song-detail__error {
+  font-family: 'Verdana', Arial, sans-serif;
+  font-size: 0.8rem;
+  color: #B22234;
+  text-shadow: 0 0 6px rgba(178, 34, 52, 0.5);
+}

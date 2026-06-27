@@ -1,0 +1,395 @@
+.upload {
+  max-width: 560px;
+  margin: 2rem auto;
+  padding: 0 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.upload h1 {
+  margin: 0;
+  font-family: 'Arial Black', sans-serif;
+  font-size: 1.8rem;
+  letter-spacing: 0.04em;
+  color: #E8E0CC;
+  text-shadow:
+    0 0 8px rgba(232, 224, 204, 0.3),
+    0 0 24px rgba(232, 224, 204, 0.1);
+}
+
+.upload__form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.upload__form label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  font-family: 'Verdana', Arial, sans-serif;
+  font-size: 0.72rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #A8A9AD;
+}
+
+.upload__form input,
+.upload__form select {
+  font-family: 'Verdana', Arial, sans-serif;
+  font-size: 0.82rem;
+  padding: 0.4rem 0.6rem;
+  background: #1A1A1A;
+  border: 1px solid #4A4A52;
+  border-radius: 4px;
+  color: #E8E0CC;
+  outline: none;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.upload__form input:focus,
+.upload__form select:focus {
+  border-color: #C09A4A;
+  box-shadow: 0 0 6px rgba(192, 154, 74, 0.25);
+}
+
+.upload__form input::placeholder {
+  color: #4A4A52;
+}
+
+.upload__form input:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.upload__form select option {
+  background: #1A1A1A;
+  color: #E8E0CC;
+}
+
+.upload__form input[type="file"] {
+  color: #A8A9AD;
+  cursor: pointer;
+}
+
+.upload__form input[type="file"]::-webkit-file-upload-button {
+  font-family: 'Verdana', Arial, sans-serif;
+  font-size: 0.72rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 0.3rem 0.75rem;
+  background: transparent;
+  border: 1px solid #4A4A52;
+  border-radius: 4px;
+  color: #A8A9AD;
+  cursor: pointer;
+  margin-right: 0.75rem;
+  transition: border-color 0.15s, color 0.15s;
+}
+
+.upload__form input[type="file"]::-webkit-file-upload-button:hover {
+  border-color: #C09A4A;
+  color: #C09A4A;
+}
+
+.upload__form > button {
+  align-self: flex-start;
+  font-family: 'Verdana', Arial, sans-serif;
+  font-size: 0.78rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 0.55rem 1.5rem;
+  border: 1px solid #B22234;
+  border-radius: 4px;
+  background: transparent;
+  color: #B22234;
+  cursor: pointer;
+  text-shadow: 0 0 6px rgba(178, 34, 52, 0.7);
+  box-shadow: 0 0 8px rgba(178, 34, 52, 0.2);
+  transition: background 0.15s, color 0.15s, box-shadow 0.15s;
+}
+
+.upload__form > button:hover {
+  background: rgba(178, 34, 52, 0.12);
+  color: #E8E0CC;
+  box-shadow: 0 0 16px rgba(178, 34, 52, 0.45);
+}
+
+.upload__form > button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.upload__album-search {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.upload__album-search input {
+  flex: 1;
+}
+
+.upload__album-clear {
+  font-family: 'Verdana', Arial, sans-serif;
+  font-size: 0.72rem;
+  background: none;
+  border: 1px solid #4A4A52;
+  border-radius: 4px;
+  cursor: pointer;
+  padding: 0.3rem 0.5rem;
+  color: #A8A9AD;
+  transition: border-color 0.15s, color 0.15s;
+}
+
+.upload__album-clear:hover {
+  border-color: #B22234;
+  color: #B22234;
+}
+
+.upload__album-dropdown {
+  list-style: none;
+  margin: 0.25rem 0 0;
+  padding: 0;
+  border: 1px solid #4A4A52;
+  border-radius: 4px;
+  background: #1A1A1A;
+  max-height: 160px;
+  overflow-y: auto;
+}
+
+.upload__album-dropdown li {
+  padding: 0.5rem 0.75rem;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-family: 'Verdana', Arial, sans-serif;
+  font-size: 0.8rem;
+  color: #E8E0CC;
+  border-bottom: 1px solid #4A4A52;
+  transition: background 0.15s;
+}
+
+.upload__album-dropdown li:last-child {
+  border-bottom: none;
+}
+
+.upload__album-dropdown li:hover {
+  background: rgba(74, 74, 82, 0.3);
+}
+
+.upload__album-dropdown li span {
+  font-size: 0.72rem;
+  color: #4A4A52;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.upload__album-selected {
+  font-family: 'Verdana', Arial, sans-serif;
+  font-size: 0.78rem;
+  color: #C09A4A;
+  text-shadow: 0 0 6px rgba(192, 154, 74, 0.5);
+  margin: 0.25rem 0 0;
+}
+
+.upload__create-album-toggle {
+  margin: 0.25rem 0;
+}
+
+.upload__create-album-toggle button {
+  font-family: 'Verdana', Arial, sans-serif;
+  font-size: 0.75rem;
+  letter-spacing: 0.06em;
+  background: none;
+  border: none;
+  color: #C09A4A;
+  cursor: pointer;
+  padding: 0;
+  text-shadow: 0 0 6px rgba(192, 154, 74, 0.4);
+  transition: text-shadow 0.15s;
+}
+
+.upload__create-album-toggle button:hover {
+  text-shadow: 0 0 10px rgba(192, 154, 74, 0.7);
+}
+
+.upload__create-album {
+  border: 1px solid #4A4A52;
+  border-radius: 8px;
+  padding: 1rem 1.25rem;
+  background: rgba(74, 74, 82, 0.1);
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.upload__create-album h3 {
+  margin: 0;
+  font-family: 'Arial Black', sans-serif;
+  font-size: 0.9rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #A8A9AD;
+}
+
+.upload__create-album label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  font-family: 'Verdana', Arial, sans-serif;
+  font-size: 0.72rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #A8A9AD;
+}
+
+.upload__create-album input,
+.upload__create-album select {
+  font-family: 'Verdana', Arial, sans-serif;
+  font-size: 0.82rem;
+  padding: 0.4rem 0.6rem;
+  background: #1A1A1A;
+  border: 1px solid #4A4A52;
+  border-radius: 4px;
+  color: #E8E0CC;
+  outline: none;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.upload__create-album input:focus,
+.upload__create-album select:focus {
+  border-color: #C09A4A;
+  box-shadow: 0 0 6px rgba(192, 154, 74, 0.25);
+}
+
+.upload__create-album input::placeholder {
+  color: #4A4A52;
+}
+
+.upload__create-album select option {
+  background: #1A1A1A;
+  color: #E8E0CC;
+}
+
+.upload__create-album button {
+  align-self: flex-start;
+  font-family: 'Verdana', Arial, sans-serif;
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 0.4rem 1rem;
+  border: 1px solid #C09A4A;
+  border-radius: 4px;
+  background: transparent;
+  color: #C09A4A;
+  cursor: pointer;
+  text-shadow: 0 0 6px rgba(192, 154, 74, 0.5);
+  transition: background 0.15s, color 0.15s, box-shadow 0.15s;
+}
+
+.upload__create-album button:hover {
+  background: rgba(192, 154, 74, 0.1);
+  color: #E8E0CC;
+  box-shadow: 0 0 10px rgba(192, 154, 74, 0.3);
+}
+
+.upload__create-album button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.upload__result {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.upload__result h2 {
+  margin: 0;
+  font-family: 'Arial Black', sans-serif;
+  font-size: 1.4rem;
+  letter-spacing: 0.04em;
+  color: #E8E0CC;
+}
+
+.upload__status {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.upload__status p {
+  font-family: 'Verdana', Arial, sans-serif;
+  font-size: 0.82rem;
+  color: #4A4A52;
+  margin: 0;
+}
+
+.upload__status button {
+  align-self: flex-start;
+  font-family: 'Verdana', Arial, sans-serif;
+  font-size: 0.75rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 0.4rem 1rem;
+  border: 1px solid #C09A4A;
+  border-radius: 4px;
+  background: transparent;
+  color: #C09A4A;
+  cursor: pointer;
+  text-shadow: 0 0 6px rgba(192, 154, 74, 0.5);
+  transition: background 0.15s, color 0.15s, box-shadow 0.15s;
+}
+
+.upload__status button:hover {
+  background: rgba(192, 154, 74, 0.1);
+  color: #E8E0CC;
+  box-shadow: 0 0 10px rgba(192, 154, 74, 0.3);
+}
+
+.upload__badge {
+  display: inline-block;
+  font-family: 'Verdana', Arial, sans-serif;
+  font-size: 0.7rem;
+  font-weight: bold;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 0.25rem 0.75rem;
+  border-radius: 999px;
+  border: 1px solid transparent;
+  align-self: flex-start;
+}
+
+.upload__badge--active {
+  background: rgba(192, 154, 74, 0.1);
+  color: #C09A4A;
+  border-color: #C09A4A;
+  text-shadow: 0 0 6px rgba(192, 154, 74, 0.5);
+}
+
+.upload__badge--processing {
+  background: rgba(168, 169, 173, 0.1);
+  color: #A8A9AD;
+  border-color: #4A4A52;
+}
+
+.upload__badge--failed {
+  background: rgba(178, 34, 52, 0.1);
+  color: #B22234;
+  border-color: #B22234;
+  text-shadow: 0 0 6px rgba(178, 34, 52, 0.5);
+}
+
+.upload__error {
+  font-family: 'Verdana', Arial, sans-serif;
+  font-size: 0.78rem;
+  color: #B22234;
+  text-shadow: 0 0 6px rgba(178, 34, 52, 0.5);
+}
+
+.upload__create-album {
+  background: #1A1A1A;
+}
