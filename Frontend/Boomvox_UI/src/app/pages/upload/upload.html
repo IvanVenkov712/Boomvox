@@ -2,11 +2,12 @@
   <h1>Upload a Song</h1>
 
   @if (error()) {
-  <p class="upload__error">{{ error() }}</p>
+    <p class="upload__error">{{ error() }}</p>
   }
 
   @if (!uploadedSong()) {
   <div class="upload__form">
+
     <label>Song name
       <input type="text" [(ngModel)]="name" name="name" placeholder="My new track" />
     </label>
@@ -14,14 +15,65 @@
     <label>Genre
       <select [(ngModel)]="genre" name="genre">
         @for (g of genres; track g) {
-        <option [value]="g">{{ g }}</option>
+          <option [value]="g">{{ g }}</option>
         }
       </select>
     </label>
 
-    <label>Album ID (optional)
-      <input type="number" [(ngModel)]="albumId" name="albumId" placeholder="Leave empty if none" />
+    <!-- Album search -->
+    <label>Album (optional)
+      <div class="upload__album-search">
+        <input
+          type="text"
+          [value]="albumSearch()"
+          (input)="albumSearch.set($any($event.target).value); searchAlbums()"
+          placeholder="Search your albums…"
+          [disabled]="!!selectedAlbum()"
+        />
+        @if (selectedAlbum()) {
+          <button class="upload__album-clear" (click)="clearAlbum()" type="button">✕</button>
+        }
+      </div>
+      @if (showAlbumDropdown()) {
+        <ul class="upload__album-dropdown">
+          @for (album of albumResults(); track album.id) {
+            <li (click)="selectAlbum(album)">{{ album.name }} <span>{{ album.genre }}</span></li>
+          }
+        </ul>
+      }
+      @if (selectedAlbum()) {
+        <p class="upload__album-selected">✓ {{ selectedAlbum()!.name }}</p>
+      }
     </label>
+
+    <!-- Create album toggle -->
+    <div class="upload__create-album-toggle">
+      <button type="button" (click)="showCreateAlbum.set(!showCreateAlbum())">
+        {{ showCreateAlbum() ? '− Cancel' : '+ Create new album' }}
+      </button>
+    </div>
+
+    @if (showCreateAlbum()) {
+      <div class="upload__create-album">
+        <h3>New Album</h3>
+        @if (albumCreateError()) {
+          <p class="upload__error">{{ albumCreateError() }}</p>
+        }
+        <label>Album name
+          <input type="text" [(ngModel)]="newAlbumName" name="newAlbumName" placeholder="Album title" />
+        </label>
+        <label>Genre
+          <select [(ngModel)]="newAlbumGenre" name="newAlbumGenre">
+            @for (g of genres; track g) {
+              <option [value]="g">{{ g }}</option>
+            }
+          </select>
+        </label>
+        <button type="button" (click)="createAlbum()" [disabled]="creatingAlbum() || !newAlbumName.trim()">
+          {{ creatingAlbum() ? 'Creating…' : 'Create Album' }}
+        </button>
+      </div>
+    }
 
     <label>Audio file
       <input type="file" accept="audio/mpeg,audio/wav" (change)="onFileChange($event)" />
@@ -34,22 +86,20 @@
       {{ uploading() ? 'Uploading…' : 'Upload' }}
     </button>
   </div>
+
   } @else {
   <div class="upload__result">
     <h2>{{ uploadedSong()!.name }}</h2>
-
     <div class="upload__status">
       @if (polling()) {
-      <span class="upload__badge upload__badge--processing">
-            ⏳ Processing…
-          </span>
-      <p>Your song is being processed. This may take a minute.</p>
+        <span class="upload__badge upload__badge--processing">⏳ Processing…</span>
+        <p>Your song is being processed. This may take a minute.</p>
       } @else if (uploadedSong()!.processingStatus === 'ACTIVE') {
-      <span class="upload__badge upload__badge--active">✓ Ready</span>
-      <button (click)="goToSong()">View song →</button>
+        <span class="upload__badge upload__badge--active">✓ Ready</span>
+        <button (click)="goToSong()">View song →</button>
       } @else if (uploadedSong()!.processingStatus === 'FAILED') {
-      <span class="upload__badge upload__badge--failed">✗ Failed</span>
-      <p>Processing failed. Please try uploading again.</p>
+        <span class="upload__badge upload__badge--failed">✗ Failed</span>
+        <p>Processing failed. Please try uploading again.</p>
       }
     </div>
   </div>

@@ -80,8 +80,7 @@
   <ul class="sidebar__list">
     @for (entry of playlistSongs(); track entry.songId) {
     <li class="sidebar__item" (click)="goToSong(entry.songId)">
-      <span class="sidebar__item-name">Song #{{ entry.songId }}</span>
-      <span class="sidebar__item-meta">#{{ entry.position }}</span>
+      <span class="sidebar__item-name">{{ playlistSongNames().get(entry.songId) ?? 'Song #' + entry.songId }}</span>
     </li>
     }
   </ul>
@@ -98,7 +97,7 @@
   <ul class="sidebar__list">
     @for (entry of favouriteSongs(); track entry.songId) {
     <li class="sidebar__item" (click)="goToSong(entry.songId)">
-      <span class="sidebar__item-name">Song #{{ entry.songId }}</span>
+      <span class="sidebar__item-name">{{ favouriteSongNames().get(entry.songId) ?? 'Song #' + entry.songId }}</span>
     </li>
     }
   </ul>

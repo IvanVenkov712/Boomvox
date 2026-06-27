@@ -69,3 +69,81 @@
 .upload__badge--failed { background: #f8d7da; color: #721c24; }
 
 .upload__error { color: red; font-size: 0.875rem; }
+
+.upload__album-search {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.upload__album-search input {
+  flex: 1;
+}
+
+.upload__album-clear {
+  background: none;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  cursor: pointer;
+  padding: 0.25rem 0.5rem;
+  color: #666;
+}
+
+.upload__album-dropdown {
+  list-style: none;
+  margin: 0.25rem 0 0;
+  padding: 0;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  background: white;
+  max-height: 160px;
+  overflow-y: auto;
+}
+
+.upload__album-dropdown li {
+  padding: 0.5rem 0.75rem;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+}
+
+.upload__album-dropdown li:hover {
+  background: #f5f5f5;
+}
+
+.upload__album-dropdown li span {
+  color: #888;
+  font-size: 0.85rem;
+}
+
+.upload__album-selected {
+  color: green;
+  font-size: 0.9rem;
+  margin: 0.25rem 0 0;
+}
+
+.upload__create-album-toggle {
+  margin: 0.5rem 0;
+}
+
+.upload__create-album-toggle button {
+  background: none;
+  border: none;
+  color: #6c63ff;
+  cursor: pointer;
+  font-size: 0.9rem;
+  padding: 0;
+}
+
+.upload__create-album {
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  background: #fafafa;
+}
+
+.upload__create-album h3 {
+  margin: 0 0 0.75rem;
+  font-size: 1rem;
+}
