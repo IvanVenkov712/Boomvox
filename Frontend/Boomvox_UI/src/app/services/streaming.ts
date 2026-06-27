@@ -16,7 +16,7 @@ export class StreamingService {
   private readonly url = `${environment.apiUrl}/streaming`;
 
   getStreamUrl(songId: number): Observable<StreamUrlResponse> {
-    return this.http.get<StreamUrlResponse>(`${this.url}/songs/${songId}`);
+    return this.http.get<StreamUrlResponse>(`${environment.apiUrl}/songs/${songId}/stream`);
   }
 
   closeSession(sessionId: number, req: SessionStatusRequest): Observable<void> {

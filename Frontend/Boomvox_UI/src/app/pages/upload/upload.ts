@@ -52,7 +52,7 @@ export class Upload {
       .upload(this.selectedFile, {
         name: this.name.trim(),
         genre: this.genre,
-        albumId: this.albumId,
+        albumId: this.albumId
       })
       .subscribe({
         next: (song) => {
