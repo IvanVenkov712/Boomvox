@@ -1,0 +1,41 @@
+<div class="playlists">
+  <div class="playlists__header">
+    <h1>Playlists</h1>
+    <button (click)="showForm = !showForm">
+      {{ showForm ? 'Cancel' : 'New Playlist' }}
+    </button>
+  </div>
+
+  @if (showForm) {
+  <div class="playlists__form">
+    <input
+      type="text"
+      [(ngModel)]="newName"
+      placeholder="Playlist name…"
+      (keyup.enter)="create()"
+    />
+    <button (click)="create()" [disabled]="creating() || !newName.trim()">
+      {{ creating() ? 'Creating…' : 'Create' }}
+    </button>
+  </div>
+  }
+
+  @if (error()) {
+  <p class="playlists__error">{{ error() }}</p>
+  }
+
+  @if (loading()) {
+  <p>Loading…</p>
+  } @else if (playlists().length === 0) {
+  <p>No playlists yet.</p>
+  } @else {
+  <ul class="playlists__list">
+    @for (playlist of playlists(); track playlist.id) {
+    <li class="playlists__item" (click)="goToPlaylist(playlist.id)">
+      <span class="playlists__name">{{ playlist.name }}</span>
+      <span class="playlists__meta">{{ playlist.createdAt | date:'mediumDate' }}</span>
+    </li>
+    }
+  </ul>
+  }
+</div>

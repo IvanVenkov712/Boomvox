@@ -1,0 +1,31 @@
+<div class="album-detail">
+  @if (loading()) {
+  <p>Loading…</p>
+  } @else if (error()) {
+  <p class="album-detail__error">{{ error() }}</p>
+  } @else if (album()) {
+  <div class="album-detail__header">
+    <h1>{{ album()!.name }}</h1>
+    <p class="album-detail__genre">{{ album()!.genre }}</p>
+    <p class="album-detail__date">{{ album()!.createdAt | date:'mediumDate' }}</p>
+  </div>
+
+  <section class="album-detail__tracks">
+    <h2>Tracks</h2>
+    @if (songs().length === 0) {
+    <p>No tracks yet.</p>
+    } @else {
+    <ul class="album-detail__list">
+      @for (song of songs(); track song.id) {
+      <li class="album-detail__item" (click)="goToSong(song.id)">
+        <span class="album-detail__item-name">{{ song.name }}</span>
+        <span class="album-detail__item-meta">
+                {{ song.format }} · {{ formatDuration(song.duration) }}
+              </span>
+      </li>
+      }
+    </ul>
+    }
+  </section>
+  }
+</div>

@@ -1,0 +1,42 @@
+<div class="home">
+  <div class="home__header">
+    <h1>For You</h1>
+    <button (click)="load()" [disabled]="loading()">
+      {{ loading() ? 'Loading…' : 'Refresh' }}
+    </button>
+  </div>
+
+  @if (error()) {
+  <p class="home__error">{{ error() }}</p>
+  }
+
+  @if (loading()) {
+  <p class="home__status">Finding recommendations…</p>
+  } @else if (recommendations().length === 0) {
+  <p class="home__status">No recommendations yet. Try listening to some songs first.</p>
+  } @else {
+  <ul class="home__list">
+    @for (rec of recommendations(); track rec.songId) {
+    <li class="home__item" (click)="onClickRecommendation(rec)">
+      <div class="home__item-info">
+            <span class="home__item-name">
+              {{ getSong(rec.songId)?.name ?? 'Song #' + rec.songId }}
+            </span>
+        <span class="home__item-meta">
+              {{ getSong(rec.songId)?.format ?? '' }}
+            </span>
+      </div>
+      <div class="home__item-right">
+        <span class="home__match">{{ formatPercent(rec.percent) }} match</span>
+        <button
+          class="home__play"
+          (click)="$event.stopPropagation(); onClickRecommendation(rec)"
+        >
+          ▶
+        </button>
+      </div>
+    </li>
+    }
+  </ul>
+  }
+</div>

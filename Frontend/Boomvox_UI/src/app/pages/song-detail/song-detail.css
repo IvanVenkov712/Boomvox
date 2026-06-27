@@ -1,0 +1,76 @@
+.song-detail {
+  max-width: 720px;
+  margin: 2rem auto;
+  padding: 0 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.song-detail__back {
+  align-self: flex-start;
+  background: none;
+  border: none;
+  cursor: pointer;
+  opacity: 0.6;
+  font-size: 0.9rem;
+  padding: 0;
+}
+
+.song-detail__back:hover { opacity: 1; }
+
+.song-detail__header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.song-detail__header h1 { margin: 0; }
+
+.song-detail__badge {
+  padding: 0.2rem 0.6rem;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.song-detail__badge--active { background: #d4edda; color: #155724; }
+.song-detail__badge--processing { background: #fff3cd; color: #856404; }
+.song-detail__badge--failed { background: #f8d7da; color: #721c24; }
+
+.song-detail__meta {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 1rem;
+  padding: 1rem;
+  border: 1px solid #eee;
+  border-radius: 8px;
+}
+
+.song-detail__meta-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.song-detail__meta-label {
+  font-size: 0.75rem;
+  opacity: 0.5;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.song-detail__rating {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.song-detail__rating h2 { margin: 0; font-size: 1.1rem; }
+
+.song-detail__processing {
+  opacity: 0.6;
+  font-style: italic;
+}
+
+.song-detail__error { color: red; }

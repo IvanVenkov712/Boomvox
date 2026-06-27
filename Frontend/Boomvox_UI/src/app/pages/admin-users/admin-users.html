@@ -1,0 +1,44 @@
+<div class="admin-users">
+  <h1>User Management</h1>
+
+  <div class="admin-users__filters">
+    <input
+      type="text"
+      [(ngModel)]="searchQuery"
+      placeholder="Search by name or email…"
+      (keyup.enter)="load()"
+    />
+    <select [(ngModel)]="roleFilter">
+      <option value="">All roles</option>
+      @for (role of roles; track role) {
+      <option [value]="role">{{ role }}</option>
+      }
+    </select>
+    <button (click)="load()">Search</button>
+    <button (click)="clearFilters()">Clear</button>
+  </div>
+
+  @if (error()) {
+  <p class="admin-users__error">{{ error() }}</p>
+  }
+
+  @if (loading()) {
+  <p class="admin-users__status">Loading…</p>
+  } @else if (users().length === 0) {
+  <p class="admin-users__status">No users found.</p>
+  } @else {
+  <ul class="admin-users__list">
+    @for (user of users(); track user.id) {
+    <li class="admin-users__item" (click)="goToUser(user.id)">
+      <div class="admin-users__info">
+        <span class="admin-users__username">{{ user.username }}</span>
+        <span class="admin-users__email">{{ user.email }}</span>
+      </div>
+      <span class="admin-users__role admin-users__role--{{ user.role | lowercase }}">
+            {{ user.role }}
+          </span>
+    </li>
+    }
+  </ul>
+  }
+</div>
