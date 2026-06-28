@@ -1,57 +1,44 @@
 <div class="rating">
   @if (loading) {
-  <p class="rating__loading">Loading rating…</p>
+    <p class="rating__loading">Loading rating…</p>
   } @else {
-  <!-- Stats -->
-  @if (stats) {
-  <div class="rating__stats">
-    <span class="rating__avg">{{ stats.avgRating | number:'1.1-1' }} / 10</span>
-    <span class="rating__count">({{ stats.ratingsCount }} ratings)</span>
-  </div>
-  }
-
-  @if (error) {
-  <p class="rating__error">{{ error }}</p>
-  }
-
-  <!-- Current rating -->
-  @if (myRating) {
-  <div class="rating__mine">
-    <span>Your rating: <strong>{{ myRating.grade }}/10</strong></span>
-    @if (myRating.comment) {
-    <span class="rating__comment">"{{ myRating.comment }}"</span>
+    @if (stats) {
+      <div class="rating__stats">
+        <span class="rating__avg">{{ stats.avgRating | number:'1.1-1' }} / 10</span>
+        <span class="rating__count">({{ stats.ratingsCount }} ratings)</span>
+      </div>
     }
-    <button class="rating__delete" (click)="deleteRating()" [disabled]="submitting">
-      Remove
-    </button>
-  </div>
-  }
 
-  <!-- Form -->
-  <div class="rating__form">
-    <label>
-      Grade (0–10)
-      <input
-        type="number"
-        [(ngModel)]="grade"
-        name="grade"
-        min="0"
-        max="10"
-        step="1"
-      />
-    </label>
-    <label>
-      Comment
-      <input
-        type="text"
-        [(ngModel)]="comment"
-        name="comment"
-        placeholder="Say something…"
-      />
-    </label>
-    <button (click)="submit()" [disabled]="submitting">
-      {{ myRating ? 'Update' : 'Rate' }}
-    </button>
-  </div>
+    @if (error) {
+      <p class="rating__error">{{ error }}</p>
+    }
+
+    @if (myRating) {
+      <div class="rating__mine">
+        <span>Your rating: <strong>{{ myRating.grade }}/10</strong></span>
+        @if (myRating.comment) {
+          <span class="rating__comment">"{{ myRating.comment }}"</span>
+        }
+        <button class="rating__delete" (click)="deleteRating()" [disabled]="submitting">
+          Remove
+        </button>
+      </div>
+    } @else {
+      <p class="rating__no-rating">You haven't rated this song yet.</p>
+    }
+
+    <div class="rating__form">
+      <label>
+        Grade (0–10)
+        <input type="number" [(ngModel)]="grade" name="grade" min="0" max="10" step="1" />
+      </label>
+      <label>
+        Comment
+        <input type="text" [(ngModel)]="comment" name="comment" placeholder="Say something…" />
+      </label>
+      <button (click)="submit()" [disabled]="submitting">
+        {{ myRating ? 'Update' : 'Rate' }}
+      </button>
+    </div>
   }
 </div>

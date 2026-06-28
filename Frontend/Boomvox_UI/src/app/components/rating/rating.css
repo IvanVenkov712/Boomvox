@@ -156,3 +156,19 @@
   opacity: 0.4;
   cursor: not-allowed;
 }
+
+.rating__no-listen {
+  font-family: 'Verdana', Arial, sans-serif;
+  font-size: 0.78rem;
+  color: #4A4A52;
+  font-style: italic;
+  margin: 0;
+}
+
+.rating__no-rating {
+  font-family: 'Verdana', Arial, sans-serif;
+  font-size: 0.78rem;
+  color: #4A4A52;
+  font-style: italic;
+  margin: 0;
+}

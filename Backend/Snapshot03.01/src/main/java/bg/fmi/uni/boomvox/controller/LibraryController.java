@@ -166,6 +166,11 @@ public class LibraryController {
         return ResponseEntity.ok(albumService.updateAlbum(albumId, request));
     }
 
+    @GetMapping("/albums/{albumId}/songs")
+    public ResponseEntity<List<SongResponse>> getAlbumSongs(@PathVariable long albumId) {
+        return ResponseEntity.ok(songService.getSongsByAlbum(albumId));
+    }
+
     // ── Artists ───────────────────────────────────────────────────────────────
 
     @GetMapping("/artists")

@@ -153,4 +153,20 @@ export class PlayerService {
     this.streamingService.closeSession(this.sessionId, { status }).subscribe();
     this.sessionId = null;
   }
+
+  reset() {
+  if (this.sessionId) {
+    this.closeSession(SessionStatus.INTERRUPTED);
+  }
+  this.audio.pause();
+  this.audio.src = '';
+  this.sessionId = null;
+  this.expiresAt = null;
+  this.queue = [];
+  this.queueIndex = 0;
+  this.currentSong.set(null);
+  this.playing.set(false);
+  this.currentTime.set(0);
+  this.duration.set(0);
+}
 }
