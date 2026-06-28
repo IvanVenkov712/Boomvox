@@ -125,6 +125,7 @@ public class AudioProcessingJob {
             }
 
             // 4. Mark song as ACTIVE — now streamable
+            songRepository.updateDuration(songId, durationSec);
             songRepository.updateProcessingStatus(songId, SongProcessingStatus.ACTIVE);
 
             // 5. Delete the raw staging file

@@ -11,6 +11,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import org.springframework.transaction.annotation.Transactional;
 
 public interface SongRepository extends JpaRepository<Song, Long> {
 
@@ -21,6 +22,11 @@ public interface SongRepository extends JpaRepository<Song, Long> {
     List<Song> findByAlbumAuthorId(long authorId);
 
     List<Song> findByNameContainingIgnoreCase(String name);
+
+    @Modifying
+    @Transactional
+    @Query("UPDATE Song s SET s.duration = :duration WHERE s.id = :id")
+    void updateDuration(@Param("id") long id, @Param("duration") long duration);
 
     @Query(value = """
     SELECT DISTINCT s.*

@@ -22,10 +22,12 @@
       <span class="song-detail__meta-label">Duration</span>
       <span>{{ formatDuration(song()!.duration) }}</span>
     </div>
-    <div class="song-detail__meta-item">
-      <span class="song-detail__meta-label">File size</span>
-      <span>{{ formatFileSize(song()!.fileSize) }}</span>
-    </div>
+    @if (isAuthor) {
+      <div class="song-detail__meta-item">
+        <span class="song-detail__meta-label">File size</span>
+        <span>{{ formatFileSize(song()!.fileSize) }}</span>
+      </div>
+    }
     <div class="song-detail__meta-item">
       <span class="song-detail__meta-label">Uploaded</span>
       <span>{{ song()!.uploadedAt | date:'mediumDate' }}</span>

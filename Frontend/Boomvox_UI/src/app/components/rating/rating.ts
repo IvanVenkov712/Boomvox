@@ -1,10 +1,8 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, signal, Input, OnChanges, SimpleChanges, ChangeDetectorRef, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { forkJoin } from 'rxjs';
 import { RatingService } from '../../services/rating';
 import { RatingResponse, SongStatsResponse } from '../../models/ratingsAndStats';
-
 
 @Component({
   selector: 'app-rating',
@@ -13,7 +11,10 @@ import { RatingResponse, SongStatsResponse } from '../../models/ratingsAndStats'
   templateUrl: './rating.html',
   styleUrl: './rating.css',
 })
-export class Rating implements OnInit {
+export class Rating implements OnInit, OnChanges {
+
+  private readonly ratingService = inject(RatingService);
+  private readonly cdr = inject(ChangeDetectorRef);
 
   @Input() songId!: number;
 
@@ -27,44 +28,49 @@ export class Rating implements OnInit {
   submitting = false;
   error: string | null = null;
 
-  constructor(private ratingService: RatingService) {}
-
   ngOnInit() {
     this.load();
+  }
+
+  ngOnChanges(changes: SimpleChanges) {
+    if (changes['songId'] && !changes['songId'].firstChange) {
+      this.myRating = null;
+      this.stats = null;
+      this.grade = 5;
+      this.comment = '';
+      this.load();
+    }
   }
 
   load() {
     this.loading = true;
     this.error = null;
+    this.myRating = null;
 
-    forkJoin({
-      mine: this.ratingService.getMine(this.songId),
-      stats: this.ratingService.getStats(this.songId),
-    }).subscribe({
-      next: ({ mine, stats }) => {
-        this.myRating = mine;
+    this.ratingService.getStats(this.songId).subscribe({
+      next: (stats) => {
         this.stats = stats;
-        this.grade = mine.grade;
-        this.comment = mine.comment;
-        this.loading = false;
+        this.ratingService.getMine(this.songId).subscribe({
+          next: (mine) => {
+            this.myRating = mine;
+            this.grade = mine.grade;
+            this.comment = mine.comment;
+            this.loading = false;
+            this.cdr.markForCheck();
+          },
+          error: () => {
+            // 403 = expired token or no rating yet
+            // 404 = no rating yet
+            // either way show the form, backend will reject if not allowed
+            this.loading = false;
+            this.cdr.markForCheck();
+          },
+        });
       },
-      error: (err) => {
-        // 404 on ratings/me just means not yet rated — still load stats
-        if (err.status === 404) {
-          this.ratingService.getStats(this.songId).subscribe({
-            next: (stats) => {
-              this.stats = stats;
-              this.loading = false;
-            },
-            error: () => {
-              this.error = 'Could not load stats';
-              this.loading = false;
-            },
-          });
-        } else {
-          this.error = 'Could not load rating';
-          this.loading = false;
-        }
+      error: () => {
+        this.error = 'Could not load rating';
+        this.loading = false;
+        this.cdr.markForCheck();
       },
     });
   }
@@ -72,23 +78,21 @@ export class Rating implements OnInit {
   submit() {
     this.submitting = true;
     this.error = null;
-    this.ratingService
-      .submit(this.songId, {
-        songId: this.songId,
-        grade: this.grade,
-        comment: this.comment,
-      })
-      .subscribe({
-        next: (rating) => {
-          this.myRating = rating;
-          this.submitting = false;
-          this.ratingService.getStats(this.songId).subscribe((s) => (this.stats = s));
-        },
-        error: (err) => {
-          this.error = err.error?.message ?? 'Could not submit rating';
-          this.submitting = false;
-        },
-      });
+    this.ratingService.submit(this.songId, {
+      songId: this.songId,
+      grade: this.grade,
+      comment: this.comment,
+    }).subscribe({
+      next: (rating) => {
+        this.myRating = rating;
+        this.submitting = false;
+        this.ratingService.getStats(this.songId).subscribe((s) => (this.stats = s));
+      },
+      error: (err) => {
+        this.error = err.error?.message ?? 'Could not submit rating';
+        this.submitting = false;
+      },
+    });
   }
 
   deleteRating() {
