@@ -6,6 +6,7 @@ import { SongResponse } from '../../models/songs';
 import { Rating } from '../../components/rating/rating';
 import { PlayerService } from '../../services/player';
 import { FavouritesService } from '../../services/favourites';
+import { AuthService } from '../../services/auth';
 
 @Component({
   selector: 'app-song-detail',
@@ -19,27 +20,34 @@ export class SongDetail implements OnInit {
   private readonly router = inject(Router);
   private readonly songService = inject(SongService);
   readonly playerService = inject(PlayerService);
+  readonly favouritesService = inject(FavouritesService);
+  private readonly authService = inject(AuthService);
 
   readonly song = signal<SongResponse | null>(null);
   readonly loading = signal(true);
   readonly error = signal<string | null>(null);
-
-  readonly favouritesService = inject(FavouritesService);
   readonly addedToFavourites = signal(false);
   readonly addingToFavourites = signal(false);
 
-
   ngOnInit() {
-    const id = Number(this.route.snapshot.paramMap.get('id'));
-    this.songService.fetchById(id).subscribe({
-      next: (song) => {
-        this.song.set(song);
-        this.loading.set(false);
-      },
-      error: () => {
-        this.error.set('Song not found');
-        this.loading.set(false);
-      },
+    this.route.paramMap.subscribe(params => {
+      const id = Number(params.get('id'));
+      this.song.set(null);
+      this.loading.set(true);
+      this.error.set(null);
+      this.addedToFavourites.set(false);
+      this.addingToFavourites.set(false);
+      
+      this.songService.fetchById(id).subscribe({
+        next: (song) => {
+          this.song.set(song);
+          this.loading.set(false);
+        },
+        error: () => {
+          this.error.set('Song not found');
+          this.loading.set(false);
+        },
+      });
     });
   }
 
@@ -68,5 +76,10 @@ export class SongDetail implements OnInit {
       },
       error: () => this.addingToFavourites.set(false),
     });
+  }
+
+  get isAuthor(): boolean {
+    const role = this.authService.getRole();
+    return role === 'AUTHOR' || role === 'ADMIN';
   }
 }

@@ -24,7 +24,7 @@ export const routes: Routes = [
   { path: 'songs/:id', component: SongDetail, canActivate: [authGuard] },
   { path: 'artists', component: Artists, canActivate: [authGuard] },
   { path: 'artists/:id', component: ArtistDetail, canActivate: [authGuard] },
-  { path: 'album/:id', component: AlbumDetail, canActivate: [authGuard] },
+  { path: 'albums/:id', component: AlbumDetail, canActivate: [authGuard] },
   { path: 'playlists', component: Playlists, canActivate: [authGuard] },
   { path: 'playlists/:id', component: PlaylistDetail, canActivate: [authGuard] },
   { path: 'favourites', component: Favourites, canActivate: [authGuard] },

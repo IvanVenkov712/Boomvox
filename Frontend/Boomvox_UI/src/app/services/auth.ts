@@ -5,6 +5,7 @@ import { Observable, tap } from 'rxjs';
 import { environment } from '../../environments/environment';
 import { AuthResponse, LoginRequest, RegisterRequest } from '../models/auth';
 import { UserRole } from '../models/enums';
+import { PlayerService } from './player';
 
 @Injectable({
   providedIn: 'root',
@@ -12,6 +13,7 @@ import { UserRole } from '../models/enums';
 export class AuthService {
   private readonly http = inject(HttpClient);
   private readonly router = inject(Router);
+  private readonly playerService = inject(PlayerService);
   private readonly url = `${environment.apiUrl}/auth`;
 
   login(req: LoginRequest): Observable<AuthResponse> {
@@ -27,6 +29,7 @@ export class AuthService {
   }
 
   logout(): void {
+    this.playerService.reset();
     localStorage.removeItem('token');
     localStorage.removeItem('email');
     localStorage.removeItem('role');
