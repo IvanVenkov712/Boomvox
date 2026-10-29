@@ -9,6 +9,9 @@ spring:
 #    url: jdbc:postgresql://localhost:5432/boomvox
     username: boomvox
     password: boomvox_pass
+    hikari:
+      # Liquibase needs this schema before creating its migration history tables.
+      connection-init-sql: CREATE SCHEMA IF NOT EXISTS boomvox
   jpa:
     hibernate:
       ddl-auto: validate
