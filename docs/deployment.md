@@ -4,14 +4,17 @@
 
 **Boomvox is not currently deployed to a hosted environment**, confirmed by the maintainer on 2026-10-29. The repository contains local development settings, a partial production profile, backend/frontend Dockerfiles, and a local Docker Compose stack. The frontend image uses Nginx to serve Angular and proxy API requests. There are no hosted frontend/API URLs or CI/CD workflows.
 
-| Component | Current local configuration | Source |
+| Component | Native development | Compose |
 | --- | --- | --- |
-| Frontend | Development origin `http://localhost:4200`; npm/Angular workspace present, production build verified on 2026-11-04 | `angular.json`, `package-lock.json`, and `SecurityConfig` |
-| API with default `dev` profile | `http://localhost:9090/api` | `application-dev.yml` |
-| Base API port with `prod`/`test` alone | `8099`, unless overridden | `application.yml` |
-| PostgreSQL | `localhost:5432`, database `postgres`, schema `boomvox` | `application-dev.yml` |
-| Audio storage | An externally configured private S3 bucket; no bucket identity is tracked in the example | `S3Config`, `FileStorageService` |
-| Audio processor | FFmpeg/FFprobe in the backend JVM's host environment, using local temporary files | `AudioProcessingJob` |
+| Frontend | Angular dev server at `http://localhost:4200` | Nginx at `http://localhost:4200`, container port 80 |
+| Browser API path | `/api`, dev proxy to `localhost:9090` | `/api`, Nginx proxy to `backend:9090` |
+| Direct/debug API | `http://localhost:9090/api` | `http://localhost:9090/api`, published on localhost |
+| PostgreSQL | Host server at `localhost:5432` | PostgreSQL 17 at internal `db:5432`; no host port |
+| Database/schema | Database `postgres`, schema `boomvox` | Same names; persistent `boomvox_postgres_data` volume |
+| Audio storage | External private S3 bucket | External private S3 bucket |
+| Audio processor | Host FFmpeg/FFprobe and writable temp storage | Executables and `/app/tmp` inside the backend container |
+
+The base API port with `prod` or `test` alone is 8099 unless overridden. Compose explicitly sets port 9090 and selects `dev`; its frontend bundle is nevertheless an optimized Angular production build. Backend and frontend environment selections are separate.
 
 Both frontend environment files use `/api` on the browser's current origin. The Angular development server proxies API requests to `localhost:9090`; the container's Nginx proxies them to `backend:9090` on its Docker network. Historical documentation's `https://api.Boomvox.com` was an example, not an active service address.
 
@@ -23,7 +26,7 @@ Start the backend from `Backend/`, since configuration imports and log paths are
 
 ## Docker Compose local stack
 
-Install Docker Desktop with Linux containers and Docker Compose. Run commands from the repository root. Host installations of Java, Node.js, PostgreSQL, and FFmpeg are unnecessary for this path.
+Install [Docker Desktop with Linux containers and Compose](https://docs.docker.com/compose/install/) on Windows/macOS, or Docker Engine and the Compose plugin on Linux. Clone the repository and run commands from its root. Host installations of Java, Node.js, PostgreSQL, and FFmpeg are unnecessary for this path.
 
 1. If a root `.env` does not already exist, copy `.compose.env.example` to `.env`:
 
@@ -53,6 +56,63 @@ The stack uses PostgreSQL 17 with database `postgres`, role `boomvox`, and the `
 Startup order is database readiness (`pg_isready` over TCP), backend readiness (HTTP `/v3/api-docs`), then Nginx. Nginx serves static files and forwards `/api/` to `backend:9090`. Its own health check checks HTTP `/`. These checks establish service readiness, not S3 access or successful audio processing. Backend packaging skips tests as specified in its Dockerfile.
 
 To check persistence, register a temporary account, run `docker compose down`, then `docker compose up -d --wait --wait-timeout 180`, and log in again. Verify upload, three audio variants, signed-URL playback, and seeking separately with a valid S3 configuration. No hosted production deployment is created by these commands.
+
+### Generating local secrets
+
+Generate a separate random value for `DB_PASSWORD` and `JWT_SECRET`. For example, this PowerShell snippet prints two values to paste into the ignored root `.env`:
+
+```powershell
+$secretGenerator = [Security.Cryptography.RandomNumberGenerator]::Create()
+foreach ($setting in @('DB_PASSWORD', 'JWT_SECRET')) {
+    $secretBytes = New-Object byte[] 48
+    $secretGenerator.GetBytes($secretBytes)
+    '{0}={1}' -f $setting, [Convert]::ToBase64String($secretBytes)
+}
+$secretGenerator.Dispose()
+```
+
+On macOS/Linux with OpenSSL, run `openssl rand -hex 32` separately for each value. The JWT implementation uses the resulting text directly; it does not Base64-decode it. Keep values stable across restarts. Compose may interpolate `$` in unquoted/double-quoted dotenv values; single-quote a literal value that contains it. Do not use the shared signing secret from `application.yml` for a non-disposable environment.
+
+Only variables explicitly listed under a service's `environment` are passed by this Compose file. Adding `SPRING_PROFILES_ACTIVE=prod` to root `.env` alone does not override its literal `dev` setting; change/override the service configuration as part of hosted preparation.
+
+### Routine operations and troubleshooting
+
+| Task or symptom | Command/check |
+| --- | --- |
+| Readiness and ports | `docker compose ps` |
+| Startup failure | `docker compose logs --tail 100 db backend frontend` |
+| Pause and resume | `docker compose stop`, then `docker compose up -d --wait --wait-timeout 180` |
+| Remove containers, retain data | `docker compose down` |
+| Open the internal database | `docker compose exec db psql -U boomvox -d postgres` |
+| Host port already in use | Stop the competing native/Compose process; the configured defaults are 4200 and 9090 |
+| Backend unhealthy | Inspect migration/startup logs and test `http://localhost:9090/v3/api-docs`; no Actuator endpoint exists |
+| UI loads but API returns 502 | Check backend health and Nginx upstream name/port; keep `backend:9090` reachable on the same network |
+| Database rejects credentials after editing `.env` | Restore the matching password or update the existing PostgreSQL role before recreating the backend; retain the volume |
+| Unknown AWS property or rejected object access | Check root Compose variable names, bucket region, static credentials, and object permissions; see the S3 guide |
+
+### Backup, restore, and release operations
+
+PostgreSQL volumes survive container replacement, but are not backups. Store database archives outside the repository, together with the release identifier and a matching S3 recovery strategy. The following uses PostgreSQL's archive format and `docker compose cp`, avoiding binary output redirection differences between PowerShell and POSIX shells.
+
+Create an external backup directory, for example `../boomvox-backups` (`New-Item -ItemType Directory -Force ../boomvox-backups` in PowerShell, or `mkdir -p ../boomvox-backups` in a POSIX shell). Use a unique archive filename for each backup:
+
+```sh
+docker compose exec -T db pg_dump -U boomvox -d postgres --format=custom --file=/tmp/boomvox-backup.dump
+docker compose cp db:/tmp/boomvox-backup.dump ../boomvox-backups/boomvox-backup.dump
+```
+
+Before restoring, choose the intended local database, stop application writes, and retain a current backup. The following restore replaces the archived objects in the target `postgres` database; it is not a merge. Use only your trusted archive. See [PostgreSQL restore options](https://www.postgresql.org/docs/17/app-pgrestore.html).
+
+```sh
+docker compose stop frontend backend
+docker compose cp ../boomvox-backups/boomvox-backup.dump db:/tmp/boomvox-restore.dump
+docker compose exec -T db pg_restore -U boomvox -d postgres --clean --if-exists --exit-on-error --single-transaction --no-owner --no-privileges /tmp/boomvox-restore.dump
+docker compose up -d --wait --wait-timeout 180
+```
+
+A DB archive does not include S3 objects, role passwords, the JWT secret, logs, or queued/running audio jobs. Preserve compatible bucket objects and keep secrets in the operator's secret store. Variant keys contain numeric song IDs, so unrelated databases should not share the same raw/variant namespace. Enable and test the bucket recovery/versioning policy appropriate to the deployment; none is managed by this repository.
+
+For an update, retain the current release/images and a restorable database/S3 state, check out the intended source release, then run `docker compose up --build -d --wait --wait-timeout 180`. Check logs and repeat the smoke workflow below. Liquibase applies pending migrations at startup. Running an older image does not automatically undo database migrations; recovery may require the matching archive and objects. Backup/restore commands are documented procedures, not an automated or already-verified recovery pipeline.
 
 ### Verification on 2026-11-04
 
@@ -152,20 +212,34 @@ The frontend currently supports **no runtime environment variables**. Both envir
 
 ## Preparing a future hosted deployment
 
-This is a preparation path, not an existing deployment procedure:
+This is the preparation sequence for a future release, not a claim that the current local configuration is ready for public use. There is no provider-specific infrastructure or hosted deployment to update.
 
-1. Resolve the access-control, password-reset, production configuration, test, and integration issues in [known problems](known-problems.md). Frontend production compilation already passes; it does not verify API/browser flows.
-2. Provision PostgreSQL with a `boomvox` schema. Configure credentials, the JDBC URL, Liquibase schema/changelog, and Hibernate validation explicitly for `prod`. Create the schema beforehand with the application role as owner, or provide the connection-init SQL with appropriate privileges.
-3. Provision a private S3 bucket and inject the required storage properties. See the [S3 guide](../Backend/s3_music_platform_guide.md) for the current client behaviour and object layout.
-4. Install a Java runtime compatible with the Java 21 build, FFmpeg/FFprobe, and sufficient writable temporary space on the backend host. Set `SPRING_PROFILES_ACTIVE=prod`, a unique `JWT_SECRET`, database/storage configuration, and suitable multipart limits. Give the configured log directory write access.
-5. Build from `Backend/` with `./mvnw package` after making test prerequisites available. If deliberately packaging with `-DskipTests`, record that tests were skipped. Launch from the configured working directory:
+1. Resolve the access-control, password-reset, error handling, deletion consistency, test, and integration issues in [known problems](known-problems.md). The successful local smoke run does not establish complete browser or authorization correctness.
+2. Provision PostgreSQL, a dedicated application role, and a `boomvox` schema owned by that role. Retain the schema name because mappings and SQL explicitly reference it. Configure database TLS/network access for the provider. Separate the migration role from a restricted runtime role if required by the deployment; the local Compose superuser is not that setup.
+3. Provision a private S3 bucket/namespace compatible with the database and inject the required `AWS_*` variables and a unique `JWT_SECRET`. The current Java client requires static basic credentials; managed-role/session-token support needs a code change. Configure the public frontend's S3 CORS origin if the chosen audio request mode needs it. See the [storage guide](../Backend/s3_music_platform_guide.md).
+4. Build release images from the repository root and tag them with your release identifier:
 
    ```sh
-   java -jar target/boomvox-0.0.1-SNAPSHOT.jar --spring.profiles.active=prod
+   docker build -f Backend/Dockerfile -t boomvox-backend:release .
+   docker build -f Frontend/Dockerfile -t boomvox-frontend:release .
    ```
 
-6. Build the frontend image from the repository root with `docker build -f Frontend/Dockerfile -t boomvox-frontend .`. Run it on the backend's Docker network, with the backend reachable as `backend:9090`; override the prod backend port with `SERVER_PORT=9090`. Nginx serves the Angular build with client-route fallback and forwards `/api/` requests. For another static host, configure equivalent API forwarding and route fallback.
-7. Configure HTTPS termination and matching public URLs. Preserve the public Host header through the proxy chain so browser API requests remain same-origin from Spring's perspective. If using direct cross-origin API access, update the allowed origins in `SecurityConfig`, which are currently hardcoded to localhost. Apply S3 browser CORS settings if required by the selected browser access mode.
-8. Verify registration/login, authenticated catalogue requests, upload/transcoding, S3 playback and seek, collections, ratings, and history. Record public URLs, hosting provider, release identifier, secrets ownership, restart/recovery steps, and database backup/restore procedures when a real deployment is introduced.
+   Replace `release` with the version/commit you will retain. The backend image includes Java 21 and native audio tools; a separate host FFmpeg installation is unnecessary. Allow writable temporary space and preserve prod logs outside the replaceable container when needed. The backend image build skips tests; make the required release tests an explicit separate check.
+5. Select `SPRING_PROFILES_ACTIVE=prod` and provide database credentials plus the settings below. For example, put non-secret settings in an external `application-prod.properties` and mount it read-only at `/app/config/application-prod.properties` for the backend image. Supply `SPRING_DATASOURCE_URL`, `SPRING_DATASOURCE_USERNAME`, and `SPRING_DATASOURCE_PASSWORD` as process variables. Point the JDBC URL at your database with `currentSchema=boomvox` and the provider's TLS options.
 
-The backend serves only the API; there is no checked-in integration that packages the Angular build inside the Spring application. There is also no health/metrics endpoint, durable audio-job retry mechanism, or automated backup/deploy workflow at present.
+   ```properties
+   server.port=9090
+   spring.jpa.hibernate.ddl-auto=validate
+   spring.jpa.show-sql=false
+   spring.jpa.properties.hibernate.default_schema=boomvox
+   spring.liquibase.default-schema=boomvox
+   spring.liquibase.change-log=classpath:db/changelog/db.changelog-master.yaml
+   spring.servlet.multipart.max-file-size=100MB
+   spring.servlet.multipart.max-request-size=100MB
+   ```
+
+   The schema must already exist before Liquibase writes its history tables. Spring loads external configuration and environment overrides using its [configuration precedence](https://docs.spring.io/spring-boot/3.4/reference/features/external-config.html). A native packaged deployment needs the same settings and host Java 21/FFmpeg; run `java -jar target/boomvox-0.0.1-SNAPSHOT.jar --spring.profiles.active=prod` from `Backend/` with external configuration supplied. Do not assume root Compose dotenv variables are loaded by a native JVM.
+6. Run the frontend and backend on the same private network with upstream `backend:9090`, or adjust Nginx for the chosen routing. Keep the browser API base `/api`. Put a public HTTPS entry point in front of the frontend and configure trusted forwarding of the public host, scheme, and port through the complete proxy chain. The checked-in Nginx uses its own `$scheme`; if another proxy terminates TLS, adapt forwarding and Spring's trusted forwarded-header handling. Configure the actual allowed origin in `SecurityConfig` when Spring treats requests as cross-origin; there is no configurable origin environment variable today. Keep the database private and avoid publishing the API debug port publicly.
+7. Back up, run migrations, check readiness, and repeat registration/login, upload/transcoding, signed playback and seek, collections, ratings, and history in the target browser. Test role/ownership rejection and recovery as well. Retain a release-specific rollback/recovery procedure, database/object archives, and the previous images. Record the actual URLs, provider, release identifier, and operational owner when hosting is introduced.
+
+The API and frontend remain separate images. Compose currently offers readiness checks using OpenAPI/static HTTP, not a dedicated health/metrics endpoint. Durable worker retries/recovery, scheduled tested backups, and automated hosted deployment are still unimplemented.

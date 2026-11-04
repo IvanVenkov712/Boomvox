@@ -1,13 +1,13 @@
 # Backend backlog
 
-The previous notes about controllers being added later are obsolete: ten controllers now exist, including administration. The [known problems](../docs/known-problems.md) document is the source for current evidence, impact, and suggested repairs.
+Ten REST controllers and the local three-service Compose stack are implemented. This backlog tracks remaining work; the [known problems](../docs/known-problems.md) document supplies evidence and the [verification record](../docs/deployment.md#verification-on-2026-11-04) distinguishes passing checks from unverified behavior.
 
 ## Before public deployment
 
 - Activate method security and implement catalogue/session ownership checks.
 - Replace direct password-reset-token disclosure with a verified delivery flow.
-- Supply a unique JWT signing secret and fix refresh/logout authentication requirements.
-- Map custom exceptions to HTTP statuses and a stable JSON error response.
+- Retain per-environment JWT secrets (Compose now injects one) and fix refresh/logout authentication requirements.
+- Map custom exceptions to HTTP statuses and stable JSON errors; prevent `/error` dispatch from hiding validation failures behind 403.
 - Define complete production database/schema, upload-limit, origin, and credential configuration.
 
 ## Local build and integration
@@ -25,10 +25,10 @@ The previous notes about controllers being added later are obsolete: ten control
 
 - Make backend tests self-contained and fix the test profile/logger configuration.
 - Repair the 14 obsolete service imports blocking `npm test -- --watch=false`, then update generated assertions/providers and add meaningful API/UI contract coverage.
-- Add access-control, clean-migration, upload/processing, playback, and deletion checks.
+- Turn the manually executed clean-migration, persistence, upload/processing, and audio/range checks into repeatable integration coverage; add access-control, browser playback, deletion, and failure/recovery tests.
 - Remove or reconcile unused AI configuration/dependencies.
 - Bound catalogue recommendation queries as data grows; define whether click analytics are required.
-- Introduce deployment/health/backup/recovery procedures when hosting is added.
+- Add hosted deployment automation, a dedicated health/metrics endpoint, scheduled backups, and verified restore/worker recovery. Local readiness checks and manual backup/restore instructions already exist.
 
 ## Completed setup work (2026-11-04)
 

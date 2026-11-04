@@ -30,6 +30,8 @@ The asynchronous [`AudioProcessingJob`](src/main/java/bg/fmi/uni/boomvox/job/Aud
 
 The upload service currently starts that job before its own transaction commits, and neither a DB rollback nor an S3 failure automatically undoes the other system's changes. Deletion also lacks complete foreign-key cleanup. These are [known consistency problems](../docs/known-problems.md).
 
+Local Compose verification on 2026-11-04 completed a one-second WAV upload, three READY variants, signed download, and byte-range requests. It also confirmed that deleting the played song removed its S3 objects before failing on `fk_streaming_session_song`. Successful processing in that run does not resolve the transaction race or job durability limits. The temporary records were removed after verification; see the [record](../docs/deployment.md#verification-on-2026-11-04).
+
 ## Recommendation inputs
 
 Preferences combine listening ratios, +4 for favourites, and `grade - 5` for ratings. Recommendation scoring weights genre by 3, artist by 2, tags by 1, and popularity by 0.25. It excludes listened-to/favourited songs and only considers `ACTIVE` songs. See the [architecture formula](../docs/architecture.md#recommendations) for the complete calculation and normalisation.
@@ -38,4 +40,4 @@ The click method returns an existing recommendation without recording a click. T
 
 ## Current gaps
 
-Custom exceptions have no HTTP mapping. Catalogue services lack resource ownership checks, session mutations lack caller ownership checks, and parent deletion does not remove all dependent records. Song metadata update does not reassign album/format even though its request accepts them. Albumless upload conflicts with JPA nullability. Consult [known problems](../docs/known-problems.md) before extending these workflows.
+Custom exceptions have no HTTP mapping, and the error dispatch can mask failures as 403. Catalogue services lack resource ownership checks, session mutations lack caller ownership checks, and parent deletion does not remove all dependent records. Song metadata update does not reassign album/format even though its request accepts them. An albumless upload passed verification, but JPA nullability remains inconsistent with the migrated SQL schema and the author/genre model. Consult [known problems](../docs/known-problems.md) before extending these workflows.

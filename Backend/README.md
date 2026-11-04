@@ -19,12 +19,14 @@ The POM includes a Spring AI Ollama starter, while configuration also mentions O
 
 ## Install and run
 
+For the complete container stack, follow the [root quick start](../README.md#install-and-run-with-docker-compose). Run `docker compose up --build -d --wait --wait-timeout 180` from the repository root after configuring its `.env`. Docker supplies Java 21, PostgreSQL 17, FFmpeg/FFprobe, and the frontend; the steps below are for native Java development.
+
 ### 1. Install prerequisites
 
 On Windows:
 
 1. Download a JDK 21 installer from the [Temurin releases page](https://adoptium.net/temurin/releases/?version=21), select the JDK package for your architecture, and install it. Set `JAVA_HOME` to the JDK directory and add its `bin` directory to `PATH` if the installer has not done so.
-2. Use an installer linked by the [PostgreSQL Windows downloads page](https://www.postgresql.org/download/windows/). Install the server and command-line tools, retain port `5432`, and remember the administrator password you choose. Add the PostgreSQL `bin` directory to `PATH` to use `psql`. The repository does not pin a PostgreSQL major version.
+2. Install PostgreSQL 17 using a provider linked by the [PostgreSQL Windows downloads page](https://www.postgresql.org/download/windows/). Install the server and command-line tools, retain port `5432`, and remember the administrator password you choose. Add its `bin` directory to `PATH` to use `psql`. PostgreSQL 17 is the major version configured and verified in Compose.
 3. Get a Windows executable build linked from the [FFmpeg downloads page](https://ffmpeg.org/download.html), extract it to a stable directory, and add the directory containing `ffmpeg.exe` and `ffprobe.exe` to `PATH`. The build needs MP3 (`libmp3lame`) and AAC encoders.
 
 On macOS/Linux, install the same JDK 21, PostgreSQL, and FFmpeg/FFprobe prerequisites using the downloads for your OS or its package manager. Start PostgreSQL and ensure the required binaries are on `PATH`. Set `JAVA_HOME` to the JDK installation directory.
@@ -68,10 +70,10 @@ Create a private S3 bucket and credentials that can put, get, and delete objects
 From `Backend/`, copy the example **if you do not already have `.env`**:
 
 ```powershell
-Copy-Item .env.example .env
+if (-not (Test-Path .env)) { Copy-Item .env.example .env }
 ```
 
-On macOS/Linux, use `cp -n .env.example .env`. Edit the copied file, replace all required placeholders, and set a unique JWT signing secret of at least 32 bytes. The file uses Java properties syntax (`aws.region=...`, without `export` or shell quotes); Spring imports it relative to the process working directory.
+On macOS/Linux, use `test -e .env || cp .env.example .env`. Edit the copied file, replace all required placeholders, and set a unique JWT signing secret of at least 32 bytes. The file uses Java properties syntax (`aws.region=...`, without `export` or shell quotes); Spring imports it relative to the process working directory. The root Compose `.env` instead uses uppercase variables; the files are not interchangeable.
 
 The example covers the required AWS and JWT properties plus optional database overrides. The [full reference](../docs/deployment.md#configuration-reference) explains every setting and its OS environment-variable equivalent. Do not commit credentials or reuse the repository's built-in JWT secret outside disposable local development.
 
@@ -89,7 +91,7 @@ On macOS/Linux:
 ./mvnw spring-boot:run
 ```
 
-If the wrapper is not executable on macOS/Linux, run `chmod +x mvnw` first. The default `dev` profile listens on **9090**, overriding the base configuration's 8099.
+If the wrapper is not executable on macOS/Linux, run `chmod +x mvnw` first. If a Windows checkout has CRLF endings and reports a `sh`/carriage-return error, normalize the wrapper first, for example `perl -pi -e 's/\r$//' mvnw` when Perl is available, or save it with LF endings in your editor. The Dockerfile normalizes it automatically. The default `dev` profile listens on **9090**, overriding the base configuration's 8099.
 
 | Local URL | Purpose |
 | --- | --- |
@@ -119,6 +121,8 @@ Registration creates an `ORDINARY_USER` and a personal favourites list. Login us
 
 No administrator is seeded. For a fresh local installation, register an account, then use a trusted database administrator connection to assign its initial role:
 
+For Compose, open the connection from the repository root with `docker compose exec db psql -U boomvox -d postgres`. For native setup, use `psql -U postgres -d postgres` against your local server.
+
 ```sql
 UPDATE boomvox."user" SET role = 'ADMIN' WHERE email = 'your-local-admin@example.test';
 ```
@@ -145,15 +149,20 @@ See [architecture](../docs/architecture.md), [controllers](../docs/Controllers.m
 
 ## Deployment and troubleshooting
 
-No instance is currently hosted. The `prod` profile changes logging, but still needs explicit database, schema, storage, JWT, and multipart configuration. Follow the [deployment guide](../docs/deployment.md) before using it.
+The local Compose stack is verified; no public instance is currently hosted. Build this image independently from the repository root with `docker build -f Backend/Dockerfile -t boomvox-backend .`. The two stages compile/package with Java 21 and run with a Java 21 JRE, FFmpeg/FFprobe, and curl. Runtime UID/GID 10001 is non-root, with writable `/app/logs` and `/app/tmp`. Packaging skips tests. Supply database, AWS, and JWT values at runtime; the image contains no local `.env` file.
+
+Compose selects `dev`, overrides the database URL to `db:5432/postgres?currentSchema=boomvox`, and publishes API port 9090 on localhost. Its readiness check uses `/v3/api-docs`, not Actuator. Local verification passed all 21 migrations, registration/login, S3 upload, three audio variants, signed downloads, and persistence after container recreation. See the [verification record](../docs/deployment.md#verification-on-2026-11-04).
+
+The `prod` profile changes logging, but still needs explicit database, schema, storage, JWT, and multipart settings. Follow the [hosted deployment guide](../docs/deployment.md#preparing-a-future-hosted-deployment) before using it.
 
 | Symptom | Check |
 | --- | --- |
-| Database connection or schema error | PostgreSQL process, role/password, `currentSchema=boomvox`, and schema ownership/creation privileges |
+| Database connection or schema error | Use `db:5432` in Compose or `localhost:5432` natively; check role/password, `currentSchema=boomvox`, and schema ownership. Changing the root `.env` password does not update an initialized database role. |
 | AWS property resolution or credential error | `.env` location, required values, AWS region, and bucket permissions |
 | Upload remains `PROCESSING` or becomes `FAILED` | Backend logs, FFmpeg/FFprobe on `PATH`, temp disk space, S3 permissions, and the async transaction issue in known problems |
-| Browser cannot call the API | API at port 9090 and frontend origin exactly `http://localhost:4200`; CORS is hardcoded |
+| Browser cannot call the API | Browser requests should use `/api`; inspect the development proxy or Nginx and backend health. Direct cross-origin access still uses the hardcoded `http://localhost:4200` CORS policy. |
 | Audio does not play | Song is `ACTIVE`, a `READY` variant exists, signed URL has not expired, and S3 is reachable from the browser |
-| Missing resource or invalid login yields an unexpected server error | Custom exceptions do not yet have HTTP exception mapping |
+| Invalid input or login yields an unexpected error or empty 403 | Custom exceptions have no HTTP mapping, and the protected `/error` dispatch can mask the original response |
+| Deleting a played song fails or audio disappears | Known dependency cleanup defect: S3 deletion happens before a DB delete that can fail on playback/other foreign keys. Back up and inspect DB/S3 state; do not retry blindly. |
 
 The [known problems](../docs/known-problems.md) distinguish implementation defects from missing operational configuration.

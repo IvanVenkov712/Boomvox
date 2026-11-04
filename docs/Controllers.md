@@ -29,6 +29,9 @@ Artists are users with role `AUTHOR`, not a separate entity or `ARTIST` enum val
 - Rating submission and song-tag attachment accept a path song ID but use the body song ID without comparing them.
 - `StreamingSessionController` binds the unannotated `LogEventRequest` and `UpdateSessionRequest`; the stricter alternate streaming DTOs are not used there.
 - Custom exceptions have no HTTP mapping; `ErrorResponse` is not connected to controller advice.
+- The protected error dispatch can hide validation/server failures behind an empty 403; this was reproduced with an invalid registration body. Song deletion after a stream session was also confirmed to fail on a foreign key after S3 removal.
 - Frontend calls to `GET /api/songs/{songId}/tags` and `DELETE /api/albums/{albumId}` have no matching controller methods.
 
 See [known problems](known-problems.md) for source evidence and [service responsibilities](../Backend/Services.md) for the next layer.
+
+The controller paths are unchanged by containerization. Angular sends `/api` requests through its development proxy or Nginx; the API remains at `backend:9090` inside Compose and `localhost:9090` on its published debug port. See the [local setup and verification](deployment.md#docker-compose-local-stack).

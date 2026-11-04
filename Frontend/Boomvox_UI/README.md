@@ -4,6 +4,8 @@ Boomvox UI is an Angular application for discovering and listening to music, man
 
 ## Install and run
 
+To run the complete stack without host Node.js, use the [Compose quick start](../../README.md#install-and-run-with-docker-compose). The following steps start the Angular development server for editing the UI. Stop the Compose frontend first if it already occupies port 4200; a native backend needs API port 9090 free as well.
+
 The workspace includes `package.json`, `package-lock.json`, `angular.json`, and `tsconfig*.json`. It declares Angular 21.2, TypeScript 5.9, RxJS 7.8, and a Vitest 4/jsdom test target. `package.json` declares `npm@11.14.1`; installation and production compilation were verified on 2026-11-04 with Node.js 24.22.1 and npm 11.19.1.
 
 1. Install Node.js 24 and npm 11. Reopen the terminal and check `node --version` and `npm --version`.
@@ -29,7 +31,7 @@ Run these commands from this directory:
 | Command | Purpose and current status |
 | --- | --- |
 | `npm ci` | Install the locked dependency tree; verified with `--no-audit --no-fund` |
-| `npm start -- --host localhost --port 4200` | Start the development server; browser/API flows have not been verified |
+| `npm start -- --host localhost --port 4200` | Start the development server with the configured `/api/**` proxy; forwarding was verified against a mock API |
 | `npm run build` | Default production build; passed, output in `dist/Boomvox_UI/browser/` |
 | `npm run build -- --configuration development` | Build with source maps and without production optimisation |
 | `npm test -- --watch=false` | Run the configured Angular/Vitest target once; currently fails during test compilation |
@@ -37,6 +39,8 @@ Run these commands from this directory:
 The production build completed with four non-blocking warnings: unused `RouterLinkActive` in `navbar.ts`, and component styles exceeding the 4 kB warning budget in `upload.css` (6.63 kB), `playlist-detail.css` (4.21 kB), and `profile.css` (4.65 kB). None exceeded the 8 kB error budget.
 
 The test command failed with 14 `TS2305` errors because service specs import old names such as `Auth` instead of `AuthService`. Test cases did not execute. The app spec also still expects the generated welcome title. Production compilation excludes `*.spec.ts`, so this failure does not block `npm run build`. See [verification and test coverage](../../docs/known-problems.md#verification-and-test-coverage).
+
+The frontend image and full local Compose stack were also verified on 2026-11-04. HTTP checks passed route refresh, registration/login, authenticated requests, S3 upload, three encoded variants, signed downloads, and byte-range seeking. Visual browser interaction and every UI flow remain unverified; see the [verification record](../../docs/deployment.md#verification-on-2026-11-04).
 
 `.gitignore` excludes `node_modules/`, `.angular/`, `dist/`, `out-tsc/`, coverage, and package-manager logs. Keep the lockfile and workspace configuration under version control.
 

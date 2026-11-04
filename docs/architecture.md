@@ -1,12 +1,13 @@
 # Architecture
 
-This document describes the source reviewed on 2026-10-29, with frontend workspace/build details updated on 2026-11-04. Boomvox has an Angular single-page application and one Spring Boot backend process. PostgreSQL holds application data, and S3 holds audio. There is no current hosted deployment.
+This document describes the source and local container topology reviewed through 2026-11-04. Boomvox has an Angular single-page application and one Spring Boot backend process. PostgreSQL holds application data, and S3 holds audio. The local Compose stack has passed selected HTTP/database/storage checks; there is no hosted public deployment.
 
 ## Components
 
 ```mermaid
 flowchart LR
     Browser[Angular UI and browser Audio]
+    Proxy[Nginx container or Angular development proxy]
     API[Spring Boot REST API]
     Security[JWT authentication]
     Services[Business services]
@@ -14,7 +15,8 @@ flowchart LR
     Job[Async audio processing: FFmpeg and FFprobe]
     S3[(Private S3 bucket)]
 
-    Browser -->|JSON and multipart HTTP| API
+    Browser -->|Same-origin /api JSON and multipart| Proxy
+    Proxy -->|Preserved /api path| API
     API --> Security
     Security --> Services
     Services -->|JPA repositories| DB
@@ -29,6 +31,20 @@ flowchart LR
 The backend is a layered monolith. Controllers map HTTP requests and DTOs; services implement business operations; Spring Data repositories access entities. `StreamingController` also reads repositories directly to select audio variants. Audio processing runs in the same JVM, using an executor with 2 core threads, 4 maximum threads, and queue capacity 50. There is no external job broker or separate worker service.
 
 The frontend uses Angular 21.2 standalone components, router providers, signals, and RxJS 7.8 HTTP requests, compiled with TypeScript 5.9. Application-scoped services retain user/catalogue state and the audio player across route changes. There is no server-side rendering configuration or global state-store package in the checked-in source. The npm lockfile and Angular/TypeScript workspace configuration are present. `@angular/build:application` produces static browser assets in `dist/Boomvox_UI/browser/`; the default production build passed on 2026-11-04. The `@angular/build:unit-test` target uses Vitest, but outdated spec imports currently prevent test compilation. See the [frontend README](../Frontend/Boomvox_UI/README.md#build-and-test-status) for commands and warnings.
+
+## Local container topology
+
+`docker-compose.yml` defines three services on its default network:
+
+| Service | Runtime and traffic | Persistence/readiness |
+| --- | --- | --- |
+| `frontend` | Node.js 24 builds Angular; Nginx serves it on container port 80, published at `127.0.0.1:4200`. `/api/` forwards to `backend:9090`. | HTTP `/` health check; starts after backend readiness. Angular routes fall back to `index.html`. |
+| `backend` | Java 21 JRE, FFmpeg/FFprobe, non-root UID/GID 10001. API port 9090 is published on localhost for debugging/Swagger. | HTTP `/v3/api-docs` health check; starts after database readiness. Writable temporary/log directories are inside the container. |
+| `db` | PostgreSQL 17, internal `db:5432`, database `postgres`, role `boomvox`, schema `boomvox`. No host port is published. | Named volume `boomvox_postgres_data`; TCP `pg_isready` readiness check. |
+
+Both Dockerfiles use the repository root as build context, with `.dockerignore` excluding local secrets and generated/dependency directories. Compose injects uppercase variables from the ignored root `.env`, selects the backend `dev` profile, and overrides its JDBC hostname. Native development instead loads Java properties from `Backend/.env`, connects to `localhost:5432`, and uses Angular's development proxy to reach port 9090. Neither Angular bundle contains server secrets.
+
+PostgreSQL data survives container removal; logs, temporary audio files, and in-memory jobs are not durable application state. S3 remains external to Compose. The readiness checks do not validate bucket access or complete audio processing.
 
 ## Data model
 
@@ -62,7 +78,7 @@ erDiagram
     SONG ||--o{ LISTENING_HISTORY : records
 ```
 
-The diagram reflects the intended SQL relationships after all included changes. In particular, migration 021 makes `song.album_id` optional, while the `Song` JPA mapping still declares it non-nullable; this inconsistency is a known problem. The existing [database image](db_er_diagram.png) is a historical illustration and may omit newer entities/changes.
+The diagram reflects SQL relationships after all included changes. Migration 021 makes `song.album_id` optional, while the `Song` JPA mapping still declares it non-nullable. An albumless upload passed the local Compose check, but that source inconsistency remains and albumless songs have no album-derived artist/genre. The existing [database image](db_er_diagram.png) is historical and may omit newer entities/changes.
 
 | Concept | Representation |
 | --- | --- |
@@ -149,6 +165,8 @@ The implementation scans the catalogue and performs per-song tag lookups, so que
 
 ## Operations and further reading
 
-The current runtime target is local development. PostgreSQL and S3 are external dependencies; FFmpeg, temporary disk space, and background threads are on the backend host. There is no checked-in container definition, deployment automation, hosted URL, or configured health endpoint.
+The current verified target is the local Compose stack. In native development, PostgreSQL and FFmpeg are host prerequisites; containers provide them for Compose. S3 stays external in both paths. Dockerfiles and readiness checks exist, while hosted release automation, a dedicated health/metrics endpoint, and durable worker recovery do not.
+
+Local verification passed clean migrations, authentication, container-recreation persistence, upload/transcoding, three READY variants, signed audio download, and byte ranges. The same check confirmed error-dispatch and song-deletion defects. See the [verification record](deployment.md#verification-on-2026-11-04); this is not full browser or concurrency coverage.
 
 See [deployment/configuration](deployment.md), [API contracts](project-endpoints.md), [frontend internals](../Frontend/Boomvox_UI/README.md), and [known problems](known-problems.md) for setup and practical limits.

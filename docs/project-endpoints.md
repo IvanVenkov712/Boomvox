@@ -1,6 +1,6 @@
 # Boomvox API reference
 
-This reference documents the implemented controllers and DTOs reviewed on 2026-10-29. The local development base URL is **`http://localhost:9090/api`**. There is no hosted API. Paths in the tables below are relative to `/api`.
+This reference documents the implemented controllers and DTOs, originally reviewed on 2026-10-29 and reconciled with local Compose verification on 2026-11-04. Browser requests use **`/api`**, available through Nginx at `http://localhost:4200/api` or the Angular development proxy. Direct API/debug requests can use **`http://localhost:9090/api`**. There is no hosted API. Paths below are relative to `/api`.
 
 Generated descriptions are available from a running backend at `/v3/api-docs` and `/swagger-ui/index.html`, outside the `/api` prefix. See the [backend README](../Backend/README.md) for installation and the [controller map](Controllers.md) for endpoint ownership.
 
@@ -70,7 +70,7 @@ The profile update accepts only username, first name, and last name. `UserRespon
 
 Catalogue browsing/search returns `ACTIVE` songs. Direct song lookup and the album/artist song lists do not apply that same status filter. `genre` and `artistId` are resolved through a song's album. `format` filters the original song format, rather than the available encoded variants. Artist listing selects `AUTHOR` accounts; artist detail retrieves a user by ID without checking that role.
 
-Upload accepts only the exact MIME types `audio/mpeg` and `audio/wav`. The controller rejects files larger than 100 MiB; the dev servlet request/file limits are also `100MB`. Upload metadata permits a null/omitted `albumId`, though the JPA mapping still conflicts with that behaviour. The service derives format from MIME type, and the job later replaces duration using FFprobe. A 201 response indicates upload acceptance, not completed transcoding; poll the returned song until `processingStatus` is `ACTIVE` or `FAILED`.
+Upload accepts only the exact MIME types `audio/mpeg` and `audio/wav`. The controller rejects files larger than 100 MiB; dev servlet request/file limits are `100MB`, and Nginx sets `client_max_body_size 100m`. Multipart overhead counts toward request limits. Upload metadata permits a null/omitted `albumId`; an albumless WAV passed Compose verification, although JPA nullability is still inconsistent. The service derives format from MIME type, and the job later replaces duration using FFprobe. A 201 response indicates acceptance, not completed transcoding; poll until `processingStatus` is `ACTIVE` or `FAILED`.
 
 `SongRequest` is a different contract from upload metadata: it requires format, duration, file size, and storage key. The update implementation changes name, duration, file size, and storage key; it looks up the submitted album but does not reassign album or format. It is not an audio replacement endpoint.
 
@@ -207,15 +207,15 @@ An enum value existing does not imply an upload MIME type or a UI control suppor
 
 ## Errors and limitations
 
-Success statuses in the endpoint tables are explicit controller responses. Invalid JSON, invalid enum values, and failures of annotated Bean Validation normally produce HTTP 400. Spring Security handles access failures, but no custom authentication entry point or common JSON error response is configured; do not assume every authentication failure is HTTP 401.
+Success statuses in the tables are explicit controller responses. Spring MVC ordinarily maps invalid JSON/enums and annotated Bean Validation failures to HTTP 400, but the current protected `/error` dispatch can mask that response. Verified through Compose: unauthenticated `POST /auth/register` with JSON `{}` returned an empty 403 both with and without an Origin header; valid registration returned 201. No common JSON error response or custom authentication entry point is configured, so do not assume every authentication failure is HTTP 401.
 
-`NotFoundException`, `ValidationException`, `StorageException`, and `AudioProcessingException` have no HTTP status mapping or controller advice. Missing resources, incorrect credentials, duplicate membership, and service-level validation can therefore surface as HTTP 500 rather than the intended 404/400. `ErrorResponse` exists but is not wired into exception handling. There is no stable application-specific error envelope to depend on yet.
+`NotFoundException`, `ValidationException`, `StorageException`, and `AudioProcessingException` have no HTTP status mapping or controller advice. Missing resources, incorrect credentials, duplicate membership, and business validation can trigger server errors, potentially masked by error-dispatch authorization. `ErrorResponse` exists but is not wired into exception handling. There is no stable application-specific error envelope yet.
 
-Song and playlist deletion can fail on dependent foreign keys; S3 deletes are not transactional with PostgreSQL. Method annotations and session ownership are also incomplete. See [known problems](known-problems.md) for evidence and follow-up.
+Song and playlist deletion can fail on dependent foreign keys; S3 deletes are not transactional with PostgreSQL. The Compose check confirmed that deleting a song after requesting its stream URL removed S3 objects and then failed on `fk_streaming_session_song`. Method annotations and session ownership are also incomplete. See [known problems](known-problems.md) and the [verification record](deployment.md#verification-on-2026-11-04).
 
 ## Examples
 
-These examples use a POSIX shell and `curl`. On Windows, use an equivalent JSON-capable REST client or adjust quoting for `curl.exe`/PowerShell. Replace IDs and `<token>` with values from your running local application. No example domain or credential represents a deployed service.
+These examples use a POSIX shell and `curl` against the published API/debug port. To exercise Nginx instead, replace `http://localhost:9090/api` with `http://localhost:4200/api`. On Windows, use a JSON-capable REST client or adjust quoting for `curl.exe`/PowerShell. Replace IDs and `<token>` with values from your application. No example domain or credential represents a deployed service.
 
 Register (creates an ordinary user):
 

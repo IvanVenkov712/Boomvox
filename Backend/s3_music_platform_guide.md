@@ -1,10 +1,12 @@
 # S3 storage and audio processing
 
-This guide documents the current implementation. It replaces the earlier proposed integration tutorial and its cost estimates. No hosted application, production bucket name, or bucket region is established by the repository. Supply your own bucket and credentials using the [configuration reference](../docs/deployment.md#configuration-reference).
+This guide documents the current implementation and the local Compose verification on 2026-11-04. It replaces the earlier proposed integration tutorial and cost estimates. No hosted application or public production bucket identity is established by the repository. Supply your own bucket and credentials using the [configuration reference](../docs/deployment.md#configuration-reference).
 
 ## Runtime model
 
 Spring Boot uploads audio to S3 and generates temporary signed GET URLs. The browser plays those URLs directly; the API does not proxy audio bytes. Audio processing runs in the backend JVM through an in-memory executor, using FFmpeg/FFprobe and temporary files on the same host.
+
+Compose provides PostgreSQL, the API, and Nginx, but it does not create or emulate S3. The backend image includes FFmpeg/FFprobe and writable `/app/tmp`; native development requires those tools and temporary space on the host. Relative `/api` requests go through Nginx or the Angular development proxy; signed audio requests still go directly to S3.
 
 | Object | Key pattern | Lifecycle |
 | --- | --- | --- |
@@ -19,7 +21,27 @@ Spring Boot uploads audio to S3 and generates temporary signed GET URLs. The bro
 
 Create a bucket using the [AWS bucket creation instructions](https://docs.aws.amazon.com/AmazonS3/latest/userguide/create-bucket-overview.html), retain Block Public Access, and record its name and region. The current client needs object put/get/delete permissions scoped to that bucket's raw and variant prefixes. `S3Config` constructs both the client and presigner with the configured region and static basic credentials. It does not read a session token, use instance roles, or implement a configurable local S3 endpoint.
 
-Copy [`.env.example`](.env.example) to an ignored `.env` from `Backend/` if no `.env` exists. Set `aws.region`, `aws.accessKeyId`, `aws.secretAccessKey`, `aws.s3.bucket`, and `aws.s3.signedUrlExpiryMinutes`. Alternatively, set the explicitly mapped `AWS_*` process variables. The Java-properties file format and all variable purposes are in [deployment/configuration](../docs/deployment.md).
+For these object operations, the example identity policy below follows [AWS's object/prefix policy examples](https://docs.aws.amazon.com/AmazonS3/latest/userguide/example-policies-s3.html); replace `YOUR_BUCKET` with your bucket. Other account controls, encryption/key policies, and operator permissions must also permit the operation.
+
+```json
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Action": ["s3:PutObject", "s3:GetObject", "s3:DeleteObject"],
+      "Resource": [
+        "arn:aws:s3:::YOUR_BUCKET/raw/uploads/*",
+        "arn:aws:s3:::YOUR_BUCKET/variants/*"
+      ]
+    }
+  ]
+}
+```
+
+For Compose, copy [`.compose.env.example`](../.compose.env.example) to the ignored root `.env` if absent. Set `AWS_REGION`, `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, and `AWS_S3_BUCKET`, plus its database/JWT secrets. Compose explicitly supplies signing expiry 15. See the [container setup](../docs/deployment.md#docker-compose-local-stack).
+
+For native development, copy [`.env.example`](.env.example) to an ignored `.env` from `Backend/` if absent. Set `aws.region`, `aws.accessKeyId`, `aws.secretAccessKey`, `aws.s3.bucket`, and `aws.s3.signedUrlExpiryMinutes`, plus a unique JWT secret. Alternatively supply the explicitly mapped `AWS_*` process variables. The native Java-properties file and Compose dotenv file are different formats; see [deployment/configuration](../docs/deployment.md).
 
 No AWS or database credential belongs in the Angular source. The browser receives only temporary playback URLs. S3 access is authorised by the URL signature, independently of the application's JWT.
 
@@ -37,7 +59,7 @@ If browser requests use CORS, allow the frontend's exact origin and the GET/HEAD
 ]
 ```
 
-Browser audio can use different cross-origin request modes; this rule does not grant public bucket access or replace signed URL permissions. API CORS in `SecurityConfig` is separate from S3 CORS. The backend's server-to-server uploads do not require a browser PUT rule.
+Browser audio can use different cross-origin request modes; this rule does not grant public access or replace signed URL permissions. Add the real HTTPS frontend origin for a hosted release; see [AWS's CORS element reference](https://docs.aws.amazon.com/AmazonS3/latest/userguide/ManageCorsUsing.html). API CORS in `SecurityConfig` is separate from S3 CORS. Backend server-to-server uploads do not require a browser PUT rule.
 
 ## Upload and processing
 
@@ -70,6 +92,8 @@ Pause/resume/seek events go to `/api/streaming/events`. Terminal status goes to 
 
 Deleting a song attempts to delete the three standard variant keys and its stored raw key. Failed S3 deletions are logged without aborting the operation. PostgreSQL foreign keys can still reject parent deletion, so file/database consistency is not guaranteed. The song's original storage key remains in its DTO even after the corresponding raw object is deleted.
 
+This deletion failure was observed after a stream request created a playback session: the variants were deleted, then `fk_streaming_session_song` rejected the song-row deletion. Do not treat a failed delete as an unchanged operation. Inspect both storage and relational state before recovery. Keep database backups and S3 recovery/versioning state together; numeric song IDs in variant keys mean unrelated databases must not share the same variant namespace.
+
 | Symptom | Checks |
 | --- | --- |
 | Upload rejected before the controller | File/request size limits and multipart overhead; both need explicit configuration outside dev |
@@ -80,5 +104,9 @@ Deleting a song attempts to delete the three standard variant keys and its store
 | Browser cannot play or seek | Reachable object, valid URL, browser audio support, request mode/CORS and Range response behaviour |
 | Expiry differs from `expiresAt` | Fixed controller expiry versus configured signing duration |
 | Raw or partial variant objects accumulate | Failure cleanup is incomplete; a bucket lifecycle policy for raw uploads may be configured externally, but none is managed by this repository |
+
+## Verified local path
+
+On 2026-11-04, the full Compose stack accepted an albumless one-second WAV through Nginx, uploaded it to the configured private S3 bucket, produced all three READY variants, and marked the song ACTIVE. A signed URL returned audio with HTTP 200; a `bytes=0-99` request returned HTTP 206 and 100 bytes. Temporary objects/DB records were removed after the test. This validates that path once, not browser codec/CORS behavior, job concurrency, or recovery after failure. See the [verification record](../docs/deployment.md#verification-on-2026-11-04).
 
 There is no implemented CDN, HLS/DASH pipeline, adaptive quality selection, or signed URL cache. Performance/cost depends on your bucket, region, catalogue, and traffic; no current hosting cost has been measured.
