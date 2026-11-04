@@ -2,7 +2,7 @@
 
 ## Current deployment
 
-**Boomvox is not currently deployed to a hosted environment**, confirmed by the maintainer on 2026-10-29. The repository contains local development settings and a partial production profile. There are no checked-in Dockerfiles, Compose files, infrastructure definitions, CI/CD workflows, hosted frontend/API URLs, or deployment scripts.
+**Boomvox is not currently deployed to a hosted environment**, confirmed by the maintainer on 2026-10-29. The repository contains local development settings, a partial production profile, and backend/frontend Dockerfiles. The frontend image uses Nginx to serve Angular and proxy API requests. Full-stack Compose orchestration is not yet configured; there are no hosted frontend/API URLs or CI/CD workflows.
 
 | Component | Current local configuration | Source |
 | --- | --- | --- |
@@ -13,7 +13,7 @@
 | Audio storage | An externally configured private S3 bucket; no bucket identity is tracked in the example | `S3Config`, `FileStorageService` |
 | Audio processor | FFmpeg/FFprobe in the backend JVM's host environment, using local temporary files | `AudioProcessingJob` |
 
-Both frontend environment files currently point to the local API on port 9090. Historical documentation's `https://api.Boomvox.com` was an example, not an active service address.
+Both frontend environment files use `/api` on the browser's current origin. The Angular development server proxies API requests to `localhost:9090`; the container's Nginx proxies them to `backend:9090` on its Docker network. Historical documentation's `https://api.Boomvox.com` was an example, not an active service address.
 
 ## Installing and starting locally
 
@@ -85,7 +85,7 @@ Hyphens are removed when expressing canonical Spring properties as environment-v
 
 The POM includes the Ollama starter while the dev YAML has its Ollama section commented out and contains OpenAI settings. Supplying `OPENAI_API_KEY` does not switch starters or make recommendations AI-powered. The checked-in business services do not call either provider. Reconcile/remove that configuration before treating either as an operational dependency.
 
-The frontend currently supports **no runtime environment variables**. Its `apiUrl` constants are browser-visible build inputs. The production target in `angular.json` does not define `fileReplacements`, so `environment.prod.ts` is not selected: even `npm run build` uses `environment.ts` with `production: false` and `http://localhost:9090/api`. Add production replacement wiring and the intended API URL before hosting. Server secrets belong in backend configuration.
+The frontend currently supports **no runtime environment variables**. Both environment files use the browser-visible API base `/api`. The production target in `angular.json` replaces `environment.ts` with `environment.prod.ts`, selecting `production: true`. `npm start` loads `proxy.conf.json` automatically and forwards `/api/**` to `http://localhost:9090`; the frontend image uses `Frontend/nginx.conf` to forward `/api/` to `http://backend:9090`. Both proxies preserve the API path. See the [frontend container instructions](../Frontend/Boomvox_UI/README.md#container-image). Server secrets belong in backend configuration.
 
 ## Profile behaviour
 
@@ -111,8 +111,8 @@ This is a preparation path, not an existing deployment procedure:
    java -jar target/boomvox-0.0.1-SNAPSHOT.jar --spring.profiles.active=prod
    ```
 
-6. Configure the frontend production API URL and environment replacement in `angular.json`. From `Frontend/Boomvox_UI/`, run `npm ci` and `npm run build`. Serve `dist/Boomvox_UI/browser/` with a static host that falls back to `index.html` for client routes. The current production build succeeds with warnings, but its localhost API configuration is unsuitable for a hosted release.
-7. Set the API's permitted frontend origin in `SecurityConfig`; it is currently hardcoded to localhost. Configure HTTPS termination and matching public URLs. Apply S3 browser CORS settings if required by the selected browser access mode.
+6. Build the frontend image from the repository root with `docker build -f Frontend/Dockerfile -t boomvox-frontend .`. Run it on the backend's Docker network, with the backend reachable as `backend:9090`; override the prod backend port with `SERVER_PORT=9090`. Nginx serves the Angular build with client-route fallback and forwards `/api/` requests. For another static host, configure equivalent API forwarding and route fallback.
+7. Configure HTTPS termination and matching public URLs. Preserve the public Host header through the proxy chain so browser API requests remain same-origin from Spring's perspective. If using direct cross-origin API access, update the allowed origins in `SecurityConfig`, which are currently hardcoded to localhost. Apply S3 browser CORS settings if required by the selected browser access mode.
 8. Verify registration/login, authenticated catalogue requests, upload/transcoding, S3 playback and seek, collections, ratings, and history. Record public URLs, hosting provider, release identifier, secrets ownership, restart/recovery steps, and database backup/restore procedures when a real deployment is introduced.
 
 The backend serves only the API; there is no checked-in integration that packages the Angular build inside the Spring application. There is also no health/metrics endpoint, durable audio-job retry mechanism, or automated backup/deploy workflow at present.

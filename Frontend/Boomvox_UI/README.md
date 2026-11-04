@@ -13,7 +13,7 @@ The workspace includes `package.json`, `package-lock.json`, `angular.json`, and 
    npm ci
    ```
 
-3. Start the [backend](../../Backend/README.md#install-and-run). Check that `src/environments/environment.ts` points to `http://localhost:9090/api`.
+3. Start the [backend](../../Backend/README.md#install-and-run) on port 9090. Both frontend environments use `/api`; `proxy.conf.json` forwards development API requests to `http://localhost:9090`.
 4. Start the UI with the installed Angular CLI:
 
    ```sh
@@ -44,12 +44,26 @@ The test command failed with 14 `TS2305` errors because service specs import old
 
 | File | Current values |
 | --- | --- |
-| `src/environments/environment.ts` | `production: false`, `apiUrl: 'http://localhost:9090/api'` |
-| `src/environments/environment.prod.ts` | `production: true`, the same localhost API URL |
+| `src/environments/environment.ts` | `production: false`, `apiUrl: '/api'` |
+| `src/environments/environment.prod.ts` | `production: true`, `apiUrl: '/api'` |
+| `proxy.conf.json` | Development `/api/**` requests forwarded to `http://localhost:9090` |
+| `../nginx.conf` | Container `/api/` requests forwarded to `http://backend:9090` |
 
-Services import `environment.ts`. `angular.json` has production and development targets, but no `fileReplacements` entry. Consequently, the production build still uses `environment.ts`, including `production: false` and the localhost API URL; `environment.prod.ts` is not selected automatically. Configure production replacement and the intended API address before hosting.
+Services import `environment.ts`. The production target in `angular.json` replaces it with `environment.prod.ts`. Both configurations send API requests to the browser's current origin. During `npm start`, the configured Angular development proxy forwards `/api/**` to Spring Boot, preserving the path. Restart `npm start` after changing proxy configuration.
 
-The frontend currently reads no OS environment variables or `.env` file. Configuration is compiled into the browser bundle. AWS keys, database passwords, and JWT signing secrets belong only in the backend environment. The backend's API CORS policy currently accepts only `http://localhost:4200`; `127.0.0.1` or another port is a different origin.
+The frontend currently reads no OS environment variables or `.env` file. Configuration is compiled into the browser bundle. AWS keys, database passwords, and JWT signing secrets belong only in the backend environment. Direct cross-origin API access is still subject to the backend's CORS policy, which accepts only `http://localhost:4200`.
+
+### Container image
+
+Build from the repository root:
+
+```sh
+docker build -f Frontend/Dockerfile -t boomvox-frontend .
+```
+
+The image builds Angular with Node.js 24, then serves `dist/Boomvox_UI/browser/` with Nginx. Run it on the same Docker network as a backend reachable as `backend:9090`, and publish frontend port `4200:80`. Nginx needs that backend name resolvable at startup. Full-stack Compose orchestration is not yet configured.
+
+Nginx forwards `/api/` without removing the prefix, preserves the public Host header including its port, and accepts request bodies up to 100 MB. Client-side routes fall back to `index.html`; API errors remain backend responses. If the backend uses the `prod` profile, explicitly set `SERVER_PORT=9090` to match this upstream.
 
 ## Application layout
 
