@@ -14,7 +14,7 @@ RUN ./mvnw --batch-mode --no-transfer-progress package -DskipTests
 FROM eclipse-temurin:21-jre-jammy AS runtime
 
 RUN apt-get update \
-    && apt-get install -y --no-install-recommends ffmpeg \
+    && apt-get install -y --no-install-recommends ffmpeg curl \
     && rm -rf /var/lib/apt/lists/* \
     && command -v ffmpeg \
     && command -v ffprobe \

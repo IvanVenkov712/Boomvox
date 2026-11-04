@@ -12,7 +12,6 @@ The previous notes about controllers being added later are obsolete: ten control
 
 ## Local build and integration
 
-- Configure Angular production environment replacement and the intended hosted API URL; the current production build still uses development constants.
 - Remove the unused navbar import and address the three component stylesheet budget warnings.
 - Align frontend/backend session status, history duration field, song update/upload DTOs, and model enums/nullability.
 - Implement missing song-tag listing/album deletion endpoints or remove frontend calls.
@@ -33,6 +32,7 @@ The previous notes about controllers being added later are obsolete: ten control
 
 ## Completed setup work (2026-11-04)
 
+- Added production environment replacement, `/api` development/Nginx proxies, backend/frontend images, and local Compose orchestration with database persistence and readiness checks. Verified clean migrations, registration/login, API access, persistence after recreation, S3 upload, three processed variants, and signed audio/range downloads; validation and deletion problems remain open.
 - Frontend npm manifest/lockfile, Angular workspace, and TypeScript configuration are present; dependency installation and production build passed with Node.js 24.22.1 and npm 11.19.1.
 - Filled root/frontend ignore files for local configuration, dependencies, caches, and build output; added backend ignores for `aws.env`, environment variants, and logs while preserving example templates.
 - Updated READMEs, architecture/deployment documentation, and known problems to distinguish the successful build from remaining warnings, test failures, and runtime integration gaps.

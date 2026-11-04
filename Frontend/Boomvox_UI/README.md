@@ -61,7 +61,7 @@ Build from the repository root:
 docker build -f Frontend/Dockerfile -t boomvox-frontend .
 ```
 
-The image builds Angular with Node.js 24, then serves `dist/Boomvox_UI/browser/` with Nginx. Run it on the same Docker network as a backend reachable as `backend:9090`, and publish frontend port `4200:80`. Nginx needs that backend name resolvable at startup. Full-stack Compose orchestration is not yet configured.
+The image builds Angular with Node.js 24, then serves `dist/Boomvox_UI/browser/` with Nginx. The repository's Compose stack supplies the shared network, backend name `backend:9090`, and localhost port `4200:80`. Nginx starts after the backend health check passes. Follow the [Compose setup](../../docs/deployment.md#docker-compose-local-stack).
 
 Nginx forwards `/api/` without removing the prefix, preserves the public Host header including its port, and accepts request bodies up to 100 MB. Client-side routes fall back to `index.html`; API errors remain backend responses. If the backend uses the `prod` profile, explicitly set `SERVER_PORT=9090` to match this upstream.
 

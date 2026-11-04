@@ -2,7 +2,7 @@
 
 ## Current deployment
 
-**Boomvox is not currently deployed to a hosted environment**, confirmed by the maintainer on 2026-10-29. The repository contains local development settings, a partial production profile, and backend/frontend Dockerfiles. The frontend image uses Nginx to serve Angular and proxy API requests. Full-stack Compose orchestration is not yet configured; there are no hosted frontend/API URLs or CI/CD workflows.
+**Boomvox is not currently deployed to a hosted environment**, confirmed by the maintainer on 2026-10-29. The repository contains local development settings, a partial production profile, backend/frontend Dockerfiles, and a local Docker Compose stack. The frontend image uses Nginx to serve Angular and proxy API requests. There are no hosted frontend/API URLs or CI/CD workflows.
 
 | Component | Current local configuration | Source |
 | --- | --- | --- |
@@ -20,6 +20,59 @@ Both frontend environment files use `/api` on the browser's current origin. The 
 Use the [backend README](../Backend/README.md#install-and-run) for JDK/PostgreSQL/FFmpeg installation requirements, database role creation, `.env` setup, and startup commands. For the frontend, use Node.js 24 and npm 11, run `npm ci` in `Frontend/Boomvox_UI/`, then `npm start -- --host localhost --port 4200`. See the [frontend README](../Frontend/Boomvox_UI/README.md#build-and-test-status) for the verified build and current test failures.
 
 Start the backend from `Backend/`, since configuration imports and log paths are relative to the current working directory. Start the frontend separately on port 4200. An audio-capable backend needs the PostgreSQL connection, AWS settings, FFmpeg binaries, and writable temporary storage.
+
+## Docker Compose local stack
+
+Install Docker Desktop with Linux containers and Docker Compose. Run commands from the repository root. Host installations of Java, Node.js, PostgreSQL, and FFmpeg are unnecessary for this path.
+
+1. If a root `.env` does not already exist, copy `.compose.env.example` to `.env`:
+
+   ```powershell
+   if (-not (Test-Path .env)) { Copy-Item .compose.env.example .env }
+   ```
+
+2. Replace all placeholders. `DB_PASSWORD` and `JWT_SECRET` should be unique random values; use at least 32 bytes for the JWT secret. Supply the existing private S3 bucket's region and basic access credentials. This file uses Compose dotenv syntax with uppercase variable names. It is separate from `Backend/.env`, which uses Java property names. Compose explicitly passes the required values to the backend; neither local secrets file is baked into an image. Both `.env` files are ignored by Git and Docker.
+3. Validate and start the stack:
+
+   ```sh
+   docker compose config --quiet
+   docker compose up --build -d --wait --wait-timeout 180
+   docker compose ps
+   ```
+
+4. Open `http://localhost:4200`. Register and log in through the UI. Swagger is available at `http://localhost:9090/swagger-ui/index.html`. The frontend and API are bound to localhost; PostgreSQL has no host port. For uploads, assign an account `AUTHOR` or `ADMIN` as described in the [backend account setup](../Backend/README.md#accounts-and-roles).
+5. Inspect logs or stop the stack:
+
+   ```sh
+   docker compose logs --tail 100 backend
+   docker compose down
+   ```
+
+The stack uses PostgreSQL 17 with database `postgres`, role `boomvox`, and the `boomvox` schema. The backend uses `dev` so existing schema initialization, Liquibase migrations, Hibernate validation, console logging, and 100 MB upload limits apply. The PostgreSQL image creates the local role as a superuser; this setup is for local development. Database files are stored in named volume `boomvox_postgres_data`; `docker compose down` preserves it. Adding `--volumes` would delete it. Changing `DB_PASSWORD` after initialization does not change the password inside an existing database; update the role's password to match before recreating the backend.
+
+Startup order is database readiness (`pg_isready` over TCP), backend readiness (HTTP `/v3/api-docs`), then Nginx. Nginx serves static files and forwards `/api/` to `backend:9090`. Its own health check checks HTTP `/`. These checks establish service readiness, not S3 access or successful audio processing. Backend packaging skips tests as specified in its Dockerfile.
+
+To check persistence, register a temporary account, run `docker compose down`, then `docker compose up -d --wait --wait-timeout 180`, and log in again. Verify upload, three audio variants, signed-URL playback, and seeking separately with a valid S3 configuration. No hosted production deployment is created by these commands.
+
+### Verification on 2026-11-04
+
+The local Compose stack was built and started with the existing private S3 configuration and newly generated database/JWT secrets in an ignored root `.env`.
+
+| Check | Result |
+| --- | --- |
+| Compose validation and both image builds | Passed |
+| Database, backend, and frontend health checks | All healthy |
+| Clean PostgreSQL initialization | All 21 Liquibase migrations applied; Hibernate validation and application startup passed |
+| Frontend and `/login` refresh | Both served the Angular entry page |
+| Registration/login through Nginx | Passed with the browser's localhost Origin header |
+| JWT profile and catalogue requests | Passed; unauthenticated catalogue access rejected |
+| Persistence across `down` and `up` | Account ID, favourites list, login, and migration state survived complete container recreation |
+| One-second WAV upload to S3 | Passed through Nginx and the API |
+| FFmpeg processing | Three variants became READY and the song became ACTIVE |
+| Signed audio URL | Download returned HTTP 200 with audio data |
+| Seeking transport | `Range: bytes=0-99` returned HTTP 206 with 100 bytes |
+
+These are HTTP/database/storage checks, not visual browser automation or a passing unit-test suite. The four known frontend build warnings remain. Invalid registration with an empty body returned an empty 403 instead of the intended validation response. Deleting the played test song removed its S3 objects but failed on the existing streaming-session foreign key; see [known problems](known-problems.md). Its exact temporary database records were then removed in a guarded transaction. All three services were left running and healthy.
 
 ## How configuration is loaded
 

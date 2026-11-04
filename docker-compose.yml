@@ -1,0 +1,69 @@
+name: boomvox
+
+services:
+  db:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_DB: postgres
+      POSTGRES_USER: boomvox
+      POSTGRES_PASSWORD: ${DB_PASSWORD:?Set DB_PASSWORD in the root .env}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -h 127.0.0.1 -U $$POSTGRES_USER -d $$POSTGRES_DB"]
+      interval: 5s
+      timeout: 5s
+      retries: 12
+      start_period: 10s
+    restart: unless-stopped
+
+  backend:
+    image: boomvox-backend:local
+    build:
+      context: .
+      dockerfile: Backend/Dockerfile
+    environment:
+      SPRING_PROFILES_ACTIVE: dev
+      SERVER_PORT: "9090"
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/postgres?currentSchema=boomvox
+      SPRING_DATASOURCE_USERNAME: boomvox
+      SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD:?Set DB_PASSWORD in the root .env}
+      AWS_REGION: ${AWS_REGION:?Set AWS_REGION in the root .env}
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID:?Set AWS_ACCESS_KEY_ID in the root .env}
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY:?Set AWS_SECRET_ACCESS_KEY in the root .env}
+      AWS_S3_BUCKET: ${AWS_S3_BUCKET:?Set AWS_S3_BUCKET in the root .env}
+      AWS_S3_SIGNED_URL_EXPIRY_MINUTES: "15"
+      JWT_SECRET: ${JWT_SECRET:?Set JWT_SECRET in the root .env}
+    ports:
+      - "127.0.0.1:9090:9090"
+    depends_on:
+      db:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "--fail", "--silent", "--show-error", "http://127.0.0.1:9090/v3/api-docs"]
+      interval: 15s
+      timeout: 5s
+      retries: 8
+      start_period: 45s
+    restart: unless-stopped
+
+  frontend:
+    image: boomvox-frontend:local
+    build:
+      context: .
+      dockerfile: Frontend/Dockerfile
+    ports:
+      - "127.0.0.1:4200:80"
+    depends_on:
+      backend:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--spider", "http://127.0.0.1/"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+      start_period: 5s
+    restart: unless-stopped
+
+volumes:
+  postgres_data:

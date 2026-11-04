@@ -30,6 +30,8 @@ docs/                  Architecture, API, deployment, and known problems
 
 ## Install and run locally
 
+To run the frontend, backend, and PostgreSQL together with Docker Compose, follow the [container setup](docs/deployment.md#docker-compose-local-stack). This supplies Java, Node.js, PostgreSQL, and FFmpeg inside the images; an S3 bucket and credentials are still required.
+
 1. Clone the repository and open its directory:
 
    ```sh
@@ -73,4 +75,4 @@ The backend test command is `./mvnw test` (`.\mvnw.cmd test` on Windows), run fr
 
 From `Frontend/Boomvox_UI/`, `npm run build` produces `dist/Boomvox_UI/browser/`. The verified production build passed with four warnings: an unused navbar import and three component stylesheet budget warnings. `npm test -- --watch=false` failed with 14 `TS2305` errors from outdated service imports; tests did not execute. See [verification limits](docs/known-problems.md#verification-and-test-coverage).
 
-The original source review was on 2026-10-29, starting from commit `b600507`; frontend build/test status and ignore rules were updated on 2026-11-04. End-to-end execution and production deployment have not been verified.
+The original source review was on 2026-10-29, starting from commit `b600507`. On 2026-11-04, local Compose verification passed service readiness, all 21 migrations, registration/login, authenticated API access, persistence across container recreation, S3 upload, three audio variants, signed audio download, and byte-range seeking. These checks used HTTP/database/storage calls, not visual browser automation. Validation error responses and song deletion exposed existing application issues; see the [verification record](docs/deployment.md#verification-on-2026-11-04). Hosted production deployment remains unverified.
