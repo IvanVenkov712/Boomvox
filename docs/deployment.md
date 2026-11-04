@@ -6,7 +6,7 @@
 
 | Component | Current local configuration | Source |
 | --- | --- | --- |
-| Frontend | Intended origin `http://localhost:4200`; workspace files must be restored to run it | Frontend source and `SecurityConfig` |
+| Frontend | Development origin `http://localhost:4200`; npm/Angular workspace present, production build verified on 2026-11-04 | `angular.json`, `package-lock.json`, and `SecurityConfig` |
 | API with default `dev` profile | `http://localhost:9090/api` | `application-dev.yml` |
 | Base API port with `prod`/`test` alone | `8099`, unless overridden | `application.yml` |
 | PostgreSQL | `localhost:5432`, database `postgres`, schema `boomvox` | `application-dev.yml` |
@@ -17,7 +17,7 @@ Both frontend environment files currently point to the local API on port 9090. H
 
 ## Installing and starting locally
 
-Use the [backend README](../Backend/README.md#install-and-run) for JDK/PostgreSQL/FFmpeg installation requirements, database role creation, `.env` setup, and startup commands. Use the [frontend README](../Frontend/Boomvox_UI/README.md#install-and-run) for the missing build-file prerequisite and the dependency installation/dev-server commands once those files are restored.
+Use the [backend README](../Backend/README.md#install-and-run) for JDK/PostgreSQL/FFmpeg installation requirements, database role creation, `.env` setup, and startup commands. For the frontend, use Node.js 24 and npm 11, run `npm ci` in `Frontend/Boomvox_UI/`, then `npm start -- --host localhost --port 4200`. See the [frontend README](../Frontend/Boomvox_UI/README.md#build-and-test-status) for the verified build and current test failures.
 
 Start the backend from `Backend/`, since configuration imports and log paths are relative to the current working directory. Start the frontend separately on port 4200. An audio-capable backend needs the PostgreSQL connection, AWS settings, FFmpeg binaries, and writable temporary storage.
 
@@ -31,7 +31,7 @@ spring.config.import=optional:file:.env[.properties],optional:file:aws.env[.prop
 
 Use ignored `Backend/.env` for local values. It is parsed as a **Java properties file**, not as a shell script: write `aws.region=your-region` without `export` or quotes. The `.env.example` uses actual property names so values work directly in this imported file. OS environment variables can be used instead and override file configuration.
 
-`aws.env` is supported by the import but is not currently ignored by `Backend/.gitignore`; avoid storing secrets there. The actual `.env`, AWS keys, database passwords, and JWT signing secret must stay outside version control.
+Both `.env` and the optional `aws.env` are ignored by Git, as are `.env.*` variants; `.env.example` and `.env.*.example` templates remain trackable. The actual local files, AWS keys, database passwords, and JWT signing secret must stay outside version control. Ignore rules do not untrack previously committed files.
 
 ## Configuration reference
 
@@ -85,7 +85,7 @@ Hyphens are removed when expressing canonical Spring properties as environment-v
 
 The POM includes the Ollama starter while the dev YAML has its Ollama section commented out and contains OpenAI settings. Supplying `OPENAI_API_KEY` does not switch starters or make recommendations AI-powered. The checked-in business services do not call either provider. Reconcile/remove that configuration before treating either as an operational dependency.
 
-The frontend currently supports **no runtime environment variables**. Its `apiUrl` constants are browser-visible build inputs; the missing Angular workspace configuration must be recovered before defining build replacements. Never put server secrets in those files.
+The frontend currently supports **no runtime environment variables**. Its `apiUrl` constants are browser-visible build inputs. The production target in `angular.json` does not define `fileReplacements`, so `environment.prod.ts` is not selected: even `npm run build` uses `environment.ts` with `production: false` and `http://localhost:9090/api`. Add production replacement wiring and the intended API URL before hosting. Server secrets belong in backend configuration.
 
 ## Profile behaviour
 
@@ -101,7 +101,7 @@ The frontend currently supports **no runtime environment variables**. Its `apiUr
 
 This is a preparation path, not an existing deployment procedure:
 
-1. Resolve the access-control, password-reset, frontend build, and integration issues in [known problems](known-problems.md).
+1. Resolve the access-control, password-reset, production configuration, test, and integration issues in [known problems](known-problems.md). Frontend production compilation already passes; it does not verify API/browser flows.
 2. Provision PostgreSQL with a `boomvox` schema. Configure credentials, the JDBC URL, Liquibase schema/changelog, and Hibernate validation explicitly for `prod`. Create the schema beforehand with the application role as owner, or provide the connection-init SQL with appropriate privileges.
 3. Provision a private S3 bucket and inject the required storage properties. See the [S3 guide](../Backend/s3_music_platform_guide.md) for the current client behaviour and object layout.
 4. Install a Java runtime compatible with the Java 21 build, FFmpeg/FFprobe, and sufficient writable temporary space on the backend host. Set `SPRING_PROFILES_ACTIVE=prod`, a unique `JWT_SECRET`, database/storage configuration, and suitable multipart limits. Give the configured log directory write access.
@@ -111,7 +111,7 @@ This is a preparation path, not an existing deployment procedure:
    java -jar target/boomvox-0.0.1-SNAPSHOT.jar --spring.profiles.active=prod
    ```
 
-6. Restore the frontend workspace, configure its production API URL and environment replacement, and create a production build. Serve the output with a static host that falls back to `index.html` for client routes. No output directory can be verified until the Angular workspace is restored.
+6. Configure the frontend production API URL and environment replacement in `angular.json`. From `Frontend/Boomvox_UI/`, run `npm ci` and `npm run build`. Serve `dist/Boomvox_UI/browser/` with a static host that falls back to `index.html` for client routes. The current production build succeeds with warnings, but its localhost API configuration is unsuitable for a hosted release.
 7. Set the API's permitted frontend origin in `SecurityConfig`; it is currently hardcoded to localhost. Configure HTTPS termination and matching public URLs. Apply S3 browser CORS settings if required by the selected browser access mode.
 8. Verify registration/login, authenticated catalogue requests, upload/transcoding, S3 playback and seek, collections, ratings, and history. Record public URLs, hosting provider, release identifier, secrets ownership, restart/recovery steps, and database backup/restore procedures when a real deployment is introduced.
 

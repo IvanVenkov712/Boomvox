@@ -12,7 +12,8 @@ The previous notes about controllers being added later are obsolete: ten control
 
 ## Local build and integration
 
-- Recover frontend package, lock, Angular workspace, and TypeScript configuration files.
+- Configure Angular production environment replacement and the intended hosted API URL; the current production build still uses development constants.
+- Remove the unused navbar import and address the three component stylesheet budget warnings.
 - Align frontend/backend session status, history duration field, song update/upload DTOs, and model enums/nullability.
 - Implement missing song-tag listing/album deletion endpoints or remove frontend calls.
 - Align albumless-upload persistence and define author/genre for songs without albums.
@@ -24,10 +25,16 @@ The previous notes about controllers being added later are obsolete: ten control
 ## Verification and maintenance
 
 - Make backend tests self-contained and fix the test profile/logger configuration.
-- Repair outdated frontend specs and add meaningful API/UI contract coverage.
+- Repair the 14 obsolete service imports blocking `npm test -- --watch=false`, then update generated assertions/providers and add meaningful API/UI contract coverage.
 - Add access-control, clean-migration, upload/processing, playback, and deletion checks.
 - Remove or reconcile unused AI configuration/dependencies.
 - Bound catalogue recommendation queries as data grows; define whether click analytics are required.
 - Introduce deployment/health/backup/recovery procedures when hosting is added.
+
+## Completed setup work (2026-11-04)
+
+- Frontend npm manifest/lockfile, Angular workspace, and TypeScript configuration are present; dependency installation and production build passed with Node.js 24.22.1 and npm 11.19.1.
+- Filled root/frontend ignore files for local configuration, dependencies, caches, and build output; added backend ignores for `aws.env`, environment variants, and logs while preserving example templates.
+- Updated READMEs, architecture/deployment documentation, and known problems to distinguish the successful build from remaining warnings, test failures, and runtime integration gaps.
 
 See [backend setup](README.md), [configuration](../docs/deployment.md), and the [API reference](../docs/project-endpoints.md) for current behaviour rather than planned features.

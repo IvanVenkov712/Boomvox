@@ -1,6 +1,6 @@
 # Architecture
 
-This document describes the source reviewed on 2026-10-29. Boomvox has an Angular single-page application and one Spring Boot backend process. PostgreSQL holds application data, and S3 holds audio. There is no current hosted deployment.
+This document describes the source reviewed on 2026-10-29, with frontend workspace/build details updated on 2026-11-04. Boomvox has an Angular single-page application and one Spring Boot backend process. PostgreSQL holds application data, and S3 holds audio. There is no current hosted deployment.
 
 ## Components
 
@@ -28,7 +28,7 @@ flowchart LR
 
 The backend is a layered monolith. Controllers map HTTP requests and DTOs; services implement business operations; Spring Data repositories access entities. `StreamingController` also reads repositories directly to select audio variants. Audio processing runs in the same JVM, using an executor with 2 core threads, 4 maximum threads, and queue capacity 50. There is no external job broker or separate worker service.
 
-The frontend uses standalone components, router providers, signals, and RxJS HTTP requests. Application-scoped services retain user/catalogue state and the audio player across route changes. There is no server-side rendering configuration or global state-store package in the checked-in source. Missing frontend build metadata prevents a complete dependency/version inventory.
+The frontend uses Angular 21.2 standalone components, router providers, signals, and RxJS 7.8 HTTP requests, compiled with TypeScript 5.9. Application-scoped services retain user/catalogue state and the audio player across route changes. There is no server-side rendering configuration or global state-store package in the checked-in source. The npm lockfile and Angular/TypeScript workspace configuration are present. `@angular/build:application` produces static browser assets in `dist/Boomvox_UI/browser/`; the default production build passed on 2026-11-04. The `@angular/build:unit-test` target uses Vitest, but outdated spec imports currently prevent test compilation. See the [frontend README](../Frontend/Boomvox_UI/README.md#build-and-test-status) for commands and warnings.
 
 ## Data model
 

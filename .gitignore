@@ -1,0 +1,21 @@
+# Local configuration and credentials
+.env
+.env.*
+!.env.example
+!.env.*.example
+aws.env
+.aws/
+
+# Editor and operating system files
+.idea/
+.vscode/
+*.iml
+*.iws
+*.ipr
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# Runtime logs
+*.log
+logs/

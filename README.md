@@ -6,7 +6,7 @@ Boomvox is a music platform for uploading, processing, streaming, organising, ra
 
 There is **no hosted deployment** at present (confirmed by the maintainer on 2026-10-29). The checked-in configuration targets local development: frontend `http://localhost:4200`, backend `http://localhost:9090`, and PostgreSQL on port `5432`.
 
-The backend has a Maven build. The frontend currently contains source files without `package.json`, a dependency lockfile, `angular.json`, or TypeScript build configuration, so a fresh checkout cannot install or run the UI until those files are restored. See [known problems](docs/known-problems.md) before relying on the application for a public deployment.
+The backend has a Maven build. The frontend now includes its npm manifest and lockfile, Angular workspace, and TypeScript configuration. On 2026-11-04, `npm ci --no-audit --no-fund` and the default production `npm run build` succeeded with Node.js 24.22.1 and npm 11.19.1. Frontend tests still fail to compile because of outdated service imports. See [known problems](docs/known-problems.md) for remaining build warnings, test failures, and integration issues.
 
 ## Features in the source
 
@@ -24,7 +24,7 @@ These features have implementation code; their limitations and integration gaps 
 
 ```text
 Backend/               Spring Boot application, Maven wrapper, SQL migrations
-Frontend/Boomvox_UI/   Angular application source
+Frontend/Boomvox_UI/   Angular application, npm lockfile, and build configuration
 docs/                  Architecture, API, deployment, and known problems
 ```
 
@@ -47,7 +47,7 @@ docs/                  Architecture, API, deployment, and known problems
 
    On macOS/Linux, use `./mvnw spring-boot:run` from `Backend/` instead. The `dev` profile is active by default. The API base is `http://localhost:9090/api`; Swagger UI is `http://localhost:9090/swagger-ui/index.html`.
 
-4. Follow the [frontend setup instructions](Frontend/Boomvox_UI/README.md#install-and-run). Restore the missing workspace files before installing dependencies or starting Angular. Once restored, run the frontend on `localhost:4200` in a second terminal.
+4. Install Node.js 24 and npm 11, then follow the [frontend setup instructions](Frontend/Boomvox_UI/README.md#install-and-run). In a second terminal, run `npm ci` and `npm start -- --host localhost --port 4200` from `Frontend/Boomvox_UI/`. Open `http://localhost:4200`.
 5. Register through the login screen or `POST /api/auth/register`. New accounts have the `ORDINARY_USER` role. There is no seeded administrator or automatic role bootstrap; uploads are intended for `AUTHOR`/`ADMIN` accounts. See [account setup](Backend/README.md#accounts-and-roles).
 
 AWS credentials, bucket configuration, and a JWT signing secret are described in the [configuration reference](docs/deployment.md#configuration-reference). A populated local `.env` must remain untracked.
@@ -69,6 +69,8 @@ AWS credentials, bucket configuration, and a JWT signing secret are described in
 
 ## Verification
 
-The backend test command is `./mvnw test` (`.\mvnw.cmd test` on Windows), run from `Backend/`. The only backend test checks application context startup; its Testcontainers configuration is empty, so it still needs external configuration/services. Frontend tests are blocked by the missing workspace files and include outdated generated specs. See [verification limits](docs/known-problems.md#verification-and-test-coverage).
+The backend test command is `./mvnw test` (`.\mvnw.cmd test` on Windows), run from `Backend/`. The only backend test checks application context startup; its Testcontainers configuration is empty, so it still needs external configuration/services.
 
-Documentation describes the source reviewed on 2026-10-29, starting from commit `b600507`. It does not claim successful end-to-end execution or a production deployment.
+From `Frontend/Boomvox_UI/`, `npm run build` produces `dist/Boomvox_UI/browser/`. The verified production build passed with four warnings: an unused navbar import and three component stylesheet budget warnings. `npm test -- --watch=false` failed with 14 `TS2305` errors from outdated service imports; tests did not execute. See [verification limits](docs/known-problems.md#verification-and-test-coverage).
+
+The original source review was on 2026-10-29, starting from commit `b600507`; frontend build/test status and ignore rules were updated on 2026-11-04. End-to-end execution and production deployment have not been verified.

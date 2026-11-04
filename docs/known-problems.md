@@ -1,12 +1,18 @@
 # Known problems
 
-Reviewed on 2026-10-29 against the source starting at commit `b600507`. These are findings from code/configuration inspection, not a record of completed runtime tests. Where failure depends on timing, database state, or browser behaviour, that condition is stated explicitly. No hosted deployment currently exists.
+The original source review was on 2026-10-29, starting at commit `b600507`. Frontend installation, production build, test compilation, and ignore rules were checked on 2026-11-04. Other findings remain based on code/configuration inspection; end-to-end behaviour has not been verified. Where failure depends on timing, database state, or browser behaviour, that condition is stated explicitly. No hosted deployment currently exists.
+
+## Resolved setup findings
+
+- **Missing frontend workspace metadata:** `package.json`, `package-lock.json`, `angular.json`, and `tsconfig*.json` are now present. `npm ci --no-audit --no-fund` and `npm run build` succeeded on 2026-11-04 with Node.js 24.22.1 and npm 11.19.1. Browser assets are in `Frontend/Boomvox_UI/dist/Boomvox_UI/browser/`. Test failures and production environment configuration remain separate open issues below.
+- **Empty ignore files and optional secrets filename:** root and frontend `.gitignore` files now cover local configuration/editor files and frontend dependencies/build caches/output. The backend also ignores `aws.env`, `.env.*` variants, and logs. Example environment templates remain trackable. These rules do not remove any previously tracked files.
 
 ## Build and local setup
 
 | Problem | Evidence and impact | Follow-up |
 | --- | --- | --- |
-| Frontend cannot be installed/built from a fresh checkout | [`Frontend/Boomvox_UI/`](../Frontend/Boomvox_UI/) contains source but no `package.json`, lockfile, `angular.json`, or `tsconfig*.json`. Dependency versions, scripts, targets, and environment replacements are unknown. | Recover the original workspace metadata and commit it; validate install, build, and tests. |
+| Frontend build has non-blocking warnings | The verified production build reports unused `RouterLinkActive` in [`navbar.ts`](../Frontend/Boomvox_UI/src/app/components/navbar/navbar.ts) and component styles above the 4 kB warning budget: upload 6.63 kB, playlist detail 4.21 kB, profile 4.65 kB. All remain below the 8 kB error budget. | Remove the unused import and reduce duplicated CSS or review the stylesheet budgets. |
+| Frontend tests fail to compile | `npm test -- --watch=false` fails with 14 `TS2305` errors from obsolete service imports such as `Auth` instead of `AuthService`. No test cases execute. | Update imports/types/injection and supply required test providers; replace outdated generated assertions, then rerun the suite. |
 | Native audio tools are external prerequisites | [`AudioProcessingJob`](../Backend/src/main/java/bg/fmi/uni/boomvox/job/AudioProcessingJob.java) invokes FFmpeg/FFprobe. The Maven library does not install them. Missing executables prevent audio processing. | Install both binaries on `PATH` with MP3/AAC encoders and verify processing on the intended host. |
 | No initial administrator | [`AuthService`](../Backend/src/main/java/bg/fmi/uni/boomvox/service/AuthService.java) always registers `ORDINARY_USER`; migrations seed no account. Upload/admin features need another role. | Use the documented trusted local DB bootstrap; implement a controlled bootstrap process before hosting. |
 
@@ -57,11 +63,11 @@ These issues should be resolved before exposing the API publicly.
 
 | Problem | Evidence and impact | Follow-up |
 | --- | --- | --- |
-| Production profile is incomplete | [`application-prod.yml`](../Backend/src/main/resources/application-prod.yml) changes logging only. Database/schema and 100 MB multipart settings are in dev, and base port is 8099. Frontend production constants still point to localhost:9090. | Supply prod configuration explicitly and restore frontend build replacement wiring; see [configuration reference](deployment.md#configuration-reference). |
+| Production profile is incomplete | [`application-prod.yml`](../Backend/src/main/resources/application-prod.yml) changes logging only. Database/schema and 100 MB multipart settings are in dev, and base port is 8099. | Supply prod configuration explicitly; see [configuration reference](deployment.md#configuration-reference). |
+| Frontend production environment is not selected | [`angular.json`](../Frontend/Boomvox_UI/angular.json) has no `fileReplacements`. The production build imports `environment.ts`, retaining `production: false` and localhost:9090; `environment.prod.ts` also still points to localhost. | Configure production file replacement and the intended hosted API URL, then verify the emitted build and browser requests. |
 | Browser origin is fixed | [`SecurityConfig`](../Backend/src/main/java/bg/fmi/uni/boomvox/config/SecurityConfig.java) allows only `http://localhost:4200`. | Configure the actual origin when hosting or using another local origin. |
 | AI dependency and configuration disagree | POM includes Ollama; dev configuration contains OpenAI settings and commented Ollama settings. No business service uses an AI client. | Remove unused integration or configure one intentional provider if a feature needs it. An API key is not required by the implemented scoring algorithm. |
 | AWS credential modes are limited | [`S3Config`](../Backend/src/main/java/bg/fmi/uni/boomvox/config/S3Config.java) builds static basic credentials and ignores session tokens/default-provider roles. | Support the credential mode required by the future host instead of assuming IAM roles work already. |
-| Optional secrets filename is not ignored | Spring imports `aws.env`, but [`.gitignore`](../Backend/.gitignore) only ignores `.env`. | Prefer the documented `.env`; ignore any additional secrets file before using it. |
 | No operational deployment tooling | No checked-in deployment workflow, infrastructure definition, health endpoint, backup procedure, or worker recovery process exists. | Introduce these with the first hosted environment and record its actual URLs and ownership. |
 
 Recommendation generation also scans all songs and performs repeated tag lookups; large catalogues can produce high memory use and many queries. The current click endpoint only retrieves a recommendation and does not record analytics. These behaviours are visible in [`RecommendationService`](../Backend/src/main/java/bg/fmi/uni/boomvox/service/RecommendationService.java).
@@ -70,6 +76,14 @@ Recommendation generation also scans all songs and performs repeated tag lookups
 
 The only backend test is [`BoomvoxApplicationTests.contextLoads`](../Backend/src/test/java/bg/fmi/uni/boomvox/BoomvoxApplicationTests.java). [`TestcontainersConfiguration`](../Backend/src/test/java/bg/fmi/uni/boomvox/TestcontainersConfiguration.java) is an empty class; the container definitions are commented out, so tests do not provision PostgreSQL or other dependencies. The test does not select the `test` profile. Selecting that profile separately lacks an `AppLogger` bean (implementations match only dev/prod) and uses a stale `theatre` property prefix.
 
-Frontend specs contain generated assumptions that disagree with current source: for example [`auth.spec.ts`](../Frontend/Boomvox_UI/src/app/services/auth.spec.ts) imports `Auth` while the service exports `AuthService`, and `app.spec.ts` expects the old generated welcome title. No frontend test runner can be established without restoring workspace metadata.
+Frontend verification on 2026-11-04 used Node.js 24.22.1 and npm 11.19.1:
+
+| Command (from `Frontend/Boomvox_UI/`) | Result |
+| --- | --- |
+| `npm ci --no-audit --no-fund` | Passed; installed 473 packages from the lockfile. No dependency security audit was performed. |
+| `npm run build` | Passed with four warnings; initial bundle 431.65 kB, estimated transfer 96.89 kB. |
+| `npm test -- --watch=false` | Failed during compilation with 14 `TS2305` errors; test cases did not execute. |
+
+The workspace configures `@angular/build:unit-test`, Vitest 4, jsdom, and `tsconfig.spec.json`. Generated service specs import obsolete names in admin, album, artist, auth, favourites, layout, player, playlist, rating, recommendation, song, streaming, tag, and user. For example, [`auth.spec.ts`](../Frontend/Boomvox_UI/src/app/services/auth.spec.ts) imports `Auth` while the service exports `AuthService`. [`app.spec.ts`](../Frontend/Boomvox_UI/src/app/app.spec.ts) also expects the old generated welcome title; this assertion has not run. The production TypeScript target excludes specs, which explains why production compilation passes while test compilation fails.
 
 Documentation checks can verify links, endpoint inventory, and examples against source, but they do not establish runtime correctness. Required follow-up coverage includes role/ownership rejection, HTTP exception mapping, database migration from a clean schema, upload commit/worker timing, S3/FFmpeg processing, playback contract agreement, collection deletion, and recommendation behaviour.

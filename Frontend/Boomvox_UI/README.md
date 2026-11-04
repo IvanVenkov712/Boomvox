@@ -4,33 +4,41 @@ Boomvox UI is an Angular application for discovering and listening to music, man
 
 ## Install and run
 
-### Current setup blocker
+The workspace includes `package.json`, `package-lock.json`, `angular.json`, and `tsconfig*.json`. It declares Angular 21.2, TypeScript 5.9, RxJS 7.8, and a Vitest 4/jsdom test target. `package.json` declares `npm@11.14.1`; installation and production compilation were verified on 2026-11-04 with Node.js 24.22.1 and npm 11.19.1.
 
-This directory contains `src/`, `.editorconfig`, and `.prettierrc`, but no `package.json`, lockfile, `angular.json`, or `tsconfig*.json`. The Angular, TypeScript, Node.js, and test-runner versions cannot be established from the checked-in source. **`npm install`, `npm ci`, and `ng serve` cannot set up this checkout as it stands.**
-
-Restore the original workspace/build files from the working development copy or project history before running it. Preserve the current source. If the original files are unavailable, create an Angular workspace in a separate directory, integrate this source, and review dependencies and bootstrap configuration before checking the recovered workspace files into this directory. This is a recovery task; there is no verified frontend build configuration in this repository yet.
-
-### Once the workspace files are restored
-
-1. Install Node.js and npm versions compatible with the restored `package.json` and Angular version, using the [Node.js downloads page](https://nodejs.org/en/download). Use the project's pinned versions if the recovered files specify them. Reopen the terminal and check `node --version` and `npm --version`.
+1. Install Node.js 24 and npm 11. Reopen the terminal and check `node --version` and `npm --version`.
 2. Open a terminal in `Frontend/Boomvox_UI/` and install the locked dependencies:
 
    ```sh
    npm ci
    ```
 
-   If only `package.json` was recovered, run `npm install` once to create a lockfile, review it, and commit it with the restored configuration.
-
 3. Start the [backend](../../Backend/README.md#install-and-run). Check that `src/environments/environment.ts` points to `http://localhost:9090/api`.
-4. With the local Angular CLI installed by the restored dependencies, start the UI:
+4. Start the UI with the installed Angular CLI:
 
    ```sh
-   npx ng serve --host localhost --port 4200
+   npm start -- --host localhost --port 4200
    ```
 
 5. Open `http://localhost:4200`. Register or log in at `/login`. There is no separate registration URL; the login component contains both forms.
 
-These commands depend on the restored Angular workspace and have not been validated against the current incomplete checkout. Frontend unit tests and a production build should be run with that workspace's configured targets (normally `npx ng test` and `npx ng build --configuration production`). Existing specs also require repair.
+### Build and test status
+
+Run these commands from this directory:
+
+| Command | Purpose and current status |
+| --- | --- |
+| `npm ci` | Install the locked dependency tree; verified with `--no-audit --no-fund` |
+| `npm start -- --host localhost --port 4200` | Start the development server; browser/API flows have not been verified |
+| `npm run build` | Default production build; passed, output in `dist/Boomvox_UI/browser/` |
+| `npm run build -- --configuration development` | Build with source maps and without production optimisation |
+| `npm test -- --watch=false` | Run the configured Angular/Vitest target once; currently fails during test compilation |
+
+The production build completed with four non-blocking warnings: unused `RouterLinkActive` in `navbar.ts`, and component styles exceeding the 4 kB warning budget in `upload.css` (6.63 kB), `playlist-detail.css` (4.21 kB), and `profile.css` (4.65 kB). None exceeded the 8 kB error budget.
+
+The test command failed with 14 `TS2305` errors because service specs import old names such as `Auth` instead of `AuthService`. Test cases did not execute. The app spec also still expects the generated welcome title. Production compilation excludes `*.spec.ts`, so this failure does not block `npm run build`. See [verification and test coverage](../../docs/known-problems.md#verification-and-test-coverage).
+
+`.gitignore` excludes `node_modules/`, `.angular/`, `dist/`, `out-tsc/`, coverage, and package-manager logs. Keep the lockfile and workspace configuration under version control.
 
 ## Configuration
 
@@ -39,7 +47,7 @@ These commands depend on the restored Angular workspace and have not been valida
 | `src/environments/environment.ts` | `production: false`, `apiUrl: 'http://localhost:9090/api'` |
 | `src/environments/environment.prod.ts` | `production: true`, the same localhost API URL |
 
-Services import `environment.ts`. A production file is present, but no `angular.json` exists to establish file replacement. A production build must explicitly wire that replacement and use the intended API address when hosting is introduced.
+Services import `environment.ts`. `angular.json` has production and development targets, but no `fileReplacements` entry. Consequently, the production build still uses `environment.ts`, including `production: false` and the localhost API URL; `environment.prod.ts` is not selected automatically. Configure production replacement and the intended API address before hosting.
 
 The frontend currently reads no OS environment variables or `.env` file. Configuration is compiled into the browser bundle. AWS keys, database passwords, and JWT signing secrets belong only in the backend environment. The backend's API CORS policy currently accepts only `http://localhost:4200`; `127.0.0.1` or another port is a different origin.
 
@@ -135,13 +143,13 @@ The backend generates 128 kbps MP3, 320 kbps MP3, and 256 kbps AAC variants. It 
 | Song update | UI sends `name`, `genre`, and `albumId`; backend also requires `format`, `duration`, `fileSize`, and `storageKey` |
 | Upload genre | UI sends a song `genre`; backend upload DTO has no such field, and genre is obtained through an album |
 | Models | UI omits backend `GUEST`/`FLAC` enum values and stream quality/duration fields; backend allows nullable IDs that UI types declare as required |
-| Tests | Specs import obsolete service class names and assert an old generated title; build/test metadata is missing |
+| Tests | The configured test target fails compilation on 14 obsolete service imports; the app spec also asserts an old generated title |
 
 Playback unload delivery, URL-refresh session handling, poll cleanup, backend access control, and other limitations are detailed in [known problems](../../docs/known-problems.md). See the [API reference](../../docs/project-endpoints.md) for the actual contract when changing frontend interfaces.
 
 ## Development workflow
 
-After recovering the workspace, keep component TypeScript, HTML, CSS, and specs together as in the existing tree. Add routes in `app.routes.ts`, put HTTP calls in a service, and keep shared contracts in `models/`. Cross-check DTO field names and enum values against the backend before adding new requests.
+Keep component TypeScript, HTML, CSS, and specs together as in the existing tree. Add routes in `app.routes.ts`, put HTTP calls in a service, and keep shared contracts in `models/`. Cross-check DTO field names and enum values against the backend before adding new requests. Run the production build after changes and repair the test suite before relying on its results.
 
 For a manual integration check, register/login, browse songs, play an `ACTIVE` song, pause/seek/skip, add it to a playlist/favourites, submit a rating, and inspect profile history. Use an authorised account for upload and confirm it progresses from `PROCESSING` to `ACTIVE`. Check browser Network requests against the [API reference](../../docs/project-endpoints.md); the known mismatches mean this is a diagnostic checklist, not a claim that every flow currently passes.
 
